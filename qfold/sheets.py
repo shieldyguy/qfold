@@ -112,6 +112,18 @@ def _sheet(case: Case, occurrence: str):
     return comp, comp.bodies[0]
 
 
+def _shell_dims(case: Case, res: dict) -> dict:
+    """Overall shell dimensions measured by the kernel, and the cheek height at
+    the front taken from the cheek's own top edge, extended to y = 0."""
+    bb = res["bodies"][case.design.proto_name(*_sheet(case, "bottom_shell"))]["bbox"]
+    st = case.shell.faces["cheek_right"]
+    (y1, z1), (y2, z2) = ((p[1], p[2]) for p in (st.to3d(*st.face.outline[4]),
+                                                 st.to3d(*st.face.outline[5])))
+    hf = z2 + (bb[1] - y2) * (z1 - z2) / (y1 - y2) - bb[2]
+    return {"x0": bb[0], "y0": bb[1], "z0": bb[2], "W": bb[3] - bb[0], "D": bb[4] - bb[1],
+            "Hb": bb[5] - bb[2], "Hf": hf}
+
+
 def sheet_assembly(case: Case, res: dict, rep: Report, render_png: bytes) -> Sheet:
     p = case.params
     sh = Sheet()
@@ -119,12 +131,11 @@ def sheet_assembly(case: Case, res: dict, rep: Report, render_png: bytes) -> She
           _common_notes(case), "NTS")
     sh.image(16, 14, 240, 172, render_png)
 
-    shell = res["bodies"][case.design.proto_name(*_sheet(case, "bottom_shell"))]["bbox"]
+    sd = _shell_dims(case, res)
     whole = res["measure"]["assembly"]["bbox"]
-    rows = [["Shell width × depth", f"{fmt_len(round(shell[3] - shell[0], 2))} × "
-                                    f"{fmt_len(round(shell[4] - shell[1], 2))}"],
-            ["Shell height, back / front", f"{fmt_len(round(shell[5] - shell[2], 2))} / "
-                                           f"{fmt_len(p.Hf)}"],
+    rows = [["Shell width × depth", f"{fmt_len(round(sd['W'], 2))} × {fmt_len(round(sd['D'], 2))}"],
+            ["Shell height, back / front", f"{fmt_len(round(sd['Hb'], 2))} / "
+                                           f"{fmt_len(round(sd['Hf'], 2))}"],
             ["Overall, with feet and knobs", f"{fmt_len(round(whole[3] - whole[0], 1))} × "
                                              f"{fmt_len(round(whole[4] - whole[1], 1))} × "
                                              f"{fmt_len(round(whole[5] - whole[2], 1))}"],
@@ -174,16 +185,18 @@ def sheet_shell_views(case: Case, res: dict) -> Sheet:
     right.draw(sh, label="RIGHT")
     back.draw(sh, label="REAR (viewed from behind)")
 
-    W, D = p.W, p.D
+    # Overall sizes come from the kernel's bounding box of the solid.
+    sd = _shell_dims(case, res)
+    W, D, Hb, Hf = sd["W"], sd["D"], sd["Hb"], sd["Hf"]
     dim_h(sh, top.P3((0, D, 0)), top.P3((W, D, 0)), top.y - 5, W)
     dim_v(sh, top.P3((0, 0, 0)), top.P3((0, D, 0)), top.x - 7, D)
     h_front = lay.faces["front_lip"].to3d(lay.faces["front_lip"].face.outline[4][0], 0)[2]
     dim_v(sh, front.P3((0, 0, 0)), front.P3((0, 0, h_front)), front.x - 7, h_front)
-    dim_v(sh, right.P3((W, 0, 0)), right.P3((W, 0, p.Hf)), right.x - 6, p.Hf)
-    dim_v(sh, right.P3((W, D, 0)), right.P3((W, D, p.Hb)), right.x + right.size[0] + 7, p.Hb)
+    dim_v(sh, right.P3((W, 0, 0)), right.P3((W, 0, Hf)), right.x - 6, Hf)
+    dim_v(sh, right.P3((W, D, 0)), right.P3((W, D, Hb)), right.x + right.size[0] + 7, Hb)
     dim_h(sh, right.P3((W, 0, 0)), right.P3((W, D, 0)), right.y + right.size[1] + 12, D,
           above=False)
-    dim_v(sh, back.P3((W, D, 0)), back.P3((W, D, p.Hb)), back.x - 7, p.Hb)
+    dim_v(sh, back.P3((W, D, 0)), back.P3((W, D, Hb)), back.x - 7, Hb)
 
     base_items = _items(lay, "base")
     back_items = _items(lay, "back_wall")

@@ -21,7 +21,7 @@ import numpy as np
 
 from . import design, dfm, kernel
 from .assembly import Design, mismatch
-from .flat import flat_pattern, write_dxf
+from .flat import cut_length, flat_pattern, write_dxf
 from .fold import expected_volume_difference
 from .render import read_stl, render
 from .sheets import sheet_assembly, sheet_flat, sheet_panel, sheet_shell_views
@@ -34,6 +34,7 @@ def _unit(v):
 
 ISO = _unit((1.0, -1.25, 0.95))
 MOUNT_TOL = {"radial": 0.05, "axial": 0.05, "angle_deg": 0.1}
+SELF_TOL = 1e-9  # relative; fused vs unfused volume, and the bend allowance identity
 
 
 def design_ref(d: Design, spec: str) -> np.ndarray:
@@ -82,15 +83,34 @@ def build_job(case: design.Case, out: Path):
     stl = [{"path": str(stl_dir / f"group_{i}.stl"), "geom": names, "deflection": 0.04}
            for i, names in enumerate(groups.values())]
 
-    # Interference and clearance questions, with what each one must satisfy.
+    # Interference and clearance questions, with what each one must satisfy:
+    #   clear      no overlap and at least min_clearance apart
+    #   seated     no overlap and touching (within rules.seated): parts that
+    #              rest on each other, so a part that misses entirely fails
+    #   pcb_clear  no overlap and at least pcb_clearance apart
+    #   self_gap   two faces of one sheet metal body not joined by a bend
     pairs = [
         ("bottom_shell vs top_panel", d.group("bottom_shell"), d.group("top_panel"), "clear"),
-        ("screws vs shell and panel", d.group(*case.screws),
-         d.group("bottom_shell", "top_panel"), "no_overlap"),
-        ("feet vs shell", d.group(*case.feet), d.group("bottom_shell"), "no_overlap"),
-        ("control board vs top_panel", board, d.group("top_panel"), "no_overlap"),
+        ("screw heads on cheeks", d.group(*case.screws), d.group("bottom_shell", "top_panel"),
+         "seated"),
+        ("feet on base", d.group(*case.feet), d.group("bottom_shell"), "seated"),
+        ("board parts against panel", board, d.group("top_panel"), "seated"),
         ("control board vs bottom_shell", board, d.group("bottom_shell"), "pcb_clear"),
     ]
+    # Each face of each sheet metal body as its own body, to measure the gaps
+    # between faces that only meet at a corner (e.g. cheek to rear wall).
+    for lay in (case.shell, case.panel):
+        names = list(lay.faces)
+        joined = {frozenset((bs.parent, bs.bend.wall.name)) for bs in lay.bends}
+        for name, plate in zip(names, lay.plates3d):
+            job["bodies"].append({"name": f"{lay.body.name}#face:{name}", "plates": [plate],
+                                  "sectors": []})
+        for i, a in enumerate(names):
+            for b in names[i + 1:]:
+                if frozenset((a, b)) not in joined:
+                    pairs.append((f"{lay.body.name}: {a} vs {b}",
+                                  f"{lay.body.name}#face:{a}", f"{lay.body.name}#face:{b}",
+                                  "self_gap"))
     job["outputs"] = {
         "measure": [{"name": "assembly", "geom": everything}],
         "step": [
@@ -115,10 +135,18 @@ def kernel_checks(case: design.Case, res: dict, pairs, rules: dfm.Rules, rep: df
         f = res["bodies"][f"{lay.body.name}#flat"]
         rep.add(f"{occ}: valid solid", m["valid"] and m["solids"] == 1,
                 f"valid={m['valid']}, solids={m['solids']}, faces={m['faces']}")
+        # Self-intersection: fusing overlapping plates/sectors loses volume, so
+        # the fused solid must equal the sum of its unfused parts, folded and flat.
+        lost = [(st, b["parts_volume"] - b["volume"]) for st, b in (("folded", m), ("flat", f))]
+        tol = SELF_TOL * m["volume"]
+        rep.add(f"{occ}: no self-intersection", all(abs(x) <= tol for _, x in lost),
+                ", ".join(f"{st} fuse loses {x:.2e} mm³" for st, x in lost)
+                + f" (limit {tol:.1e})")
+        # Bend allowance identity on the unfused parts: an exact relation.
         expect = expected_volume_difference(lay)
-        got = m["volume"] - f["volume"]
-        rep.add(f"{occ}: flat pattern matches fold", abs(got - expect) <= 1e-4 * m["volume"] + 1e-3,
-                f"folded−flat volume {got:.4f} mm³, bend allowance predicts {expect:.4f}",
+        got = m["parts_volume"] - f["parts_volume"]
+        rep.add(f"{occ}: flat pattern matches fold", abs(got - expect) <= tol,
+                f"folded−flat volume {got:.6f} mm³, bend allowance predicts {expect:.6f}",
                 got, expect)
 
     vol = {k: v["volume"] for k, v in res["bodies"].items()}
@@ -135,6 +163,7 @@ def kernel_checks(case: design.Case, res: dict, pairs, rules: dfm.Rules, rep: df
                 f"{s['readback_solids']} solid(s), volume {s['readback_volume']:.3f} mm³ "
                 f"(model {want[name]:.3f})")
 
+    gaps = []
     for (label, _, _, rule), pr in zip(pairs, res["pairs"]):
         overlap, dist = pr["interference_volume"], pr["min_distance"]
         if rule == "clear":
@@ -145,9 +174,35 @@ def kernel_checks(case: design.Case, res: dict, pairs, rules: dfm.Rules, rep: df
             rep.add(f"{label}: clearance", overlap < 1e-6 and dist >= r.pcb_clearance,
                     f"overlap {overlap:.6f} mm³, closest {dist:.2f} mm, need ≥ {r.pcb_clearance}",
                     dist, r.pcb_clearance)
+        elif rule == "seated":
+            rep.add(f"{label}", overlap < 1e-6 and dist <= r.seated,
+                    f"overlap {overlap:.6f} mm³, gap {dist:.4f} mm (must touch, ≤ {r.seated})",
+                    dist, r.seated)
+        elif rule == "self_gap":
+            gaps.append((label, overlap, dist))
         else:
-            rep.add(f"{label}: no interference", overlap < 1e-6,
-                    f"overlap {overlap:.6f} mm³, closest {dist:.3f} mm")
+            raise ValueError(f"unknown pair rule {rule}")
+    if gaps:
+        bad = [f"{lb} {dist:.3f} mm" for lb, ov, dist in gaps if ov > 1e-6 or dist < r.min_clearance]
+        tight = min(gaps, key=lambda g: g[2])
+        rep.add("faces of one part keep their gaps", not bad,
+                f"{len(gaps)} unjoined face pairs, tightest {tight[2]:.3f} mm ({tight[0]}), "
+                f"need ≥ {r.min_clearance}" if not bad else "too close: " + ", ".join(bad),
+                tight[2], r.min_clearance)
+
+    # Each screw through its cheek hole and on into its lip's PEM nut hole.
+    off = []
+    for screw, cheek, lip in case.screw_holes:
+        f = design_ref(d, screw)
+        for hole in (cheek, lip):
+            m = mismatch(f, design_ref(d, hole))
+            off.append((m["radial"], m["angle_deg"], f"{screw}→{hole.split(':')[-1]}"))
+    worst_r = max(off)
+    worst_a = max(o[1] for o in off)
+    bad = [w for rr, aa, w in off if rr > MOUNT_TOL["radial"] or aa > MOUNT_TOL["angle_deg"]]
+    rep.add("screws on cheek and lip holes", not bad,
+            f"{len(case.screw_holes)} screws, worst {worst_r[0]:.3f} mm off axis, {worst_a:.3f}°"
+            if not bad else "off axis: " + ", ".join(bad))
 
     # Every board part on its panel hole: position along and across the hole
     # axis, and tilt. Only RV1 was aligned; the rest test the board layout.
@@ -177,21 +232,45 @@ def kernel_checks(case: design.Case, res: dict, pairs, rules: dfm.Rules, rep: df
 
 
 def check_dxf(path: Path, fp) -> dfm.Check:
-    """Re-open the DXF and confirm the cut layer has the flat pattern's extent."""
+    """Re-open the DXF and take a census of the cut layer against the flat
+    pattern: extent, every circle by centre and diameter, line and arc counts,
+    total cut length, and bend lines with their up/down labels."""
     import ezdxf
     from ezdxf import bbox
 
     doc = ezdxf.readfile(path)
     msp = doc.modelspace()
     cut = msp.query('*[layer=="CUT"]')
+    lines = msp.query('LINE[layer=="CUT"]')
+    arcs = msp.query('ARC[layer=="CUT"]')
+    circles = msp.query('CIRCLE[layer=="CUT"]')
     bends = msp.query('LINE[layer=="BEND"]')
+    notes = [t.dxf.text for t in msp.query('TEXT[layer=="NOTES"]')]
     ext = bbox.extents(cut)
     size = (ext.size.x, ext.size.y)
-    ok = (abs(size[0] - fp.size[0]) < 1e-6 and abs(size[1] - fp.size[1]) < 1e-6
-          and len(bends) == len(fp.bends))
-    return dfm.Check(f"{path.name} reads back", "pass" if ok else "fail",
-                     f"{len(cut)} cut entities, {len(bends)} bend lines, extent "
-                     f"{size[0]:.3f} × {size[1]:.3f} mm")
+    problems = []
+    if abs(size[0] - fp.size[0]) > 1e-6 or abs(size[1] - fp.size[1]) > 1e-6:
+        problems.append(f"extent {size[0]:.3f}×{size[1]:.3f}")
+    key = lambda x, y, r: (round(x, 4), round(y, 4), round(r, 4))
+    got = sorted(key(c.dxf.center.x, c.dxf.center.y, c.dxf.radius) for c in circles)
+    want = sorted(key(c[0], c[1], r) for c, r in fp.circles)
+    if got != want:
+        problems.append(f"circles {len(got)} vs {len(want)} or moved")
+    if len(lines) != len(fp.lines) or len(arcs) != len(fp.arcs):
+        problems.append(f"lines/arcs {len(lines)}/{len(arcs)} vs {len(fp.lines)}/{len(fp.arcs)}")
+    length = sum(ln.dxf.start.distance(ln.dxf.end) for ln in lines)
+    length += sum(2 * np.pi * c.dxf.radius for c in circles)
+    length += sum(np.radians((a.dxf.end_angle - a.dxf.start_angle) % 360 or 360) * a.dxf.radius
+                  for a in arcs)
+    if abs(length - cut_length(fp)) > 1e-6 * cut_length(fp):
+        problems.append(f"cut length {length:.3f} vs {cut_length(fp):.3f}")
+    labels = [f"{b.name} {b.direction} " for b in fp.bends]
+    if len(bends) != len(fp.bends) or not all(any(n.startswith(lb) for n in notes) for lb in labels):
+        problems.append("bend lines or DN/UP labels differ")
+    return dfm.Check(f"{path.name} reads back", "fail" if problems else "pass",
+                     "; ".join(problems) if problems else
+                     f"{len(circles)} circles, {len(lines)} lines, {len(arcs)} arcs, "
+                     f"{len(bends)} bends, cut {length:.1f} mm, extent {size[0]:.3f} × {size[1]:.3f}")
 
 
 def main(out_dir: str = "out") -> int:

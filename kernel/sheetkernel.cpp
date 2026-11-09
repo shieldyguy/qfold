@@ -279,21 +279,27 @@ struct JParser {
 // ---------------------------------------------------------------------------
 // Small JSON writer helpers.
 
+// Full double precision, so exact identities (e.g. fused volume == sum of
+// parts) can be checked tightly on the Python side.
 static std::string fmt(double x) {
   if (!std::isfinite(x)) return "null";
   char buf[64];
-  std::snprintf(buf, sizeof buf, "%.10g", x);
+  std::snprintf(buf, sizeof buf, "%.17g", x);
   return buf;
 }
 static std::string quote(const std::string& s) {
   std::string out = "\"";
-  for (char c : s) {
-    if (c == '"' || c == '\\') out += '\\';
-    if (c == '\n') {
-      out += "\\n";
-      continue;
+  for (unsigned char c : s) {
+    if (c == '"' || c == '\\') {
+      out += '\\';
+      out += static_cast<char>(c);
+    } else if (c < 0x20) {
+      char buf[8];
+      std::snprintf(buf, sizeof buf, "\\u%04x", c);
+      out += buf;
+    } else {
+      out += static_cast<char>(c);
     }
-    out += c;
   }
   return out + "\"";
 }
@@ -876,11 +882,13 @@ int main(int argc, char** argv) {
 
   std::ostringstream res;
   std::string resultPath;
+  bool ok = false;
   try {
     J job = JParser(text).value();
     resultPath = job["result"].str();
 
     std::map<std::string, TopoDS_Shape> bodies, instances;
+    std::map<std::string, double> partsVolume;  // sum over unfused parts
     std::vector<std::string> order;
     for (size_t k = 0; k < job["bodies"].size(); ++k) {
       const J& b = job["bodies"][k];
@@ -894,6 +902,15 @@ int main(int argc, char** argv) {
         for (size_t i = 0; i < b["sectors"].size(); ++i)
           parts.push_back(makeSector(b["sectors"][i]));
         for (size_t i = 0; i < b["prims"].size(); ++i) parts.push_back(makePrim(b["prims"][i]));
+        // If the parts overlap anywhere, the fused volume comes out smaller
+        // than this sum; that is how self-intersection is detected.
+        double sum = 0.0;
+        for (const auto& part : parts) {
+          GProp_GProps g;
+          BRepGProp::VolumeProperties(part, g);
+          sum += g.Mass();
+        }
+        partsVolume[name] = sum;
         shape = fuseAll(parts);
       }
       if (bodies.count(name)) throw std::runtime_error("duplicate body: " + name);
@@ -930,8 +947,13 @@ int main(int argc, char** argv) {
 
     const J& out = job["outputs"];
     res << "{\"ok\":true,\"bodies\":{";
-    for (size_t k = 0; k < order.size(); ++k)
-      res << (k ? "," : "") << quote(order[k]) << ":" << measureJson(bodies[order[k]]);
+    for (size_t k = 0; k < order.size(); ++k) {
+      std::string m = measureJson(bodies[order[k]]);
+      auto pv = partsVolume.find(order[k]);
+      if (pv != partsVolume.end())
+        m = m.substr(0, m.size() - 1) + ",\"parts_volume\":" + fmt(pv->second) + "}";
+      res << (k ? "," : "") << quote(order[k]) << ":" << m;
+    }
     res << "}";
 
     res << ",\"measure\":{";
@@ -999,6 +1021,7 @@ int main(int argc, char** argv) {
       res << "}";
     }
     res << "]}";
+    ok = true;
   } catch (const Standard_Failure& e) {
     res.str("");
     res << "{\"ok\":false,\"error\":" << quote(std::string("OCCT: ") + e.GetMessageString())
@@ -1008,11 +1031,12 @@ int main(int argc, char** argv) {
     res << "{\"ok\":false,\"error\":" << quote(e.what()) << "}";
   }
 
+  // Errors before "result" was read (e.g. malformed JSON) go to stderr.
   if (resultPath.empty()) {
-    std::cout << res.str() << "\n";
+    std::cerr << res.str() << "\n";
   } else {
     std::ofstream o(resultPath);
     o << res.str() << "\n";
   }
-  return 0;
+  return ok ? 0 : 1;
 }

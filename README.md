@@ -34,27 +34,42 @@ See [`examples/synth_case`](examples/synth_case) for a committed run.
 
 ## Checks
 
-Every run checks its own output. The example passes all 30:
+Every run checks its own output. The example passes all 38:
 
-- **Kernel:** each part is one valid solid. Folded minus flat volume equals
-  what the bend allowance predicts (θ·L·T²·(0.5 − K) per bend), which proves
-  the flat pattern and the folded part agree.
+- **Kernel:** each part is one valid solid that doesn't intersect itself. The
+  fused solid must hold exactly the volume of its unfused plates and bends,
+  folded and flat. Folded minus flat volume must equal what the bend allowance
+  predicts (θ·L·T²·(0.5 − K) per bend). Together these show the flat pattern
+  and the folded part are the same sheet. They don't prove the bend allowance
+  matches your press brake; that's what the fab's K-factor is for.
+- **Gaps inside a part:** faces that only meet at a corner, such as a cheek and
+  the rear wall, must keep `min_clearance` apart.
 - **Assembly:** no interference between any parts. The shell and panel keep
-  their clearance, the M3 screws pass through the cheek and PEM holes, and the
-  board clears the base.
+  their clearance, and the board clears the base. Parts that rest on others
+  (screw heads, feet, board parts against the panel) must actually touch, so a
+  part that misses entirely fails. Each screw's axis must run through both its
+  cheek hole and its lip's PEM hole.
 - **Board fit:** every part on the inserted board sits on its own panel hole,
   checked across the hole, along its axis and for tilt. Every panel hole has a
   part, and every part has a hole. Only one pot is aligned; the other 24
   parts test whether the board layout matches the panel.
-- **DFM:** hole to bend, hole to edge, web between holes, minimum hole size,
-  hardware centre-to-edge distance (PEM), minimum flange length, sheet size.
-- **Files:** every STEP is read back and its volume compared with the model.
-  Every DXF is re-opened and its extent and bend count compared.
+- **DFM:** hole to bend (for each bend's own radius), hole to edge, web between
+  holes, holes inside their face, minimum hole size, hardware centre-to-edge
+  distance (PEM), bend corner relief, minimum flange length, sheet size.
+- **Files:** every STEP is read back and its volume and solid count compared
+  with the model. Every DXF is re-opened and checked against the flat pattern:
+  extent, each circle's centre and diameter, line and arc counts, total cut
+  length, and the bend lines with their DN/UP labels.
 
 These caught two real problems while the example was being built. The first
 was a PEM nut too close to the lip bend, fixed by deepening the lip. The second
 was the panel's back edge poking 0.01 mm into the rear wall, fixed by allowing
-for the edge's tilt.
+for the edge's tilt. An independent review then found gaps in the checks
+themselves: a self-intersecting variant passed, two checks could pass with a
+part missing entirely, and bends met at sharp corners without relief. The
+self-intersection, contact, screw-axis, corner-relief and DXF census checks
+above came out of that review, each with a test that breaks the design on
+purpose.
 
 ## Assemblies
 
@@ -112,8 +127,9 @@ pipeline.py  runs it all, writes report.json
 Python owns the design, the fold math and the assembly tree. The kernel owns
 geometry truth and stays stateless: it sees a flat list of body prototypes and
 world-placed instances, never the tree. Both states of a sheet metal body come
-from the same description, so there is no unfold step that can fail.
-Dimensions and hole tables on drawings are read from the model.
+from the same description, so there is no unfold step that can fail. Overall
+dimensions on the drawings are the kernel's measurements of the solids. Hole
+tables and feature dimensions come from the model tree. None are typed in.
 
 ### Conventions
 

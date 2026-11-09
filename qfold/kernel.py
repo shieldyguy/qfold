@@ -32,17 +32,25 @@ def run(job: dict, workdir: Path, tag: str = "kernel") -> dict:
     workdir.mkdir(parents=True, exist_ok=True)
     job = dict(job)
     job.setdefault("bodies", [])
-    job["result"] = str(workdir / f"{tag}_result.json")
+    result = workdir / f"{tag}_result.json"
+    job["result"] = str(result)
     job_path = workdir / f"{tag}_job.json"
-    job_path.write_text(json.dumps(job, default=_jsonable))
+    # allow_nan=False: NaN/Infinity aren't JSON and would only fail later.
+    job_path.write_text(json.dumps(job, default=_jsonable, allow_nan=False))
     if not KERNEL.exists():
         raise FileNotFoundError(f"sheetkernel not built: {KERNEL} (run scripts/bootstrap.sh)")
+    if result.exists():
+        result.unlink()
     proc = subprocess.run([str(KERNEL), str(job_path)], capture_output=True, text=True)
-    if proc.returncode != 0:
-        raise RuntimeError(f"sheetkernel exited {proc.returncode}: {proc.stderr.strip()}")
-    res = json.loads(Path(job["result"]).read_text())
-    if not res.get("ok"):
-        raise RuntimeError(f"sheetkernel failed: {res.get('error')}")
+    res = None
+    if result.exists():
+        try:
+            res = json.loads(result.read_text())
+        except json.JSONDecodeError as e:
+            raise RuntimeError(f"sheetkernel wrote an unreadable result ({e}); job: {job_path}")
+    if res is None or proc.returncode != 0 or not res.get("ok"):
+        why = (res or {}).get("error") or proc.stderr.strip() or proc.stdout.strip()[-2000:]
+        raise RuntimeError(f"sheetkernel failed (exit {proc.returncode}): {why}; job: {job_path}")
     return res
 
 

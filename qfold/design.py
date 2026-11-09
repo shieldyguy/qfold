@@ -45,6 +45,7 @@ class CaseParams:
     front_lip_clearance: float = 0.5  # front lip top to panel underside
     relief_depth: float | None = None  # defaults to R + T
     relief_width: float = 2.0
+    corner_relief: float = 2.0  # square relief where two base bends meet (>= T)
     lip_depth: float = 18.0  # top panel lip, from panel top surface
     pem_edge_cl: float = 4.8  # PEM CLS-M3 centre-to-edge minimum (placeholder, check catalog)
     board_gap: float = 10.0  # board top to panel inside surface (part body height)
@@ -102,14 +103,15 @@ class Case:
     slope: float  # radians
     mounts: list[tuple[str, str]]  # (board part occurrence path, panel ref)
     screws: list[str]
+    screw_holes: list[tuple[str, str, str]]  # (screw path, cheek hole ref, lip hole ref)
     feet: list[str]
 
 
-def _wall_outline(L: float, Lf: float, ext0: float, ext1: float, rd: float):
-    """Wall on a bend spanning v in [0, L]. It extends ext0 before and ext1
-    after the bend, with relief notches of depth rd under the extensions."""
-    return [(0, 0), (0, L), (rd, L), (rd, L + ext1), (Lf, L + ext1), (Lf, -ext0), (rd, -ext0),
-            (rd, 0)]
+def _wall_outline(b0: float, b1: float, w0: float, w1: float, Lf: float, rd: float):
+    """Wall standing on a bend that spans v in [b0, b1]. The wall spans
+    [w0, w1]; where it reaches past the bend it is notched to depth rd, so the
+    bend ends in free edges (bend relief)."""
+    return [(0, b0), (0, b1), (rd, b1), (rd, w1), (Lf, w1), (Lf, w0), (rd, w0), (rd, b0)]
 
 
 def build_panel(p: CaseParams) -> SheetLayout:
@@ -157,6 +159,7 @@ def build_shell(p: CaseParams, lip_holes_world: dict[str, np.ndarray]) -> SheetL
     T, R = m.T, m.R
     a = R + T
     rd = p.relief_depth if p.relief_depth is not None else a
+    cr = p.corner_relief
     alpha = math.atan2(p.Hb - p.Hf, p.D)
     g = p.corner_gap
     L_x, L_y = p.W - 2 * a, p.D - 2 * a
@@ -185,8 +188,8 @@ def build_shell(p: CaseParams, lip_holes_world: dict[str, np.ndarray]) -> SheetL
     def cheek(name: str, lip_tags: tuple[str, str], tags: tuple[str, str], side: str) -> Face:
         vs, ve = T + g - a, p.D - T - g - a
         top = lambda v: p.Hf + (v + a) * math.tan(alpha) - a
-        outline = [(0, 0), (0, L_y), (rd, L_y), (rd, ve), (top(ve), ve), (top(vs), vs), (rd, vs),
-                   (rd, 0)]
+        outline = [(0, cr), (0, L_y - cr), (rd, L_y - cr), (rd, ve), (top(ve), ve), (top(vs), vs),
+                   (rd, vs), (rd, cr)]
         holes = []
         for lt, t in zip(lip_tags, tags):
             y, z = lip_holes_world[lt][1, 3], lip_holes_world[lt][2, 3]
@@ -194,17 +197,34 @@ def build_shell(p: CaseParams, lip_holes_world: dict[str, np.ndarray]) -> SheetL
                               tag=t))
         return Face(name, outline, holes)
 
-    base = Face("base", [(a, a), (p.W - a, a), (p.W - a, p.D - a), (a, p.D - a)], base_holes, [
-        Flange("front", (a, a), (1, 0), (0, -1), 0, L_x, 90.0,
-               Face("front_lip", _wall_outline(L_x, h_front - a, a, a, rd))),
-        Flange("back", (a, p.D - a), (1, 0), (0, 1), 0, L_x, 90.0,
-               Face("back_wall", _wall_outline(L_x, p.Hb - a, a, a, rd), rear_holes)),
-        Flange("right", (p.W - a, a), (0, 1), (1, 0), 0, L_y, 90.0,
+    # The base sits inside the bend lines. Each bend stops `cr` short of the
+    # corner, and a cr x cr square is cut from each base corner, so no two
+    # bends end on the same sharp corner (corner relief).
+    x0, x1, y0, y1 = a, p.W - a, a, p.D - a
+    base_outline = [(x0 + cr, y0), (x1 - cr, y0), (x1 - cr, y0 + cr), (x1, y0 + cr),
+                    (x1, y1 - cr), (x1 - cr, y1 - cr), (x1 - cr, y1), (x0 + cr, y1),
+                    (x0 + cr, y1 - cr), (x0, y1 - cr), (x0, y0 + cr), (x0 + cr, y0 + cr)]
+    base = Face("base", base_outline, base_holes, [
+        Flange("front", (a, a), (1, 0), (0, -1), cr, L_x - cr, 90.0,
+               Face("front_lip", _wall_outline(cr, L_x - cr, -a, L_x + a, h_front - a, rd))),
+        Flange("back", (a, p.D - a), (1, 0), (0, 1), cr, L_x - cr, 90.0,
+               Face("back_wall", _wall_outline(cr, L_x - cr, -a, L_x + a, p.Hb - a, rd),
+                    rear_holes)),
+        Flange("right", (p.W - a, a), (0, 1), (1, 0), cr, L_y - cr, 90.0,
                cheek("cheek_right", ("L1", "L2"), ("S1", "S2"), "right")),
-        Flange("left", (a, a), (0, 1), (-1, 0), 0, L_y, 90.0,
+        Flange("left", (a, a), (0, 1), (-1, 0), cr, L_y - cr, 90.0,
                cheek("cheek_left", ("L3", "L4"), ("S3", "S4"), "left")),
     ])
     return layout(SheetMetalBody("bottom_shell", m, base))
+
+
+def build_shell_only(p: CaseParams | None = None) -> SheetLayout:
+    """The shell layout on its own (no kernel), for layout-level checks."""
+    p = p or CaseParams()
+    panel = build_panel(p)
+    seat = panel_seat(p)
+    refs = sheet_component("top_panel", panel).refs
+    return build_shell(p, {t: seat @ refs[t] for t in ("L1", "L2", "L3", "L4")})
 
 
 def make_board(p: CaseParams, name: str = "control_board",
@@ -255,11 +275,12 @@ def build(p: CaseParams | None = None, board_step: Path = BOARD_STEP,
     align(panel_occ, "origin", onto=shell_occ.ref("panel_seat"))
 
     screw = parts.screw_m3x6()
-    screws = []
-    for i, tag in enumerate(("S1", "S2", "S3", "S4")):
+    screws, screw_holes = [], []
+    for i, (tag, lip) in enumerate((("S1", "L1"), ("S2", "L2"), ("S3", "L3"), ("S4", "L4"))):
         occ = d.add(screw, f"screw_{i + 1}")
         align(occ, "origin", onto=shell_occ.ref(tag))
         screws.append(occ.path)
+        screw_holes.append((occ.path, f"bottom_shell:{tag}", f"top_panel:{lip}"))
     foot = parts.rubber_foot()
     feet = []
     for i, tag in enumerate(("A1", "A2", "A3", "A4")):
@@ -275,4 +296,4 @@ def build(p: CaseParams | None = None, board_step: Path = BOARD_STEP,
     align(board, pp0.ref, onto=panel_occ.ref(f"{pp0.tag}.inside"))
     mounts = [(f"control_board/{pp.ref}", f"top_panel:{pp.tag}.inside") for pp in panel_parts()]
 
-    return Case(p, d, shell, panel, alpha, mounts, screws, feet)
+    return Case(p, d, shell, panel, alpha, mounts, screws, screw_holes, feet)
