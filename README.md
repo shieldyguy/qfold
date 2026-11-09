@@ -36,9 +36,9 @@ It prints one line per check and exits non-zero if any fails.
 Three examples, each with committed output in their `out/` folder:
 
 - [`examples/pedal_box`](examples/pedal_box/__main__.py): a tray with lips and
-  a flat lid, 160 lines. **Copy this to start a new design.**
+  a flat lid, 130 lines. **Copy this to start a new design.**
 - [`examples/chassis`](examples/chassis/__main__.py): a U-channel with a
-  board inserted from a STEP file on standoffs, 70 lines.
+  board inserted from a STEP file on standoffs, 65 lines.
 - [`examples/synth_case`](examples/synth_case): a sloped desktop synth case
   with a control board inserted from a STEP file and its own drawing sheets.
 
@@ -54,41 +54,55 @@ and on the drawing, so every output can be traced to the numbers that made it.
 the sheet metal rule (thickness, bend radius, K) and that shop's limits.
 See Shop data below.
 
-**3. Sheet metal bodies.** A body is a root `Face` with `Flange`s on its
-edges, each carrying another `Face` (which can have flanges of its own):
+**3. Sheet metal parts.** Describe each part by its outside dimensions and
+let `Sheet` do the bend math:
 
 ```python
-Face(name, outline, holes=[], flanges=[])       # outline: (u, v) points in the face's plane
-Flange(name, p0, d, o, v0, v1, angle, wall)     # on a straight edge of the parent face
-SheetMetalBody(name, rule, root_face)
+tray = Sheet("tray", shop)
+base = tray.base(140, 100)                       # outside width (x) × depth (y)
+base.flange("front", 40, name="front_wall")      # outside height
+side = base.flange("right", 38.5, name="right_wall")
+side.flange("top", 14, name="right_lip")         # a lip folding inward off the wall's top
 ```
 
-- A flange's edge starts at `p0` and runs along unit vector `d`; `o` is the
-  unit vector pointing out of the parent. The bend covers `v0..v1` along `d`.
-- The wall's own coordinates: `u` runs away from the bend (0 at the bend),
-  `v` runs along `d` (same numbers as `v0..v1`).
-- A positive angle folds toward the material side. With the default root
-  frame (`N = +z`) the root's own surface is the outside bottom and walls
-  fold up. `N=(0, 0, -1)` makes the surface the top, with material below.
-- A 90° wall's outside face sits `a = R + T` outside its bend line. So for a
-  box of outside width W, the base runs between bend lines at `a` and `W - a`,
-  and a wall of outside height H has `u` up to `H - a`.
-- Reliefs are part of the outlines for now: stop each bend short of the
-  corner and notch the wall beside the bend ends, as `pedal_box` does.
+- **Every number is an outside dimension**, the one you would measure with
+  a ruler on the finished part. A wall's height runs from the outside of the
+  face it rises from to its far edge, or to the outside of a flange on that
+  edge. Inside dimensions are the outside ones less the thickness of each
+  wall in the way. Bend set-backs, radii and allowances never appear.
+- **Edges:** the base has `front` (y = 0), `back`, `left` (x = 0), `right`.
+  A wall has `top`, `start` and `end`.
+- **Coordinates:** the base's outside surface is z = 0 and its front-left
+  corner is the origin. Walls fold up; `Sheet(..., up=False)` folds them down
+  from a top surface at z = 0 (a lid or panel).
+- **Corners:** where two walls meet, one runs the full outside length and the
+  other tucks in behind it, `corner_gap` short. The wall made first goes
+  over; `over=True/False` chooses.
+- **Reliefs are cut for you**, sized from the shop's rule: a small square
+  where two bends meet at a corner, a notch where a wall runs past its bend,
+  and a slot each side of a flange that covers only part of an edge.
+  `Sheet(..., relief_width=, relief_depth=)` changes their size.
+- **More:** `height=(20, 45)` slopes a wall's top edge; `start=`/`end=` put a
+  flange on part of an edge (a tab); `angle=` and `radius=` set the bend.
 
-**4. Holes.** On the root face, give `Hole(..., c=(u, v))`. On walls, place
-holes by where they are on the finished part, which avoids mirroring them:
+For shapes `Sheet` can't describe, the layer beneath it is in `fold.py`:
+`Face` outlines with `Flange`s, in bend-line coordinates. The synth case is
+written that way.
+
+**4. Holes.** Put them where they are on the finished part:
 
 ```python
-hole_at(tray, "back_wall", (50, D, 15), Hole("circle", d=8.2, label="DC jack", tag="J4"))
+tray.hole("back_wall", (50, 100, 15), Hole("circle", d=8.2, label="DC jack", tag="J4"))
 ```
 
+The point is x, y, z on the part; the tool finds the spot on the face, so a
+hole on a wall can't be mirrored. A point that isn't on that face is an error.
 Kinds: `circle` (d), `rrect` (w, h, r, rot), `poly` (pts). A `tag` makes the
 hole a named reference; `edge_cl` sets a minimum centre-to-edge distance for
 pressed-in hardware.
 
-**5. Assembly.** `sheet_component(name, layout(body))` makes a component with
-a ref on every tagged hole: `"J4"` on the outside surface, `"J4.inside"` on
+**5. Assembly.** `tray.component()` makes a component with a ref on every
+tagged hole: `"J4"` on the outside surface, `"J4.inside"` on
 the inside, both with z pointing out of the part. Add components to a
 `Design` and place them with `align`:
 
@@ -176,6 +190,7 @@ edge, and single parts lifted, slid or pushed in by fractions of a millimetre.
 
 ```
 qfold/
+  sheet.py     Sheet: a part from outside dimensions, with corners and reliefs worked out
   fold.py      sheet metal body -> folded plates + bend sectors, and flat pattern
   assembly.py  Design, Component, Occurrence, Body, refs, align, insert_step
   project.py   Project: declare fits, then build, check, export, draw
@@ -326,5 +341,5 @@ the manifest stop a moved branch from being used anyway.
 
 ## Next
 
-See [DIRECTION.md](DIRECTION.md). In short: reliefs generated by the fold
-engine instead of drawn into outlines, then the first real design.
+See [DIRECTION.md](DIRECTION.md). In short: round and obround relief shapes,
+then the first real design.

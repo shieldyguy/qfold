@@ -48,7 +48,7 @@
     {
       "name": "chassis: no self-intersection",
       "status": "pass",
-      "detail": "folded fuse loses 1.16e-10 mm\u00b3, flat fuse loses -2.91e-11 mm\u00b3 (limit 1.2e-04)",
+      "detail": "folded fuse loses 1.75e-10 mm\u00b3, flat fuse loses -2.91e-11 mm\u00b3 (limit 1.2e-04)",
       "value": null,
       "limit": null
     },
@@ -62,7 +62,7 @@
     {
       "name": "chassis: hole to bend",
       "status": "pass",
-      "detail": "tightest 15.81 mm (base standoff screw M3 to bend left), need \u2265 4.72",
+      "detail": "tightest 15.81 mm (base standoff screw M3 to bend left_wall), need \u2265 4.72",
       "value": 15.8108,
       "limit": 4.724399999999999
     },
@@ -104,7 +104,7 @@
     {
       "name": "chassis: flange length",
       "status": "pass",
-      "detail": "shortest flat flange 42.51 mm (bend right), need \u2265 5.21",
+      "detail": "shortest flat flange 42.51 mm (bend right_wall), need \u2265 5.21",
       "value": 42.5108,
       "limit": 5.206999999999999
     },
@@ -147,7 +147,7 @@
       "name": "faces of one part keep their gaps",
       "status": "pass",
       "detail": "1 unjoined face pairs, tightest 336.800 mm (chassis: right_wall vs left_wall), need \u2265 0.2",
-      "value": 336.79960000000005,
+      "value": 336.7996,
       "limit": 0.2
     },
     {
@@ -314,15 +314,15 @@
   "bodies": {
     "chassis#chassis": {
       "valid": true,
-      "volume": 122356.1013769391,
+      "volume": 122356.10137693904,
       "area": 155022.23081438337,
       "com": [
-        169.9999999999999,
-        90.00000000000014,
-        5.378915222503445
+        170,
+        90.00000000000013,
+        5.378915222503418
       ],
       "bbox": [
-        -4.719646895523511e-15,
+        -5.1637361053735734e-15,
         0,
         0,
         340,
@@ -529,14 +529,14 @@
     "chassis#face:right_wall": {
       "valid": true,
       "volume": 12193.740626086652,
-      "area": 15997.638902163273,
+      "area": 15997.638902163275,
       "com": [
-        339.1999,
+        339.19989999999996,
         90,
         23.739359601156877
       ],
       "bbox": [
-        338.3998,
+        338.39979999999997,
         0,
         2.4891999999999967,
         340,
@@ -551,17 +551,17 @@
     "chassis#face:left_wall": {
       "valid": true,
       "volume": 12193.740626086721,
-      "area": 15997.638902163273,
+      "area": 15997.638902163275,
       "com": [
-        0.8000999999999973,
-        90,
+        0.8000999999999968,
+        89.99999999999999,
         23.739359601156874
       ],
       "bbox": [
-        -4.719646895523511e-15,
+        -5.1637361053735734e-15,
         0,
         2.4891999999999967,
-        1.6001999999999998,
+        1.6001999999999994,
         180,
         45
       ],
@@ -572,7 +572,7 @@
     }
   },
   "envelope": [
-    -4.719646895523511e-15,
+    -5.1637361053735734e-15,
     0,
     0,
     340,
@@ -706,7 +706,7 @@
       "a": "chassis#face:right_wall",
       "b": "chassis#face:left_wall",
       "interference_volume": 0,
-      "min_distance": 336.79960000000005,
+      "min_distance": 336.7996,
       "closest": [
         [
           338.3998,
@@ -714,7 +714,7 @@
           2.4891999999999994
         ],
         [
-          1.6001999999999998,
+          1.6001999999999994,
           0,
           2.4891999999999994
         ]

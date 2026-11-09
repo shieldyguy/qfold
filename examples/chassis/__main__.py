@@ -8,9 +8,10 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from qfold import shops
-from qfold.assembly import Design, align, cyl, frame, insert_step, prim_component, sheet_component
-from qfold.fold import Face, Flange, Hole, SheetMetalBody, hole_at, layout
+from qfold.assembly import Design, align, cyl, frame, insert_step, prim_component
+from qfold.fold import Hole
 from qfold.project import Project
+from qfold.sheet import Sheet
 
 BOARD = Path(__file__).resolve().parents[1] / "synth_case" / "control_board.step"
 
@@ -30,22 +31,22 @@ def build() -> Project:
     p = Params()
     shop = shops.spec(p.shop, p.material, p.thickness)
     m = shop.rule
-    a = m.R + m.T
-    wall = lambda name: Face(name, [(0, 0), (0, p.D), (p.H - a, p.D), (p.H - a, 0)])
-    base = Face("base", [(a, 0), (p.W - a, 0), (p.W - a, p.D), (a, p.D)], flanges=[
-        Flange("right", (p.W - a, 0), (0, 1), (1, 0), 0, p.D, 90.0, wall("right_wall")),
-        Flange("left", (a, 0), (0, 1), (-1, 0), 0, p.D, 90.0, wall("left_wall")),
-    ])
-    body = SheetMetalBody("chassis", m, base)
+    body = Sheet("chassis", shop)
+    base = body.base(p.W, p.D)
+    base.flange("right", p.H, name="right_wall")
+    base.flange("left", p.H, name="left_wall")
     posts = [(20, 20), (p.W - 20, 20), (20, p.D - 20), (p.W - 20, p.D - 20)]
     for i, (x, y) in enumerate(posts, 1):
-        hole_at(body, "base", (x, y, 0), Hole("circle", d=3.4, label="standoff screw M3", tag=f"M{i}"))
+        body.hole("base", (x, y, 0), Hole("circle", d=3.4, label="standoff screw M3",
+                                          tag=f"M{i}"))
     for i, y in enumerate((40, p.D - 40), 1):
-        hole_at(body, "right_wall", (p.W, y, 25), Hole("circle", d=4.5, label="rack ear M4", tag=f"E{i}"))
-        hole_at(body, "left_wall", (0, y, 25), Hole("circle", d=4.5, label="rack ear M4", tag=f"E{i + 2}"))
+        body.hole("right_wall", (p.W, y, 25), Hole("circle", d=4.5, label="rack ear M4",
+                                                   tag=f"E{i}"))
+        body.hole("left_wall", (0, y, 25), Hole("circle", d=4.5, label="rack ear M4",
+                                                tag=f"E{i + 2}"))
 
     d = Design("chassis")
-    ch = d.add(sheet_component("chassis", layout(body)), "chassis")
+    ch = d.add(body.component(), "chassis")
     post = prim_component("standoff_M3x8", [cyl((0, 0, 0), 6.0, p.standoff)])
     standoffs = [align(d.add(post, f"standoff_{i}"), "origin", onto=ch.ref(f"M{i}.inside"), flip=True)
                  for i in (1, 2, 3, 4)]

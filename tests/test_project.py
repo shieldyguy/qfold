@@ -50,12 +50,13 @@ def test_report_records_parameters_shop_and_holes(built):
 
 def test_hole_at_places_by_finished_position_and_rejects_points_off_the_face():
     p = Params()
-    m = shops.spec(p.shop, p.material, p.thickness).rule
-    tray = build_tray(p, m)
+    shop = shops.spec(p.shop, p.material, p.thickness)
+    tray = build_tray(p, shop).body()
+    T = shop.rule.T
     h = hole_at(tray, "right_wall", (p.W, 30, 12), Hole("circle", d=3, tag="X1"))
     st = layout(tray).faces["right_wall"]
     assert np.allclose(st.to3d(*h.c), (p.W, 30, 12))
-    hole_at(tray, "right_wall", (p.W - m.T, 60, 12), Hole("circle", d=3, tag="X2"))  # inside face
+    hole_at(tray, "right_wall", (p.W - T, 60, 12), Hole("circle", d=3, tag="X2"))  # inside face
     with pytest.raises(ValueError, match="isn't on this face"):
         hole_at(tray, "right_wall", (p.W - 5, 30, 12), Hole("circle", d=3))
     with pytest.raises(KeyError, match="front_wall"):

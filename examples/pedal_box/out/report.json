@@ -9,7 +9,6 @@
     "W": "140",
     "D": "100",
     "H": "40",
-    "corner_relief": "2",
     "corner_gap": "0.4",
     "lid_clearance": "0.3",
     "lip": "14",
@@ -51,36 +50,36 @@
     {
       "name": "tray: valid solid",
       "status": "pass",
-      "detail": "valid=True, solids=1, faces=77",
+      "detail": "valid=True, solids=1, faces=73",
       "value": null,
       "limit": null
     },
     {
       "name": "tray: no self-intersection",
       "status": "pass",
-      "detail": "folded fuse loses -7.28e-12 mm\u00b3, flat fuse loses -2.18e-11 mm\u00b3 (limit 5.0e-05)",
+      "detail": "folded fuse loses -1.16e-10 mm\u00b3, flat fuse loses 2.18e-11 mm\u00b3 (limit 5.0e-05)",
       "value": null,
       "limit": null
     },
     {
       "name": "tray: flat pattern matches fold",
       "status": "pass",
-      "detail": "folded\u2212flat volume 190.583148 mm\u00b3, bend allowance predicts 190.583148",
-      "value": 190.58314753371815,
-      "limit": 190.58314753369802
+      "detail": "folded\u2212flat volume 191.784807 mm\u00b3, bend allowance predicts 191.784807",
+      "value": 191.78480672369915,
+      "limit": 191.78480672369614
     },
     {
       "name": "tray: hole to bend",
       "status": "pass",
-      "detail": "tightest 3.52 mm (right_wall_lip PEM CLS-M3 nut to bend right_wall_lip), need \u2265 3.00",
-      "value": 3.515,
+      "detail": "tightest 3.64 mm (right_lip PEM CLS-M3 nut to bend right_lip), need \u2265 3.00",
+      "value": 3.64,
       "limit": 3.0
     },
     {
       "name": "tray: hole to edge",
       "status": "pass",
-      "detail": "closest 3.51 mm (left_wall_lip PEM CLS-M3 nut), need \u2265 2.25",
-      "value": 3.514999999999997,
+      "detail": "closest 3.39 mm (left_lip PEM CLS-M3 nut), need \u2265 2.25",
+      "value": 3.3899999999999952,
       "limit": 2.25
     },
     {
@@ -114,14 +113,14 @@
     {
       "name": "tray: bend corner relief",
       "status": "pass",
-      "detail": "bends end \u2265 2.83 mm apart, need \u2265 1.50",
-      "value": 2.8284271247461903,
+      "detail": "bends end \u2265 2.12 mm apart, need \u2265 1.50",
+      "value": 2.1213203435596424,
       "limit": 1.5
     },
     {
       "name": "tray: flange length",
       "status": "pass",
-      "detail": "shortest flat flange 11.25 mm (bend right_wall_lip), need \u2265 5.25",
+      "detail": "shortest flat flange 11.25 mm (bend right_lip), need \u2265 5.25",
       "value": 11.25,
       "limit": 5.25
     },
@@ -149,8 +148,8 @@
     {
       "name": "lid: hole to edge",
       "status": "pass",
-      "detail": "closest 4.88 mm (lid M3 clearance), need \u2265 2.25",
-      "value": 4.875,
+      "detail": "closest 5.00 mm (lid M3 clearance), need \u2265 2.25",
+      "value": 5.0,
       "limit": 2.25
     },
     {
@@ -177,7 +176,7 @@
     {
       "name": "tray.step reads back",
       "status": "pass",
-      "detail": "1 solid(s), volume 49773.024 mm\u00b3 (model 49773.024)",
+      "detail": "1 solid(s), volume 49924.811 mm\u00b3 (model 49924.811)",
       "value": null,
       "limit": null
     },
@@ -191,7 +190,7 @@
     {
       "name": "assembly.step reads back",
       "status": "pass",
-      "detail": "15 solid(s), volume 87017.138 mm\u00b3 (model 87017.138)",
+      "detail": "15 solid(s), volume 87168.926 mm\u00b3 (model 87168.926)",
       "value": null,
       "limit": null
     },
@@ -247,8 +246,8 @@
     {
       "name": "faces of one part keep their gaps",
       "status": "pass",
-      "detail": "15 unjoined face pairs, tightest 0.400 mm (tray: front_wall vs right_wall), need \u2265 0.2",
-      "value": 0.40000000000000013,
+      "detail": "15 unjoined face pairs, tightest 0.400 mm (tray: back_wall vs right_lip), need \u2265 0.2",
+      "value": 0.3999999999999915,
       "limit": 0.2
     },
     {
@@ -275,7 +274,7 @@
     {
       "name": "tray_flat.dxf reads back",
       "status": "pass",
-      "detail": "11 circles, 36 lines, 4 arcs, 6 bends, cut 1077.7 mm, extent 234.765 \u00d7 174.883",
+      "detail": "11 circles, 32 lines, 4 arcs, 6 bends, cut 1077.0 mm, extent 234.765 \u00d7 174.883",
       "value": null,
       "limit": null
     },
@@ -388,8 +387,8 @@
       "tag": "N1",
       "label": "PEM CLS-M3 nut",
       "size": "\u00d84.22",
-      "face": "right_wall_lip",
-      "x": 131.625,
+      "face": "right_lip",
+      "x": 131.5,
       "y": 18.0,
       "z": 38.5,
       "facing": "+Z up"
@@ -399,8 +398,8 @@
       "tag": "N2",
       "label": "PEM CLS-M3 nut",
       "size": "\u00d84.22",
-      "face": "right_wall_lip",
-      "x": 131.625,
+      "face": "right_lip",
+      "x": 131.5,
       "y": 82.0,
       "z": 38.5,
       "facing": "+Z up"
@@ -410,8 +409,8 @@
       "tag": "N3",
       "label": "PEM CLS-M3 nut",
       "size": "\u00d84.22",
-      "face": "left_wall_lip",
-      "x": 8.375,
+      "face": "left_lip",
+      "x": 8.5,
       "y": 18.0,
       "z": 38.5,
       "facing": "+Z up"
@@ -421,8 +420,8 @@
       "tag": "N4",
       "label": "PEM CLS-M3 nut",
       "size": "\u00d84.22",
-      "face": "left_wall_lip",
-      "x": 8.375,
+      "face": "left_lip",
+      "x": 8.5,
       "y": 82.0,
       "z": 38.5,
       "facing": "+Z up"
@@ -433,7 +432,7 @@
       "label": "M3 clearance",
       "size": "\u00d83.4",
       "face": "lid",
-      "x": 131.625,
+      "x": 131.5,
       "y": 18.0,
       "z": 40.0,
       "facing": "+Z up"
@@ -444,7 +443,7 @@
       "label": "M3 clearance",
       "size": "\u00d83.4",
       "face": "lid",
-      "x": 131.625,
+      "x": 131.5,
       "y": 82.0,
       "z": 40.0,
       "facing": "+Z up"
@@ -455,7 +454,7 @@
       "label": "M3 clearance",
       "size": "\u00d83.4",
       "face": "lid",
-      "x": 8.375,
+      "x": 8.5,
       "y": 18.0,
       "z": 40.0,
       "facing": "+Z up"
@@ -466,7 +465,7 @@
       "label": "M3 clearance",
       "size": "\u00d83.4",
       "face": "lid",
-      "x": 8.375,
+      "x": 8.5,
       "y": 82.0,
       "z": 40.0,
       "facing": "+Z up"
@@ -556,32 +555,32 @@
   "bodies": {
     "tray#tray": {
       "valid": true,
-      "volume": 49773.023717334625,
-      "area": 67984.12890129541,
+      "volume": 49924.811332471865,
+      "area": 68185.4540188528,
       "com": [
-        69.98837460905135,
-        50.08227384876393,
-        13.62783330340408
+        69.98840995400953,
+        50.08202370958554,
+        13.643356480380827
       ],
       "bbox": [
-        -3.6637359812630166e-15,
-        -4.135580766728708e-15,
+        -4.107825191113079e-15,
+        -4.579669976578771e-15,
         0,
         140,
         100,
         40
       ],
       "solids": 1,
-      "faces": 77,
-      "edges": 217,
-      "parts_volume": 49773.02371733462
+      "faces": 73,
+      "edges": 213,
+      "parts_volume": 49924.81133247175
     },
     "lid#lid": {
       "valid": true,
       "volume": 19473.683384039618,
       "area": 26844.26691556626,
       "com": [
-        68.19999999999999,
+        68.20000000000002,
         48.1794329939374,
         -0.7499999999999998
       ],
@@ -710,12 +709,12 @@
     },
     "tray#flat": {
       "valid": true,
-      "volume": 49582.44056980092,
-      "area": 67726.41306034716,
+      "volume": 49733.02652574803,
+      "area": 67926.13596565119,
       "com": [
-        69.98832992380446,
-        50.11816684731708,
-        0.7499999999999999
+        69.98836525946977,
+        50.1178090515241,
+        0.7500000000000003
       ],
       "bbox": [
         -47.382632243846885,
@@ -726,9 +725,9 @@
         1.5
       ],
       "solids": 1,
-      "faces": 53,
-      "edges": 153,
-      "parts_volume": 49582.4405698009
+      "faces": 49,
+      "edges": 141,
+      "parts_volume": 49733.02652574805
     },
     "lid#flat": {
       "valid": true,
@@ -754,10 +753,10 @@
     },
     "tray#face:base": {
       "valid": true,
-      "volume": 18986.899783386758,
-      "area": 26066.954867982233,
+      "volume": 18997.399783386758,
+      "area": 26080.954867982233,
       "com": [
-        70.00000000000001,
+        70,
         49.99999999999998,
         0.7499999999999996
       ],
@@ -772,38 +771,38 @@
       "solids": 1,
       "faces": 18,
       "edges": 48,
-      "parts_volume": 18986.899783386758
+      "parts_volume": 18997.399783386758
     },
     "tray#face:front_wall": {
       "valid": true,
-      "volume": 7570.665947260141,
-      "area": 10715.50665364083,
+      "volume": 7587.16683753789,
+      "area": 10737.50784067783,
       "com": [
-        69.99999999999999,
-        0.7499999999999979,
-        21.50291125533253
+        70,
+        0.7499999999999972,
+        21.466568237908078
       ],
       "bbox": [
         0,
-        -4.135580766728708e-15,
+        -4.579669976578771e-15,
         2.7499999999999996,
         140,
-        1.5,
+        1.4999999999999996,
         40
       ],
       "solids": 1,
       "faces": 12,
       "edges": 30,
-      "parts_volume": 7570.665947260141
+      "parts_volume": 7587.16683753789
     },
     "tray#face:back_wall": {
       "valid": true,
-      "volume": 7653.813525449948,
-      "area": 10810.95593497632,
+      "volume": 7670.314415727698,
+      "area": 10832.957122013315,
       "com": [
-        69.92439966593312,
-        99.25,
-        21.519433103874224
+        69.9245623023975,
+        99.24999999999997,
+        21.483448508350616
       ],
       "bbox": [
         0,
@@ -816,16 +815,16 @@
       "solids": 1,
       "faces": 19,
       "edges": 51,
-      "parts_volume": 7653.813525449948
+      "parts_volume": 7670.314415727698
     },
     "tray#face:right_wall": {
       "valid": true,
-      "volume": 4738.387499999999,
-      "area": 6705.449999999999,
+      "volume": 4749.35563933005,
+      "area": 6720.074185773399,
       "com": [
         139.25,
-        50.000000000000014,
-        19.325052232959003
+        49.99999999999999,
+        19.291231192693502
       ],
       "bbox": [
         138.5,
@@ -838,15 +837,15 @@
       "solids": 1,
       "faces": 10,
       "edges": 24,
-      "parts_volume": 4738.387499999999
+      "parts_volume": 4749.35563933005
     },
-    "tray#face:right_wall_lip": {
+    "tray#face:right_lip": {
       "valid": true,
-      "volume": 1547.6649460408585,
-      "area": 2420.2050090283374,
+      "volume": 1581.4149460408585,
+      "area": 2470.6758243822583,
       "com": [
-        131.66588821043717,
-        49.99999999999999,
+        131.62831665434047,
+        50.000000000000014,
         37.75000000000001
       ],
       "bbox": [
@@ -854,64 +853,64 @@
         1.9,
         37,
         137.25,
-        98.1,
-        38.5
+        98.10000000000001,
+        38.50000000000001
       ],
       "solids": 1,
       "faces": 8,
       "edges": 18,
-      "parts_volume": 1547.6649460408585
+      "parts_volume": 1581.4149460408585
     },
     "tray#face:left_wall": {
       "valid": true,
-      "volume": 4738.387499999999,
-      "area": 6705.449999999999,
+      "volume": 4749.35563933005,
+      "area": 6720.074185773399,
       "com": [
-        0.749999999999998,
-        50,
-        19.325052232959003
+        0.7499999999999976,
+        49.99999999999999,
+        19.291231192693502
       ],
       "bbox": [
-        -3.6637359812630166e-15,
+        -4.107825191113079e-15,
         1.9,
         2.7499999999999996,
-        1.5,
+        1.4999999999999996,
         98.1,
         35.75
       ],
       "solids": 1,
       "faces": 10,
       "edges": 24,
-      "parts_volume": 4738.387499999999
+      "parts_volume": 4749.35563933005
     },
-    "tray#face:left_wall_lip": {
+    "tray#face:left_lip": {
       "valid": true,
-      "volume": 1547.6649460408582,
-      "area": 2420.2050090283374,
+      "volume": 1581.4149460408585,
+      "area": 2470.6758243822583,
       "com": [
-        8.334111789562792,
-        50,
-        37.750000000000014
+        8.371683345659513,
+        50.00000000000002,
+        37.75000000000002
       ],
       "bbox": [
-        2.749999999999996,
+        2.7499999999999956,
         1.9,
         37,
         13.999999999999996,
-        98.1,
-        38.5
+        98.10000000000001,
+        38.50000000000001
       ],
       "solids": 1,
       "faces": 8,
       "edges": 18,
-      "parts_volume": 1547.6649460408582
+      "parts_volume": 1581.4149460408585
     },
     "lid#face:lid": {
       "valid": true,
       "volume": 19473.683384039618,
       "area": 26844.26691556626,
       "com": [
-        68.19999999999999,
+        68.20000000000002,
         48.1794329939374,
         -0.7499999999999998
       ],
@@ -930,8 +929,8 @@
     }
   },
   "envelope": [
-    -3.6637359812630166e-15,
-    -4.135580766728708e-15,
+    -4.107825191113079e-15,
+    -4.579669976578771e-15,
     -4,
     140,
     100,
@@ -947,13 +946,13 @@
       "min_distance": 0,
       "closest": [
         [
-          137.25,
-          98.09999999999998,
+          126,
+          1.9,
           38.5
         ],
         [
-          137.25,
-          98.09999999999998,
+          126,
+          1.9,
           38.5
         ]
       ]
@@ -967,12 +966,12 @@
       "min_distance": 0,
       "closest": [
         [
-          134.375,
+          134.25,
           18,
           40
         ],
         [
-          134.375,
+          134.25,
           18,
           40
         ]
@@ -987,12 +986,12 @@
       "min_distance": 0,
       "closest": [
         [
-          134.375,
+          134.25,
           82,
           40
         ],
         [
-          134.375,
+          134.25,
           82,
           40
         ]
@@ -1007,12 +1006,12 @@
       "min_distance": 0,
       "closest": [
         [
-          11.125,
+          11.25,
           18,
           40
         ],
         [
-          11.125,
+          11.25,
           18,
           40
         ]
@@ -1027,12 +1026,12 @@
       "min_distance": 0,
       "closest": [
         [
-          11.125,
+          11.25,
           82,
           40
         ],
         [
-          11.125,
+          11.25,
           82,
           40
         ]
@@ -1280,40 +1279,40 @@
     },
     {
       "label": "faces of one part keep their gaps",
-      "item": "tray: base vs right_wall_lip",
+      "item": "tray: base vs right_lip",
       "a": "tray#face:base",
-      "b": "tray#face:right_wall_lip",
+      "b": "tray#face:right_lip",
       "interference_volume": 0,
       "min_distance": 35.5,
       "closest": [
         [
           137.25,
-          95.25,
+          4.25,
           1.5
         ],
         [
           137.25,
-          95.25,
+          4.25,
           37
         ]
       ]
     },
     {
       "label": "faces of one part keep their gaps",
-      "item": "tray: base vs left_wall_lip",
+      "item": "tray: base vs left_lip",
       "a": "tray#face:base",
-      "b": "tray#face:left_wall_lip",
+      "b": "tray#face:left_lip",
       "interference_volume": 0,
       "min_distance": 35.5,
       "closest": [
         [
           2.75,
-          95.25,
+          4.25,
           1.5
         ],
         [
-          2.7499999999999964,
-          95.25,
+          2.749999999999996,
+          4.25,
           37
         ]
       ]
@@ -1327,12 +1326,12 @@
       "min_distance": 97,
       "closest": [
         [
-          4.75,
-          1.5,
+          4.25,
+          1.4999999999999996,
           2.7499999999999996
         ],
         [
-          4.75,
+          4.25,
           98.5,
           2.7499999999999996
         ]
@@ -1344,31 +1343,31 @@
       "a": "tray#face:front_wall",
       "b": "tray#face:right_wall",
       "interference_volume": 0,
-      "min_distance": 0.40000000000000013,
+      "min_distance": 0.4000000000000006,
       "closest": [
         [
           140,
-          1.4999999999999998,
-          5.5
+          1.4999999999999993,
+          4.529341939
         ],
         [
           140,
           1.9,
-          5.5
+          4.529341939
         ]
       ]
     },
     {
       "label": "faces of one part keep their gaps",
-      "item": "tray: front_wall vs right_wall_lip",
+      "item": "tray: front_wall vs right_lip",
       "a": "tray#face:front_wall",
-      "b": "tray#face:right_wall_lip",
+      "b": "tray#face:right_lip",
       "interference_volume": 0,
-      "min_distance": 0.4000000000000019,
+      "min_distance": 0.40000000000000235,
       "closest": [
         [
           137.25,
-          1.499999999999998,
+          1.4999999999999976,
           38.5
         ],
         [
@@ -1384,35 +1383,35 @@
       "a": "tray#face:front_wall",
       "b": "tray#face:left_wall",
       "interference_volume": 0,
-      "min_distance": 0.40000000000000013,
+      "min_distance": 0.4000000000000006,
       "closest": [
         [
           0,
-          1.4999999999999998,
-          5.5
+          1.4999999999999993,
+          4.529341939
         ],
         [
-          -3.0531133177191805e-16,
+          -6.416358487859597e-16,
           1.9,
-          5.5
+          4.529341939
         ]
       ]
     },
     {
       "label": "faces of one part keep their gaps",
-      "item": "tray: front_wall vs left_wall_lip",
+      "item": "tray: front_wall vs left_lip",
       "a": "tray#face:front_wall",
-      "b": "tray#face:left_wall_lip",
+      "b": "tray#face:left_lip",
       "interference_volume": 0,
-      "min_distance": 0.4000000000000019,
+      "min_distance": 0.40000000000000235,
       "closest": [
         [
-          2.749999999999996,
-          1.499999999999998,
+          2.7499999999999956,
+          1.4999999999999976,
           38.5
         ],
         [
-          2.749999999999996,
+          2.7499999999999956,
           1.9,
           38.5
         ]
@@ -1429,22 +1428,22 @@
         [
           140,
           98.5,
-          5.5
+          4.529341939
         ],
         [
           140,
           98.1,
-          5.5
+          4.529341939
         ]
       ]
     },
     {
       "label": "faces of one part keep their gaps",
-      "item": "tray: back_wall vs right_wall_lip",
+      "item": "tray: back_wall vs right_lip",
       "a": "tray#face:back_wall",
-      "b": "tray#face:right_wall_lip",
+      "b": "tray#face:right_lip",
       "interference_volume": 0,
-      "min_distance": 0.4000000000000057,
+      "min_distance": 0.3999999999999915,
       "closest": [
         [
           137.25,
@@ -1453,7 +1452,7 @@
         ],
         [
           137.25,
-          98.1,
+          98.10000000000001,
           38.5
         ]
       ]
@@ -1469,31 +1468,31 @@
         [
           0,
           98.5,
-          5.5
+          4.529341939
         ],
         [
-          -3.0531133177191805e-16,
+          -6.416358487859597e-16,
           98.1,
-          5.5
+          4.529341939
         ]
       ]
     },
     {
       "label": "faces of one part keep their gaps",
-      "item": "tray: back_wall vs left_wall_lip",
+      "item": "tray: back_wall vs left_lip",
       "a": "tray#face:back_wall",
-      "b": "tray#face:left_wall_lip",
+      "b": "tray#face:left_lip",
       "interference_volume": 0,
-      "min_distance": 0.4000000000000057,
+      "min_distance": 0.3999999999999915,
       "closest": [
         [
-          2.749999999999996,
+          2.7499999999999956,
           98.5,
           38.5
         ],
         [
-          2.749999999999996,
-          98.1,
+          2.7499999999999956,
+          98.10000000000001,
           38.5
         ]
       ]
@@ -1508,72 +1507,72 @@
       "closest": [
         [
           138.5,
-          4.75,
+          4.25,
           2.7499999999999996
         ],
         [
-          1.5,
-          4.75,
+          1.4999999999999996,
+          4.25,
           2.7499999999999996
         ]
       ]
     },
     {
       "label": "faces of one part keep their gaps",
-      "item": "tray: right_wall vs left_wall_lip",
+      "item": "tray: right_wall vs left_lip",
       "a": "tray#face:right_wall",
-      "b": "tray#face:left_wall_lip",
+      "b": "tray#face:left_lip",
       "interference_volume": 0,
       "min_distance": 124.50627494226947,
       "closest": [
         [
           138.5,
-          3.9000000000000057,
+          1.9,
           35.75
         ],
         [
           13.999999999999996,
-          3.9,
+          1.9,
           37
         ]
       ]
     },
     {
       "label": "faces of one part keep their gaps",
-      "item": "tray: right_wall_lip vs left_wall",
-      "a": "tray#face:right_wall_lip",
+      "item": "tray: right_lip vs left_wall",
+      "a": "tray#face:right_lip",
       "b": "tray#face:left_wall",
       "interference_volume": 0,
       "min_distance": 124.50627494226947,
       "closest": [
         [
           126,
-          3.9,
+          1.9,
           37
         ],
         [
-          1.4999999999999964,
-          3.9000000000000057,
+          1.499999999999996,
+          1.9,
           35.75
         ]
       ]
     },
     {
       "label": "faces of one part keep their gaps",
-      "item": "tray: right_wall_lip vs left_wall_lip",
-      "a": "tray#face:right_wall_lip",
-      "b": "tray#face:left_wall_lip",
+      "item": "tray: right_lip vs left_lip",
+      "a": "tray#face:right_lip",
+      "b": "tray#face:left_lip",
       "interference_volume": 0,
       "min_distance": 112,
       "closest": [
         [
           126,
-          3.9,
+          1.9,
           38.5
         ],
         [
           13.999999999999996,
-          3.9,
+          1.9,
           38.5
         ]
       ]

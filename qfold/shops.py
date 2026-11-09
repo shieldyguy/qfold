@@ -122,7 +122,8 @@ def _sendcutsend(data, material, thickness, bend_radius, k_factor, tol) -> ShopS
         min_hole=max(g["min_hole_per_T"] * T, g["min_feature"]) * IN,
         # flange90 is outside to edge; the flat wall past the bend is R + T less.
         min_flange=(r["flange90"] - (R + T)) * IN,
-        max_sheet=tuple(x * IN for x in g["max_flat_bent"]))
+        max_sheet=tuple(x * IN for x in g["max_flat_bent"]),
+        relief_width=max(T / 2, 0.030) * IN)  # relief width >= T/2; not below 0.76 mm
     if r.get("max_bend") is not None:
         notes.append(f"max bend length {r['max_bend']} in ({r['max_bend'] * IN:.0f} mm)")
     rule = SheetMetalRule(f"SendCutSend {material}", T * IN, R * IN, K)
@@ -175,6 +176,7 @@ def _jlccnc(data, material, thickness, bend_radius, k_factor, tol) -> ShopSpec:
         hole_web=g["min_hole_spacing"],
         min_hole=max(1.0, T / 2),
         min_flange=flange - ((R or 0.0) + T),
+        relief_width=float(T),  # design guide: 1-2 T
         max_sheet=(g["max_length"], g["max_length"]))
     rule = SheetMetalRule(f"JLCCNC {material}", T, R, K) if R is not None else None
     return ShopSpec(data["shop"], material, T, rule, rules, r, tuple(notes), data["sources"])

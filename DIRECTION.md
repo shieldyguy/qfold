@@ -26,8 +26,11 @@ keybed touch the PEM nuts. Two failures qfold must prevent:
   every check. Intent is verified by showing it: final hole positions in a
   table, labelled renders, drawings a person can read.
 - **Don't build a tool where the LLM will do.** No formula language, no
-  constraint solver, no parameter ranges, no fuzzy matching, no high-level
-  design language. Designs are Python; the agent does the thinking.
+  constraint solver, no parameter ranges, no fuzzy matching. Designs are
+  Python; the agent does the thinking.
+- **But the tool does the bend math.** An agent gives outside dimensions
+  and names edges. Set-backs, corner treatment and reliefs are the tool's
+  job, because an agent redoing them by hand each time gets them wrong.
 - **A real design drives every feature.** Nothing is added for a
   hypothetical user. If the keybed case doesn't need it, it waits.
 - **Shop data is data.** Bend radius, K and limits come from the shop's
@@ -42,15 +45,20 @@ keybed touch the PEM nuts. Two failures qfold must prevent:
   drawing sheets, the holes-as-assembled table and the parameter table. The
   synth case and the pedal box both run on it; `qfold/` holds only the tool
   and each design lives under `examples/`.
-- **`hole_at`**: place a hole by its position on the finished part.
+- **`Sheet`** (`qfold/sheet.py`): parts described by outside dimensions.
+  It works out bend set-backs, bend extents, which wall goes over at a
+  corner, and the reliefs (corner squares, wall notches, slots beside
+  partial flanges), sized from the shop's rule. Holes are placed by their
+  position on the finished part. The pedal box and chassis use it.
 
 ## Next, in order
 
-1. **Generated reliefs.** The fold engine cuts bend and corner reliefs,
-   sized from the shop's rules, closed corners by default. Today they are
-   hand-drawn into face outlines, oversized and inconsistent.
-2. **Keybed case v2**, with the keybed and boards as STEP.
-3. **Fresh-agent test.** A new agent, given the README and a spec, builds a
+1. **Relief shapes.** Reliefs are rectangular. Round and obround ones need
+   arcs in face outlines, which the kernel's plates don't take yet.
+2. **Synth case onto `Sheet`**, or leave it as the example of the layer
+   beneath. Decide when the keybed case shows what wedge-shaped parts need.
+3. **Keybed case v2**, with the keybed and boards as STEP.
+4. **Fresh-agent test.** A new agent, given the README and a spec, builds a
    correct box without reading qfold's internals.
 
 ## Known limits

@@ -22,6 +22,7 @@ class Rules:
     min_hole: float | None = None  # default T
     min_flange: float | None = None  # default 4T, flat length past the bend
     bend_end_gap: float | None = None  # default T: bends on one face must end this far apart
+    relief_width: float | None = None  # default T: width of bend and corner reliefs (qfold.sheet)
     max_sheet: tuple[float, float] = (1200.0, 600.0)
     min_clearance: float = 0.2  # between parts (or faces of one part) that should not touch
     pcb_clearance: float = 2.0
@@ -35,6 +36,7 @@ class Rules:
             min_hole=self.min_hole if self.min_hole is not None else T,
             min_flange=self.min_flange if self.min_flange is not None else 4 * T,
             bend_end_gap=self.bend_end_gap if self.bend_end_gap is not None else T,
+            relief_width=self.relief_width if self.relief_width is not None else T,
             max_sheet=self.max_sheet, min_clearance=self.min_clearance,
             pcb_clearance=self.pcb_clearance, seated=self.seated)
 
