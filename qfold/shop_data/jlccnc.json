@@ -1,0 +1,37 @@
+{
+  "shop": "JLCCNC",
+  "retrieved": "2026-11-09",
+  "units": "mm",
+  "sources": {
+    "capabilities": "https://jlccnc.com/capabilities/sheet-metal-fabrication",
+    "design_guide": "https://jlccnc.com/blog/sheet-metal-design",
+    "bending": "https://jlccnc.com/blog/sheet-metal-bending"
+  },
+  "general": {
+    "bend_radius_and_k": "no per-thickness table is published; the quote tool sets them per part. Design guide: inside radius about 1 T for most metals (5052-H32 about 1 T; 6061-T6 2-3 T).",
+    "k_guideline": "mild steel 0.30-0.40, aluminum 0.33-0.50, stainless 0.40-0.50 (to be confirmed by test bends)",
+    "thickness_range": [0.5, 6.0],
+    "tolerance_general": 0.2,
+    "tolerance_cut": 0.1,
+    "tolerance_bend": 0.3,
+    "tolerance_punch": 0.1,
+    "min_hole": "at least T/2 and at least 1.0",
+    "min_hole_spacing": 1.0,
+    "hole_to_edge_per_T": 1.5,
+    "hole_to_bend_tangent_per_T": 2.0,
+    "min_flange_per_T": 3.0,
+    "relief_width_per_T": "1-2",
+    "dxf_text": "double-line fonts, 0.2 mm line width"
+  },
+  "notes": [
+    "The multiples of T are JLCCNC's published design-guide rules, not per-thickness shop limits. hole_to_edge and hole_to_bend are hole edge to sheet edge and to the bend tangent line.",
+    "Stock thicknesses within 0.5-6.0 mm are not listed on the public pages."
+  ],
+  "materials": {
+    "Aluminum 5052": {},
+    "Stainless Steel 304": {},
+    "Stainless Steel 201": {},
+    "Cold Rolled Steel": {},
+    "Galvanized Steel": {}
+  }
+}
