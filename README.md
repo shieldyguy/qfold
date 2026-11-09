@@ -89,7 +89,7 @@ These are marked on every drawing:
 ## Setup
 
 On a fresh checkout, one command gets everything and runs the tests. It takes
-about a minute and needs only git, so it works in sandboxes without PyPI:
+under 30 seconds and needs only git, so it works in sandboxes without PyPI:
 
 ```bash
 scripts/bootstrap.sh
@@ -122,6 +122,11 @@ source once and point the kernel at it. This takes about 40 minutes on 2 cores:
 scripts/build_occt.sh .occt
 kernel/build.sh                # uses .occt/install by default, or set OCCT_DIR
 ```
+
+`build_occt.sh` and `bootstrap.sh` share `.occt/install`. Bootstrap refuses to
+touch an `.occt/install` that isn't its own prebuilt checkout, so it never
+deletes a source build. After a source build, run `kernel/build.sh` and the
+tests directly.
 
 To publish a new prebuilt build:
 

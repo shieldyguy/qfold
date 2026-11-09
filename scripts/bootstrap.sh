@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Set up a checkout in about a minute without compiling OpenCascade:
+# Set up a checkout in seconds without compiling OpenCascade:
 #   0. check the platform and the tools the pipeline needs
 #   1. fetch prebuilt OpenCascade from a pinned commit, verify its libraries
 #   2. fetch a pinned ezdxf release from git if ezdxf isn't importable
@@ -31,6 +31,17 @@ done
 [ ${#missing[@]} -eq 0 ] || die "missing: ${missing[*]}"
 
 # 1. Prebuilt OpenCascade -------------------------------------------------
+# .occt/install is either absent, a prebuilt checkout (its own git clone,
+# moved into place only when complete), or something the user put there,
+# such as a source build from scripts/build_occt.sh. Never delete the last
+# kind. Test for its own .git: `git -C` would find qfold's repository above it.
+if [ -d .occt/install ] && [ ! -e .occt/install/.git ]; then
+  if [ -z "$(ls -A .occt/install)" ]; then
+    rmdir .occt/install
+  else
+    die ".occt/install exists but is not the prebuilt checkout (a source build?). Build the kernel against it with: OCCT_DIR=\$PWD/.occt/install kernel/build.sh. Or move it away to let bootstrap fetch the prebuilt."
+  fi
+fi
 if [ ! -d .occt/install/lib ] || [ "$(git -C .occt/install rev-parse HEAD 2>/dev/null)" != "$occt_sha" ]; then
   echo "== fetching prebuilt OpenCascade (qfold-prebuilt $occt_branch @ ${occt_sha:0:12})"
   rm -rf .occt/install .occt/install.tmp  # also clears a half-finished earlier clone
@@ -40,12 +51,14 @@ if [ ! -d .occt/install/lib ] || [ "$(git -C .occt/install rev-parse HEAD 2>/dev
   [ "$got" = "$occt_sha" ] || die "$occt_branch is at $got, expected $occt_sha. If that change was intended, verify it, then update occt_sha and scripts/occt-prebuilt.sha256."
   mv .occt/install.tmp .occt/install
 fi
+# The commit pin already covers every file (headers included); the manifest
+# adds a SHA-256 check of the libraries that actually get loaded.
 (cd .occt/install && sha256sum --quiet -c "$root/scripts/occt-prebuilt.sha256") ||
   die "prebuilt libraries don't match scripts/occt-prebuilt.sha256"
 
 # 2. ezdxf ------------------------------------------------------------------
 if ! python3 -c "import ezdxf" 2>/dev/null &&
-   [ "$(git -C .deps/ezdxf describe --tags 2>/dev/null)" != "$ezdxf_tag" ]; then
+   { [ ! -e .deps/ezdxf/.git ] || [ "$(git -C .deps/ezdxf describe --tags 2>/dev/null)" != "$ezdxf_tag" ]; }; then
   echo "== fetching ezdxf $ezdxf_tag from git"
   rm -rf .deps/ezdxf .deps/ezdxf.tmp
   mkdir -p .deps
