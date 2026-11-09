@@ -168,10 +168,11 @@ The bootstrap script:
 - **Checks the platform and tools.** It stops early, with a clear message, if
   the machine isn't Linux x86_64 or is missing git, g++, `rsvg-convert`,
   `qpdf`, `pdftoppm`, numpy, Pillow or pytest.
-- **Fetches OpenCascade.** It shallow-clones the
-  `prebuilt/occt-7.9.3-linux-x86_64` branch into `.occt/install`. That branch
-  holds compiled libraries and headers only, for Linux x86_64 on Ubuntu 24.04
-  (glibc 2.38+). The clone must match the commit pinned in the script, and the
+- **Fetches OpenCascade.** It shallow-clones the `occt-7.9.3-linux-x86_64`
+  branch of [qfold-prebuilt](https://github.com/shieldyguy/qfold-prebuilt) into
+  `.occt/install`. That repo holds compiled libraries and headers only, for
+  Linux x86_64 on Ubuntu 24.04 (glibc 2.38+), so cloning qfold itself stays
+  small. The clone must match the commit pinned in the script, and the
   libraries must match `scripts/occt-prebuilt.sha256`. A moved branch or an
   altered library stops the bootstrap instead of being linked silently. An
   interrupted clone is cleared and retried.
@@ -189,15 +190,17 @@ scripts/build_occt.sh .occt
 kernel/build.sh                # uses .occt/install by default, or set OCCT_DIR
 ```
 
-To publish a new prebuilt branch:
+To publish a new prebuilt build:
 
-1. Commit the stripped `lib/` and `include/opencascade/`, with the OCCT licence
-   files, on an orphan branch.
+1. In qfold-prebuilt, commit the stripped `lib/` and `include/opencascade/`,
+   with the OCCT licence files, on a new orphan branch named for the version
+   and platform.
 2. Regenerate the manifest: `(cd <install> && sha256sum lib/*.so.*.*.*) >
    scripts/occt-prebuilt.sha256`.
 3. Update `occt_branch` and `occt_sha` in `scripts/bootstrap.sh`.
 
-Don't move an existing prebuilt branch; publish a new one.
+Don't move an existing prebuilt branch; publish a new one. The SHA pin and
+the manifest stop a moved branch from being used anyway.
 
 ## Next
 
