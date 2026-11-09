@@ -125,6 +125,7 @@ assembly.py  Design, Component, Occurrence, Body, refs, align, insert_step
 parts.py     stand-in hardware (pots, switches, screws, feet, PCB)
 kernel/      sheetkernel (C++/OCCT): bodies + placed instances in, answers out
 dfm.py       manufacturing rules on the layout
+shops.py     fab shop bend tables and limits (data in shop_data/*.json)
 flat.py      flat pattern in outside-face view, DXF export
 render.py    numpy z-buffer renderer (no GPU or display)
 drawing.py   SVG sheets: views from hidden-line removal, dims, tables
@@ -155,11 +156,60 @@ tables and feature dimensions come from the model tree. None are typed in.
 These are marked on every drawing:
 
 - Material, inside radius (R1.6) and K-factor (0.42): use your fabricator's
-  values or bend table.
-- DFM thresholds in `dfm.Rules`.
+  values (see Shop data below).
+- DFM thresholds in `dfm.Rules`, or a shop's from `qfold.shops`.
 - Hole sizes for jacks, pots, switches and the PEM centre-to-edge minimum:
   check the part datasheets.
 - Stand-in hardware dimensions in `parts.py`: swap in vendor STEP models.
+
+## Shop data
+
+`qfold/shop_data/` holds what each shop publishes about bending and cutting,
+copied from its own pages in its own units. The source pages and the date
+they were read are in each file. `qfold.shops.spec(shop, material,
+thickness_mm)` turns one row into qfold's terms, in mm:
+
+```python
+from qfold import shops
+s = shops.spec("sendcutsend", "5052 Aluminum", 1.6)
+s.rule   # SheetMetalRule: T 1.6002, R 0.889, K 0.455
+s.rules  # dfm.Rules: hole to bend 4.72, min flange 5.21, min hole 0.80, sheet 1118 × 762
+s.notes  # anything to know, e.g. where K came from
+```
+
+| Shop | Bend radius and K | Limits |
+| --- | --- | --- |
+| SendCutSend | per material and thickness, 10 materials | die-based hole to bend, min flange, min hole, max bent size, max bend length |
+| OSH Cut | not public: in their app (app.oshcut.com/catalog) | min hole, web, part size and tolerance per thickness for 5052, A1008, 304, G90 |
+| JLCCNC | radius per thickness (outer corner radius − T); K not published | min flange per thickness, hole to bend, edge, web, min hole, 800 mm max; 11 stock thicknesses, nominal and actual |
+
+For OSH Cut, `rule` stays None until you pass `bend_radius=` and
+`k_factor=` read from their app. The limits are there either way.
+
+JLCCNC requires a STEP model for orders and lays out the flat pattern from it
+itself, so its unpublished K never reaches the part. It only shapes qfold's
+own flat drawing. qfold uses the middle of JLCCNC's design-guide range unless
+you pass `k_factor=`. The minimum flanges and the 3 mm hole-to-bend rule come
+from JLC's Chinese bending article. JLCCNC stocks 1.5 mm, not 1.6, and its
+1.5 mm sheet is actually 1.42 mm thick: the notes give the actual thickness. Names are
+the shop's own: `shops.materials(shop)` lists them with their stock
+thicknesses, and a wrong name or thickness lists the valid ones.
+
+How the published numbers map to qfold's checks:
+
+- SendCutSend's printed K has two decimals. On four rows it disagrees with
+  the bend deduction printed beside it, including 0.063 in 5052. qfold uses
+  the K that reproduces the bend deduction, since that is what lays out the
+  flat pattern. For every row, a test checks that a 90° bend from qfold
+  flattens by exactly the shop's bend deduction.
+- Formed flange minimums are measured from the outside of the other leg.
+  qfold checks the flat wall past the bend, which is R + T shorter. The
+  converted value matches SendCutSend's own flat minimum (from the bend
+  centre line) to within 0.002 in.
+- "Cut features at least half the die width from the bend centre line"
+  becomes the hole-to-bend distance from the tangent line: (die − BA)/2.
+
+The synth case passes SendCutSend's limits in 1.6 mm 5052 and JLCCNC's in 1.5 mm 5052, as designed.
 
 ## Setup
 
@@ -217,7 +267,7 @@ the manifest stop a moved branch from being used anyway.
 
 ## Next
 
-- Bend tables (R and K by material and thickness) instead of one K-factor
+- Shop and material as design parameters, with R, K and the DFM limits looked up
 - Hems, jogs and non-90° bends in the example
 - A real KiCad board STEP in place of the stand-in, and vendor part models
 - A rear-wall board for the jacks, aligned the same way as the panel board

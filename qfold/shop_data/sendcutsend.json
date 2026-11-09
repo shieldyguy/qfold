@@ -1,0 +1,150 @@
+{
+  "shop": "SendCutSend",
+  "retrieved": "2026-11-09",
+  "units": "in",
+  "sources": {
+    "bend_table": "https://sendcutsend.com/bending-calculator/",
+    "bend_sizes": "https://sendcutsend.com/materials/processing-min-max/",
+    "bending_specs": "https://sendcutsend.com/faq/what-are-your-material-bending-specifications/",
+    "feature_to_bend": "https://sendcutsend.com/guidelines/bend-deformation/",
+    "flange_measurement": "https://sendcutsend.com/blog/design-considerations-when-planning-sheet-metal-bends/",
+    "minimum_geometry": "https://sendcutsend.com/faq/what-are-best-practices-for-minimum-geometry/",
+    "hardware_and_holes": "https://sendcutsend.com/blog/how-to-apply-hole-distance-specifications/",
+    "cut_sizes": "https://sendcutsend.com/materials/min-max/"
+  },
+  "general": {
+    "min_feature": 0.015,
+    "min_hole_per_T": 0.5,
+    "feature_to_bend_centerline": "die / 2, measured in the flat pattern from the bend centre line",
+    "hardware_to_bend": "BA / 2 + the hardware's hole centre to edge or bend distance (from its catalog page)",
+    "max_bend_angle_deg": 130,
+    "min_obtuse_bend_deg": 5,
+    "bend_angle_tol_deg": "±1 up to 24 in of bend, ±2 beyond (sheet metal); ±5 / ±7 (polycarbonate)",
+    "bend_to_edge_tol": "±0.015 per flange, ±0.030 between two parallel bends, +0.015 per extra flange",
+    "max_flat_bent": [44, 30],
+    "min_flat_bent": [1.5, 0.375],
+    "min_flange_contact": "the minimum flange must hold over about 50-60% of the bend's length (full length at .187 in and up)",
+    "relief": "width >= T/2; depth from the bend line = R + T + 0.020 (the relief_depth column); recommended where bends meet at a corner, strongly at .187 in and up",
+    "radius": "fixed per material and thickness; custom radii are not offered"
+  },
+  "columns": {
+    "T": "thickness",
+    "K": "K-factor",
+    "BD90": "bend deduction at 90 degrees",
+    "R": "effective inside bend radius at 90 degrees",
+    "die": "bottom die width; the die is centred on the bend line",
+    "flange90": "minimum formed flange length at 90 degrees, from the outside of the other leg to the flange edge",
+    "relief_dist": "minimum corner relief distance from bend line",
+    "relief_depth": "bend relief depth",
+    "max_bend": "maximum bend length (null: not published for this material)"
+  },
+  "notes": [
+    "Formed flange lengths are outside dimensions: the published flat minimum (from the bend centre line) equals flange90 - (R + T) + BA90/2, checked for every published row.",
+    "5052 Aluminum .080: the processing chart lists R = .045 but the bend table lists .038; .038 is the value consistent with its K and BD90, so it is used here.",
+    "K is printed to two decimals and on a few rows disagrees with BD90 (BD90 = 2(R + T) - (pi/2)(R + K T) is off by more than .003 in for 5052 Aluminum .063, Brass .187 and .250, Titanium Grade 2 .040; re-read on 2026-11-09, the page does print these values). qfold.shops uses the K that reproduces BD90, since the bend deduction is what lays out the flat pattern, and keeps the printed K beside it."
+  ],
+  "materials": {
+    "5052 Aluminum": {
+      "columns": ["T", "K", "BD90", "R", "die", "flange90", "relief_dist", "relief_depth", "max_bend"],
+      "rows": [
+        [0.040, 0.45, 0.062, 0.024, 0.472, 0.286, 0.024, 0.084, 44],
+        [0.063, 0.42, 0.096, 0.035, 0.472, 0.303, 0.030, 0.118, 44],
+        [0.080, 0.48, 0.116, 0.038, 0.472, 0.313, 0.037, 0.138, 44],
+        [0.090, 0.37, 0.142, 0.032, 0.472, 0.326, 0.034, 0.142, 44],
+        [0.100, 0.40, 0.191, 0.125, 0.630, 0.463, 0.020, 0.245, 44],
+        [0.125, 0.44, 0.216, 0.125, 0.630, 0.476, 0.032, 0.270, 44],
+        [0.187, 0.43, 0.356, 0.250, 0.984, 0.798, 0.024, 0.457, 44],
+        [0.250, 0.42, 0.442, 0.250, 1.575, 1.371, 0.044, 0.520, 44]
+      ]
+    },
+    "Mild Steel": {
+      "columns": ["T", "K", "BD90", "R", "die", "flange90", "relief_dist", "relief_depth", "max_bend"],
+      "rows": [
+        [0.030, 0.38, 0.0610, 0.045, 0.472, 0.286, 0.015, 0.095, 44],
+        [0.048, 0.38, 0.0860, 0.045, 0.472, 0.298, 0.020, 0.113, 44],
+        [0.059, 0.40, 0.1080, 0.063, 0.472, 0.309, 0.020, 0.142, 44],
+        [0.074, 0.40, 0.1290, 0.063, 0.472, 0.320, 0.025, 0.157, 44],
+        [0.104, 0.34, 0.1815, 0.063, 0.630, 0.459, 0.028, 0.187, 44],
+        [0.119, 0.38, 0.1955, 0.063, 0.630, 0.466, 0.036, 0.202, 44],
+        [0.135, 0.32, 0.2440, 0.100, 0.984, 0.742, 0.028, 0.255, 44],
+        [0.187, 0.36, 0.3225, 0.125, 0.984, 0.781, 0.041, 0.332, 22],
+        [0.250, 0.36, 0.4215, 0.150, 1.575, 1.361, 0.054, 0.420, 20]
+      ]
+    },
+    "304 Stainless Steel": {
+      "columns": ["T", "K", "BD90", "R", "die", "flange90", "relief_dist", "relief_depth", "max_bend"],
+      "rows": [
+        [0.030, 0.36, 0.0785, 0.080, 0.472, 0.294, 0.006, 0.130, 44],
+        [0.048, 0.36, 0.1045, 0.080, 0.472, 0.307, 0.011, 0.148, 44],
+        [0.060, 0.34, 0.1185, 0.070, 0.472, 0.314, 0.016, 0.150, 44],
+        [0.074, 0.36, 0.1370, 0.075, 0.472, 0.324, 0.021, 0.169, 44],
+        [0.100, 0.36, 0.2230, 0.187, 0.984, 0.732, 0.004, 0.307, 35],
+        [0.125, 0.38, 0.2400, 0.150, 0.984, 0.740, 0.020, 0.295, 40],
+        [0.187, 0.35, 0.3285, 0.130, 0.984, 0.784, 0.038, 0.337, 36],
+        [0.250, 0.34, 0.4620, 0.225, 1.575, 1.381, 0.034, 0.495, 18]
+      ]
+    },
+    "G90 Steel": {
+      "columns": ["T", "K", "BD90", "R", "die", "flange90", "relief_dist", "relief_depth", "max_bend"],
+      "rows": [
+        [0.030, 0.38, 0.0610, 0.045, 0.472, 0.286, 0.015, 0.095, 44],
+        [0.048, 0.38, 0.0860, 0.045, 0.472, 0.298, 0.020, 0.113, 44],
+        [0.059, 0.36, 0.1120, 0.063, 0.472, 0.311, 0.018, 0.142, 44],
+        [0.074, 0.40, 0.1290, 0.063, 0.472, 0.320, 0.025, 0.157, 44]
+      ]
+    },
+    "316 Stainless Steel": {
+      "columns": ["T", "K", "BD90", "R", "die", "flange90", "relief_dist", "relief_depth", "max_bend"],
+      "rows": [
+        [0.060, 0.34, 0.1185, 0.070, 0.472, 0.314, 0.016, 0.150, null],
+        [0.125, 0.38, 0.2400, 0.150, 0.984, 0.740, 0.020, 0.295, null],
+        [0.187, 0.35, 0.3285, 0.130, 0.984, 0.784, 0.038, 0.337, null],
+        [0.250, 0.34, 0.4620, 0.225, 1.575, 1.381, 0.034, 0.495, null]
+      ]
+    },
+    "Brass": {
+      "columns": ["T", "K", "BD90", "R", "die", "flange90", "relief_dist", "relief_depth", "max_bend"],
+      "rows": [
+        [0.040, 0.38, 0.074, 0.040, 0.472, 0.292, 0.018, 0.100, null],
+        [0.063, 0.38, 0.105, 0.040, 0.472, 0.308, 0.026, 0.123, null],
+        [0.125, 0.36, 0.205, 0.060, 0.630, 0.471, 0.038, 0.205, null],
+        [0.187, 0.38, 0.324, 0.095, 0.984, 0.782, 0.040, 0.302, null],
+        [0.250, 0.38, 0.424, 0.130, 1.575, 1.362, 0.053, 0.400, null]
+      ]
+    },
+    "Copper": {
+      "columns": ["T", "K", "BD90", "R", "die", "flange90", "relief_dist", "relief_depth", "max_bend"],
+      "rows": [
+        [0.040, 0.34, 0.081, 0.052, 0.472, 0.296, 0.015, 0.112, null],
+        [0.063, 0.36, 0.099, 0.024, 0.472, 0.305, 0.029, 0.107, null],
+        [0.125, 0.34, 0.205, 0.050, 0.630, 0.471, 0.038, 0.195, null],
+        [0.187, 0.36, 0.320, 0.118, 0.984, 0.780, 0.042, 0.325, null],
+        [0.250, 0.33, 0.430, 0.140, 1.575, 1.365, 0.050, 0.410, null]
+      ]
+    },
+    "4130 Chromoly": {
+      "columns": ["T", "K", "BD90", "R", "die", "flange90", "relief_dist", "relief_depth", "max_bend"],
+      "rows": [
+        [0.050, 0.38, 0.0945, 0.050, 0.472, 0.302, 0.018, 0.120, null],
+        [0.063, 0.41, 0.1065, 0.050, 0.472, 0.308, 0.025, 0.133, null],
+        [0.125, 0.43, 0.2050, 0.090, 0.984, 0.723, 0.038, 0.235, null],
+        [0.190, 0.37, 0.3240, 0.125, 0.984, 0.782, 0.043, 0.335, null],
+        [0.250, 0.36, 0.4335, 0.170, 1.575, 1.367, 0.048, 0.440, 16]
+      ]
+    },
+    "Titanium Grade 2": {
+      "columns": ["T", "K", "BD90", "R", "die", "flange90", "relief_dist", "relief_depth", "max_bend"],
+      "rows": [
+        [0.040, 0.38, 0.0790, 0.045, 0.472, 0.295, 0.016, 0.105, null]
+      ]
+    },
+    "Polycarbonate": {
+      "columns": ["T", "K", "BD90", "R", "die", "flange90", "relief_dist", "relief_depth", "max_bend"],
+      "rows": [
+        [0.118, 0.33, 0.1950, 0.040, 0.472, 0.386, 0.083, 0.178, null],
+        [0.177, 0.33, 0.2960, 0.085, 0.984, 0.848, 0.214, 0.282, null],
+        [0.220, 0.33, 0.3670, 0.100, 0.984, 0.884, 0.235, 0.340, null]
+      ]
+    }
+  }
+}
