@@ -1,0 +1,372 @@
+{
+  "summary": "26 pass, 0 warn, 0 fail",
+  "ok": true,
+  "checks": [
+    {
+      "name": "bottom_shell: valid solid",
+      "status": "pass",
+      "detail": "valid=True, solids=1, faces=96",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "bottom_shell: flat pattern matches fold",
+      "status": "pass",
+      "detail": "folded\u2212flat volume 300.5956 mm\u00b3, bend allowance predicts 300.5956",
+      "value": 300.59560000000056,
+      "limit": 300.59562757266474
+    },
+    {
+      "name": "top_panel: valid solid",
+      "status": "pass",
+      "detail": "valid=True, solids=1, faces=70",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "top_panel: flat pattern matches fold",
+      "status": "pass",
+      "detail": "folded\u2212flat volume 93.2355 mm\u00b3, bend allowance predicts 93.2355",
+      "value": 93.23546999999962,
+      "limit": 93.23547108593426
+    },
+    {
+      "name": "bottom_shell vs top_panel: no interference",
+      "status": "pass",
+      "detail": "overlap volume 0.000000 mm\u00b3",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "bottom_shell vs top_panel: clearance",
+      "status": "pass",
+      "detail": "closest 0.300 mm, need \u2265 0.2",
+      "value": 0.3,
+      "limit": 0.2
+    },
+    {
+      "name": "bottom_shell.step reads back",
+      "status": "pass",
+      "detail": "1 solid(s), volume 137741.354 mm\u00b3 (model 137741.354)",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "top_panel.step reads back",
+      "status": "pass",
+      "detail": "1 solid(s), volume 84810.012 mm\u00b3 (model 84810.012)",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "assembly.step reads back",
+      "status": "pass",
+      "detail": "2 solid(s), volume 222551.367 mm\u00b3 (model 222551.366)",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "screws pass through cheek and lip holes",
+      "status": "pass",
+      "detail": "4 M3 shanks clear both parts",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "PCB keep-out clears the case",
+      "status": "pass",
+      "detail": "closest 4.30 mm to the case, need \u2265 2.0",
+      "value": 4.300769157,
+      "limit": 2.0
+    },
+    {
+      "name": "bottom_shell: hole to bend",
+      "status": "pass",
+      "detail": "closest 7.10 mm (base foot screw M3 to bend front), need \u2265 4.80",
+      "value": 7.1000000000000005,
+      "limit": 4.800000000000001
+    },
+    {
+      "name": "bottom_shell: hole to edge",
+      "status": "pass",
+      "detail": "closest 7.10 mm (base foot screw M3), need \u2265 1.60",
+      "value": 7.1000000000000005,
+      "limit": 1.6
+    },
+    {
+      "name": "bottom_shell: web between holes",
+      "status": "pass",
+      "detail": "narrowest 8.00 mm (base vent slot / vent slot), need \u2265 1.60",
+      "value": 8.0,
+      "limit": 1.6
+    },
+    {
+      "name": "bottom_shell: minimum hole size",
+      "status": "pass",
+      "detail": "all holes \u2265 1.60 mm",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "bottom_shell: flange length",
+      "status": "pass",
+      "detail": "shortest flat flange 20.67 mm (bend front), need \u2265 6.40",
+      "value": 20.66831375565031,
+      "limit": 6.4
+    },
+    {
+      "name": "top_panel: hole to bend",
+      "status": "pass",
+      "detail": "closest 5.79 mm (lip_right PEM CLS-M3 nut to bend panel_right), need \u2265 4.80",
+      "value": 5.790000000000001,
+      "limit": 4.800000000000001
+    },
+    {
+      "name": "top_panel: hole to edge",
+      "status": "pass",
+      "detail": "closest 4.79 mm (lip_right PEM CLS-M3 nut), need \u2265 1.60",
+      "value": 4.790000000000001,
+      "limit": 1.6
+    },
+    {
+      "name": "top_panel: web between holes",
+      "status": "pass",
+      "detail": "narrowest 4.80 mm (panel 3 mm LED / 3 mm LED), need \u2265 1.60",
+      "value": 4.800000000000011,
+      "limit": 1.6
+    },
+    {
+      "name": "top_panel: minimum hole size",
+      "status": "pass",
+      "detail": "all holes \u2265 1.60 mm",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "top_panel: hardware edge distance",
+      "status": "pass",
+      "detail": "4 hardware holes meet their centre-to-edge minimum",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "top_panel: flange length",
+      "status": "pass",
+      "detail": "shortest flat flange 14.80 mm (bend panel_right), need \u2265 6.40",
+      "value": 14.8,
+      "limit": 6.4
+    },
+    {
+      "name": "bottom_shell: fits sheet",
+      "status": "pass",
+      "detail": "flat 429.5 \u00d7 236.2 mm, sheet limit 1200 \u00d7 600",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "bottom_shell_flat.dxf reads back",
+      "status": "pass",
+      "detail": "78 cut entities, 4 bend lines, extent 429.538 \u00d7 236.206 mm",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "top_panel: fits sheet",
+      "status": "pass",
+      "detail": "flat 346.5 \u00d7 160.9 mm, sheet limit 1200 \u00d7 600",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "top_panel_flat.dxf reads back",
+      "status": "pass",
+      "detail": "60 cut entities, 2 bend lines, extent 346.538 \u00d7 160.911 mm",
+      "value": null,
+      "limit": null
+    }
+  ],
+  "bodies": {
+    "bottom_shell": {
+      "valid": true,
+      "volume": 137741.354,
+      "area": 175613.7792,
+      "com": [
+        160.1940503,
+        90.2818049,
+        10.87943421
+      ],
+      "bbox": [
+        -6.039613254e-15,
+        -2.294643781e-15,
+        0,
+        320,
+        160,
+        58
+      ],
+      "solids": 1,
+      "faces": 96,
+      "edges": 266
+    },
+    "top_panel": {
+      "valid": true,
+      "volume": 84810.01248,
+      "area": 108903.808,
+      "com": [
+        159.5257447,
+        80.74810218,
+        -1.578423088
+      ],
+      "bbox": [
+        -1.643130076e-15,
+        0,
+        -18,
+        316.2,
+        160.910997,
+        0
+      ],
+      "solids": 1,
+      "faces": 70,
+      "edges": 188
+    },
+    "bottom_shell_flat": {
+      "valid": true,
+      "volume": 137440.7584,
+      "area": 175235.461,
+      "com": [
+        160.1944747,
+        95.06048625,
+        0.8
+      ],
+      "bbox": [
+        -54.76884925,
+        -21.03716301,
+        0,
+        374.7688493,
+        215.1688493,
+        1.6
+      ],
+      "solids": 1,
+      "faces": 80,
+      "edges": 234
+    },
+    "top_panel_flat": {
+      "valid": true,
+      "volume": 84716.77701,
+      "area": 108785.9769,
+      "com": [
+        159.5273138,
+        -80.74842421,
+        0.8
+      ],
+      "bbox": [
+        -15.16884925,
+        -160.910997,
+        0,
+        331.3688493,
+        0,
+        1.6
+      ],
+      "solids": 1,
+      "faces": 62,
+      "edges": 180
+    }
+  },
+  "pairs": [
+    {
+      "a": "bottom_shell",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0.3,
+      "closest": [
+        [
+          1.6,
+          2,
+          26.4
+        ],
+        [
+          1.9,
+          2,
+          26.4
+        ]
+      ]
+    }
+  ],
+  "probes": [
+    {
+      "name": "screw_1_lip_right",
+      "hits": {
+        "bottom_shell": {
+          "common_volume": 0,
+          "min_distance": 0.2
+        },
+        "top_panel": {
+          "common_volume": 0,
+          "min_distance": 0.61
+        }
+      }
+    },
+    {
+      "name": "screw_2_lip_right",
+      "hits": {
+        "bottom_shell": {
+          "common_volume": 0,
+          "min_distance": 0.2
+        },
+        "top_panel": {
+          "common_volume": 0,
+          "min_distance": 0.61
+        }
+      }
+    },
+    {
+      "name": "screw_3_lip_left",
+      "hits": {
+        "bottom_shell": {
+          "common_volume": 0,
+          "min_distance": 0.2
+        },
+        "top_panel": {
+          "common_volume": 0,
+          "min_distance": 0.61
+        }
+      }
+    },
+    {
+      "name": "screw_4_lip_left",
+      "hits": {
+        "bottom_shell": {
+          "common_volume": 0,
+          "min_distance": 0.2
+        },
+        "top_panel": {
+          "common_volume": 0,
+          "min_distance": 0.61
+        }
+      }
+    },
+    {
+      "name": "pcb_keepout",
+      "hits": {
+        "bottom_shell": {
+          "common_volume": 0,
+          "min_distance": 4.300769157
+        },
+        "top_panel": {
+          "common_volume": 0,
+          "min_distance": 6.4
+        }
+      }
+    }
+  ],
+  "flat_sizes": {
+    "bottom_shell": [
+      429.53769855,
+      236.20601231
+    ],
+    "top_panel": [
+      346.53769855,
+      160.910997
+    ]
+  },
+  "slope_deg": 11.309932474020213
+}
