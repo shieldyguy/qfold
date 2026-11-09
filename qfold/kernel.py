@@ -40,7 +40,7 @@ def run(job: dict, workdir: Path) -> dict:
     job_path = workdir / "kernel_job.json"
     job_path.write_text(json.dumps(job, default=_jsonable))
     if not KERNEL.exists():
-        raise FileNotFoundError(f"sheetkernel not built: {KERNEL} (see kernel/README.md)")
+        raise FileNotFoundError(f"sheetkernel not built: {KERNEL} (run scripts/bootstrap.sh)")
     proc = subprocess.run([str(KERNEL), str(job_path)], capture_output=True, text=True)
     if proc.returncode != 0:
         raise RuntimeError(f"sheetkernel exited {proc.returncode}: {proc.stderr.strip()}")

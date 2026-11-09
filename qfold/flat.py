@@ -19,12 +19,16 @@ import numpy as np
 
 from .fold import Layout
 
-# ezdxf from a git checkout (scripts/bootstrap.sh) when it isn't installed.
-_EZDXF = os.environ.get("QFOLD_EZDXF_SRC") or str(
-    Path(__file__).resolve().parent.parent / ".deps" / "ezdxf" / "src")
-if Path(_EZDXF).is_dir() and _EZDXF not in sys.path:
-    os.environ.setdefault("EZDXF_DISABLE_C_EXT", "1")
-    sys.path.insert(0, _EZDXF)
+# Prefer an installed ezdxf. Fall back to a git checkout in .deps (made by
+# scripts/bootstrap.sh) or QFOLD_EZDXF_SRC, so PyPI isn't needed.
+try:
+    import ezdxf as _ezdxf  # noqa: F401
+except ImportError:
+    _EZDXF = os.environ.get("QFOLD_EZDXF_SRC") or str(
+        Path(__file__).resolve().parent.parent / ".deps" / "ezdxf" / "src")
+    if Path(_EZDXF).is_dir() and _EZDXF not in sys.path:
+        os.environ.setdefault("EZDXF_DISABLE_C_EXT", "1")
+        sys.path.insert(0, _EZDXF)
 
 
 @dataclass
