@@ -10,7 +10,15 @@ survives; the DXF gets an independent check; the bootstrap fails fast and
 reproducibly. Ordered so each PR is small, testable and leaves main green.
 
 Reading this from another session: `git fetch origin review-plan && git show
-origin/review-plan:PLAN.md`, or `gh pr view 2`.
+origin/review-plan:PLAN.md`, or `gh pr view 4`.
+
+**Status note (2026-11-08, later):** issue #3 assigns owners — Builder takes
+H1–M4 and L1–L9 on PR #2 (`assembly-align`), M5/L7/L10 on PR #1; Reviewer takes
+the adversarial tests (PR A below). Treat #3 as authoritative for *who/where*;
+this file is the reference for *how*. PR #2 renamed the API to Fusion terms
+(`SheetMetalRule`, `Flange`, `SheetMetalBody`, `Design/Component/Occurrence`;
+kernel job = `bodies` + `instances`), so names below (`Face`, `Bend`,
+`CaseParams`, `plates3d`) are the pre-rename ones; the mechanics are unchanged.
 
 ---
 
