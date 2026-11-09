@@ -53,6 +53,10 @@ def pcb(w: float, h: float, t: float = 1.6) -> Component:
 STANDIN = {"pot_9mm": pot_9mm, "toggle_m6": toggle_m6, "button_12mm": button_12mm,
            "led_3mm": led_3mm, "oled_096": oled_096}
 
+# Panel parts held against the panel by a nut or a snap, so they must touch
+# it. The rest (LEDs, the display) sit in or behind their hole with clearance.
+CLAMPED = {"pot_9mm", "toggle_m6", "button_12mm"}
+
 # Render colours for the stand-ins once they come back from STEP (which
 # carries no colours here).
 COLORS = {"control_board_pcb": GREEN, "pot_9mm": DARK, "toggle_m6": METAL,

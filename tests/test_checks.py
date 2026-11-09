@@ -4,8 +4,8 @@ import math
 import numpy as np
 import pytest
 
-from qfold import design, dfm, kernel
-from qfold.assembly import translate
+from qfold import design, dfm, kernel, pipeline
+from qfold.assembly import align, translate
 from qfold.flat import flat_pattern
 from qfold.fold import Face, Flange, Hole, SheetMetalBody, SheetMetalRule, layout
 
@@ -47,21 +47,53 @@ def test_hole_crossing_face_edge_fails():
     assert next(c for c in rep.checks if "inside their face" in c.name).status == "fail"
 
 
+@pytest.fixture(scope="module")
+def fit_dir(tmp_path_factory):
+    return tmp_path_factory.mktemp("fit")
+
+
+def _failures(case, workdir):
+    rep = pipeline.check_fit(case, workdir)
+    return {c.name: c.detail for c in rep.checks if c.status != "pass"}
+
+
 @needs_kernel
-def test_screw_that_misses_its_cheek_is_caught(tmp_path):
-    case = design.build(workdir=tmp_path)
-    d = case.design
-    screw = d.find("screw_1")
-    screw.transform = screw.transform @ translate((0, 0, 1.0))  # lift off the cheek
-    screw._src.transform = screw.transform
-    job = d.job()
-    job["outputs"] = {"pairs": [{"a": d.group("screw_1"), "b": d.group("bottom_shell")}]}
-    pr = kernel.run(job, tmp_path)["pairs"][0]
-    assert pr["interference_volume"] < 1e-9  # "no overlap" alone would pass
-    # The shank still sits in the Ø3.4 hole (0.2 mm all round), but the head
-    # no longer touches the cheek, so the seated rule fails it.
-    assert pr["min_distance"] == pytest.approx(0.2, abs=1e-6)
-    assert pr["min_distance"] > dfm.Rules().seated
+def test_assembled_case_fits(fit_dir):
+    assert _failures(design.build(workdir=fit_dir), fit_dir) == {}
+
+
+# One part out of place among several: the checks run per part, so the group
+# can't pass on the strength of the others. (occurrence, move in its own
+# frame, {check: words its detail must contain}).
+MISPLACED = [
+    ("foot_1", (0, 0, 5), {"feet on base": "foot_1 5.000 mm off",
+                           "feet on their base holes": "5.00 mm along"}),
+    ("foot_1", (100, 0, 0), {"feet on their base holes": "100.00 mm across"}),
+    ("screw_1", (0, 0, 50), {"screw heads on cheeks": "screw_1",
+                             "screws on cheek and lip holes": "50.00 mm along"}),
+    # The shank still sits in its Ø3.4 hole, 0.2 mm all round; the head is off.
+    ("screw_1", (0, 0, 1), {"screw heads on cheeks": "screw_1 0.200 mm off",
+                            "screws on cheek and lip holes": "1.00 mm along"}),
+    ("screw_1", (0, 0, -0.06), {"screw heads on cheeks": "screw_1 overlaps",
+                                "screws on cheek and lip holes": "-0.06 mm along"}),
+    ("control_board/RV5", (0, 0, -2), {"board parts against panel": "RV5 0.100 mm off",
+                                       "board parts on their panel holes": "RV5→P10"}),
+    ("control_board/D2", (0.5, 0, 0), {"board parts against panel": "D2 overlaps",
+                                       "board parts on their panel holes": "D2→P3"}),
+]
+
+
+@needs_kernel
+@pytest.mark.parametrize("path, move, expect", MISPLACED,
+                         ids=[f"{p.split('/')[-1]}{m}" for p, m, _ in MISPLACED])
+def test_one_misplaced_part_is_caught(fit_dir, path, move, expect):
+    case = design.build(workdir=fit_dir)
+    occ = case.design.find(path)
+    align(occ, "origin", onto=occ.world() @ translate(move))
+    failed = _failures(case, fit_dir)
+    assert set(failed) == set(expect), failed
+    for name, words in expect.items():
+        assert words in failed[name], failed[name]
 
 
 def _tab_with_hole(N):

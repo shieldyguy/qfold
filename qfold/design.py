@@ -102,9 +102,11 @@ class Case:
     panel: SheetLayout
     slope: float  # radians
     mounts: list[tuple[str, str]]  # (board part occurrence path, panel ref)
+    clamped: set[str]  # board parts held against the panel: they must touch it
     screws: list[str]
     screw_holes: list[tuple[str, str, str]]  # (screw path, cheek hole ref, lip hole ref)
     feet: list[str]
+    foot_holes: list[tuple[str, str]]  # (foot path, base hole ref)
 
 
 def _wall_outline(b0: float, b1: float, w0: float, w1: float, Lf: float, rd: float):
@@ -282,11 +284,12 @@ def build(p: CaseParams | None = None, board_step: Path = BOARD_STEP,
         screws.append(occ.path)
         screw_holes.append((occ.path, f"bottom_shell:{tag}", f"top_panel:{lip}"))
     foot = parts.rubber_foot()
-    feet = []
+    feet, foot_holes = [], []
     for i, tag in enumerate(("A1", "A2", "A3", "A4")):
         occ = d.add(foot, f"foot_{i + 1}")
         align(occ, "origin", onto=shell_occ.ref(tag))
         feet.append(occ.path)
+        foot_holes.append((occ.path, f"bottom_shell:{tag}"))
 
     if not Path(board_step).exists():
         write_board_step(p, Path(board_step), workdir)
@@ -295,5 +298,6 @@ def build(p: CaseParams | None = None, board_step: Path = BOARD_STEP,
     pp0 = next(pp for pp in panel_parts() if pp.ref == "RV1")
     align(board, pp0.ref, onto=panel_occ.ref(f"{pp0.tag}.inside"))
     mounts = [(f"control_board/{pp.ref}", f"top_panel:{pp.tag}.inside") for pp in panel_parts()]
+    clamped = {f"control_board/{pp.ref}" for pp in panel_parts() if pp.part in parts.CLAMPED}
 
-    return Case(p, d, shell, panel, alpha, mounts, screws, screw_holes, feet)
+    return Case(p, d, shell, panel, alpha, mounts, clamped, screws, screw_holes, feet, foot_holes)

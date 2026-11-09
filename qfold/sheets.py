@@ -1,4 +1,5 @@
-"""The four drawing sheets for the synth case."""
+"""The drawing sheets for the synth case: assembly, shell views, the two flat
+patterns, and the checks."""
 
 from __future__ import annotations
 
@@ -11,7 +12,7 @@ from .dfm import Report
 from .drawing import Sheet, View, dim_h, dim_v, fmt_len, frame, table, tag
 from .flat import FlatPattern
 
-TOTAL = 4
+TOTAL = 5
 
 
 def _material_text(case: Case) -> str:
@@ -150,15 +151,41 @@ def sheet_assembly(case: Case, res: dict, rep: Report, render_png: bytes) -> She
                                ("Source", 44, "start")], bom, row_h=3.9, size=2.15,
               title="Parts list")
 
-    rows, cls = [], []
-    for c in rep.checks:
-        detail = c.detail if len(c.detail) <= 92 else c.detail[:89] + "…"
-        rows.append([c.name, detail, c.status.upper()])
-        cls.append(c.status)
-    row_h = min(3.55, (283.0 - 193.0) / (len(rows) + 1))
-    sh.text(16, 190, f"Checks: {rep.summary()}", 2.8, weight="bold")
-    table(sh, 16, 193, [("Check", 62, "start"), ("Result", 134, "start"), ("", 13, "middle")],
-          rows, row_h=row_h, size=min(2.05, row_h * 0.6), row_cls=cls)
+    # Sheet 1 lists only what needs attention; every check is on the last sheet.
+    sh.text(16, 192, f"Checks: {rep.summary()}. All {len(rep.checks)} are listed on sheet "
+                     f"{TOTAL}.", 2.8, weight="bold")
+    issues = [c for c in rep.checks if c.status != "pass"]
+    if not issues:
+        sh.text(16, 198, "Every check passes.", 2.5)
+        return sh
+    fit = 18  # rows that fit between the render and the frame at row_h 4.2
+    shown = issues[:fit] if len(issues) <= fit else issues[:fit - 1]
+    rows = [[c.name, _clip(c.detail, 95), c.status.upper()] for c in shown]
+    if len(shown) < len(issues):
+        rows.append([f"… {len(issues) - len(shown)} more on sheet {TOTAL}", "", ""])
+    # Left of the notes and title block (x ≥ 235).
+    table(sh, 16, 195, [("Check", 62, "start"), ("Result", 136, "start"), ("", 14, "middle")],
+          rows, row_cls=[c.status for c in shown] + [""] * (len(rows) - len(shown)))
+    return sh
+
+
+def _clip(s: str, n: int) -> str:
+    return s if len(s) <= n else s[:n - 1] + "…"
+
+
+def sheet_checks(case: Case, rep: Report) -> Sheet:
+    sh = Sheet()
+    frame(sh, "Checks", "SYNTH CASE", TOTAL, TOTAL, _material_text(case),
+          ["Run on every build (python -m qfold.pipeline); also in report.json.",
+           "Thresholds are placeholder rules of thumb (qfold/dfm.py): use your fab's values."],
+          "NTS")
+    sh.text(16, 18, f"Checks: {rep.summary()}", 2.8, weight="bold")
+    # Room from y=22 down to the notes above the title block; shrink rows to fit.
+    n = len(rep.checks) + 1
+    row_h = max(3.0, min(4.2, (232.0 - 22.0) / n))
+    rows = [[c.name, _clip(c.detail, 150), c.status.upper()] for c in rep.checks]
+    table(sh, 16, 22, [("Check", 82, "start"), ("Result", 204, "start"), ("", 14, "middle")],
+          rows, row_h=row_h, size=min(2.3, row_h * 0.58), row_cls=[c.status for c in rep.checks])
     return sh
 
 

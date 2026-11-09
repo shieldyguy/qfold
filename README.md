@@ -25,7 +25,7 @@ writes:
 | `bottom_shell.step`, `top_panel.step` | Each sheet metal part, exact B-rep, mm |
 | `assembly.step` | The whole design, with named components and occurrences |
 | `*_flat.dxf` | Flat patterns: `CUT` layer, `BEND` centre lines, `NOTES` |
-| `synth_case_drawing.pdf` | 4 A3 sheets: assembly and parts list, shell views, shell flat, panel |
+| `synth_case_drawing.pdf` | 5 A3 sheets: assembly and parts list, shell views, shell flat, panel, checks |
 | `preview/sheet-*.png` | PNG of each sheet |
 | `render_iso.png`, `render_board.png` | Shaded renders of the assembly and the inserted board |
 | `report.json` | Every measurement, check result and the parts list |
@@ -34,7 +34,7 @@ See [`examples/synth_case`](examples/synth_case) for a committed run.
 
 ## Checks
 
-Every run checks its own output. The example passes all 38:
+Every run checks its own output. The example passes all 39:
 
 - **Kernel:** each part is one valid solid that doesn't intersect itself. The
   fused solid must hold exactly the volume of its unfused plates and bends,
@@ -45,10 +45,13 @@ Every run checks its own output. The example passes all 38:
 - **Gaps inside a part:** faces that only meet at a corner, such as a cheek and
   the rear wall, must keep `min_clearance` apart.
 - **Assembly:** no interference between any parts. The shell and panel keep
-  their clearance, and the board clears the base. Parts that rest on others
-  (screw heads, feet, board parts against the panel) must actually touch, so a
-  part that misses entirely fails. Each screw's axis must run through both its
-  cheek hole and its lip's PEM hole.
+  their clearance, and the board clears the base. Each part is checked on its
+  own, so one bad screw fails by name even when the other three are fine.
+  Parts held against another must touch it: every screw head on its cheek,
+  every foot on the base, and every pot, switch and button on the panel (LEDs
+  and the display sit in their holes with clearance). Each screw sits on its
+  cheek hole's axis at the right depth and runs on through its lip's PEM hole.
+  Each foot sits on its base hole.
 - **Board fit:** every part on the inserted board sits on its own panel hole,
   checked across the hole, along its axis and for tilt. Every panel hole has a
   part, and every part has a hole. Only one pot is aligned; the other 24
@@ -61,6 +64,9 @@ Every run checks its own output. The example passes all 38:
   extent, each circle's centre and diameter, line and arc counts, total cut
   length, and the bend lines with their DN/UP labels.
 
+`pipeline.check_fit(case, workdir)` runs just the assembly and board fit
+checks in about a second, for a quick answer while moving parts around.
+
 These caught two real problems while the example was being built. The first
 was a PEM nut too close to the lip bend, fixed by deepening the lip. The second
 was the panel's back edge poking 0.01 mm into the rear wall, fixed by allowing
@@ -69,7 +75,9 @@ themselves: a self-intersecting variant passed, two checks could pass with a
 part missing entirely, and bends met at sharp corners without relief. The
 self-intersection, contact, screw-axis, corner-relief and DXF census checks
 above came out of that review, each with a test that breaks the design on
-purpose.
+purpose. A second round found that contact was still checked per group, so one
+lifted foot or a screw slid far along its own axis passed while the others
+touched. Contact and hole checks now run per part.
 
 ## Assemblies
 
@@ -120,7 +128,7 @@ dfm.py       manufacturing rules on the layout
 flat.py      flat pattern in outside-face view, DXF export
 render.py    numpy z-buffer renderer (no GPU or display)
 drawing.py   SVG sheets: views from hidden-line removal, dims, tables
-sheets.py    the synth case's four sheets
+sheets.py    the synth case's five sheets
 pipeline.py  runs it all, writes report.json
 ```
 

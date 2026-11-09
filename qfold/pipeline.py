@@ -4,7 +4,7 @@
 
 Writes STEP (each sheet metal part, plus the whole assembly with named
 components and occurrences), flat-pattern DXFs, STL meshes, PNG renders, a
-4-sheet PDF drawing with PNG previews, and report.json.
+5-sheet PDF drawing with PNG previews, and report.json.
 """
 
 from __future__ import annotations
@@ -24,7 +24,7 @@ from .assembly import Design, mismatch
 from .flat import cut_length, flat_pattern, write_dxf
 from .fold import expected_volume_difference
 from .render import read_stl, render
-from .sheets import sheet_assembly, sheet_flat, sheet_panel, sheet_shell_views
+from .sheets import sheet_assembly, sheet_checks, sheet_flat, sheet_panel, sheet_shell_views
 
 
 def _unit(v):
@@ -34,6 +34,7 @@ def _unit(v):
 
 ISO = _unit((1.0, -1.25, 0.95))
 MOUNT_TOL = {"radial": 0.05, "axial": 0.05, "angle_deg": 0.1}
+OVERLAP_TOL = 1e-6  # mm³: below this two parts don't overlap
 SELF_TOL = 1e-9  # relative; fused vs unfused volume, and the bend allowance identity
 
 
@@ -61,8 +62,6 @@ def build_job(case: design.Case, out: Path):
     job["bodies"] += [kernel.flat_body(case.shell), kernel.flat_body(case.panel)]
     shell_p, panel_p = sheet_proto(case, "bottom_shell"), sheet_proto(case, "top_panel")
     everything = [n for n, *_ in d.instances()]
-    board = d.group("control_board")
-
     views = []
 
     def view(name, geom, toward, right):
@@ -83,34 +82,7 @@ def build_job(case: design.Case, out: Path):
     stl = [{"path": str(stl_dir / f"group_{i}.stl"), "geom": names, "deflection": 0.04}
            for i, names in enumerate(groups.values())]
 
-    # Interference and clearance questions, with what each one must satisfy:
-    #   clear      no overlap and at least min_clearance apart
-    #   seated     no overlap and touching (within rules.seated): parts that
-    #              rest on each other, so a part that misses entirely fails
-    #   pcb_clear  no overlap and at least pcb_clearance apart
-    #   self_gap   two faces of one sheet metal body not joined by a bend
-    pairs = [
-        ("bottom_shell vs top_panel", d.group("bottom_shell"), d.group("top_panel"), "clear"),
-        ("screw heads on cheeks", d.group(*case.screws), d.group("bottom_shell", "top_panel"),
-         "seated"),
-        ("feet on base", d.group(*case.feet), d.group("bottom_shell"), "seated"),
-        ("board parts against panel", board, d.group("top_panel"), "seated"),
-        ("control board vs bottom_shell", board, d.group("bottom_shell"), "pcb_clear"),
-    ]
-    # Each face of each sheet metal body as its own body, to measure the gaps
-    # between faces that only meet at a corner (e.g. cheek to rear wall).
-    for lay in (case.shell, case.panel):
-        names = list(lay.faces)
-        joined = {frozenset((bs.parent, bs.bend.wall.name)) for bs in lay.bends}
-        for name, plate in zip(names, lay.plates3d):
-            job["bodies"].append({"name": f"{lay.body.name}#face:{name}", "plates": [plate],
-                                  "sectors": []})
-        for i, a in enumerate(names):
-            for b in names[i + 1:]:
-                if frozenset((a, b)) not in joined:
-                    pairs.append((f"{lay.body.name}: {a} vs {b}",
-                                  f"{lay.body.name}#face:{a}", f"{lay.body.name}#face:{b}",
-                                  "self_gap"))
+    pairs = add_fit_pairs(case, job)
     job["outputs"] = {
         "measure": [{"name": "assembly", "geom": everything}],
         "step": [
@@ -122,9 +94,62 @@ def build_job(case: design.Case, out: Path):
         "flat_outline": [{"body": "bottom_shell#flat", "z": 0.0},
                          {"body": "top_panel#flat", "z": 0.0}],
         "views": views,
-        "pairs": [{"a": a, "b": b} for _, a, b, _ in pairs],
+        "pairs": [{"a": a, "b": b} for _, _, a, b, _ in pairs],
     }
     return job, pairs, list(zip(groups.keys(), stl))
+
+
+# How parts must sit against each other. Each pair is one kernel question
+# (overlap volume and closest distance) about one part, so a single lifted,
+# missing or misplaced screw fails by name. Pairs that share a check report as
+# one row.
+#   clear       no overlap and at least min_clearance apart
+#   seated      no overlap and touching (within rules.seated)
+#   no_overlap  no overlap; where the part sits is checked against its hole
+#   pcb_clear   no overlap and at least pcb_clearance apart
+#   self_gap    two faces of one sheet metal body not joined by a bend
+def add_fit_pairs(case: design.Case, job: dict) -> list[tuple[str, str, list, list, str]]:
+    """Add per-face bodies to job; return the (check, item, a, b, rule) pairs."""
+    d = case.design
+    shell, panel = d.group("bottom_shell"), d.group("top_panel")
+    pairs = [("bottom_shell vs top_panel", "", shell, panel, "clear")]
+    pairs += [("screw heads on cheeks", s, d.group(s), shell + panel, "seated")
+              for s in case.screws]
+    pairs += [("feet on base", f, d.group(f), shell, "seated") for f in case.feet]
+    for occ in d.find("control_board").children():
+        pairs.append(("board parts against panel", occ.name, d.group(occ.path), panel,
+                      "seated" if occ.path in case.clamped else "no_overlap"))
+    pairs.append(("control board vs bottom_shell", "", d.group("control_board"), shell,
+                  "pcb_clear"))
+    # Each face of each sheet metal body as its own body, to measure the gaps
+    # between faces that only meet at a corner (e.g. cheek to rear wall).
+    for lay in (case.shell, case.panel):
+        names = list(lay.faces)
+        joined = {frozenset((bs.parent, bs.bend.wall.name)) for bs in lay.bends}
+        for name, plate in zip(names, lay.plates3d):
+            job["bodies"].append({"name": f"{lay.body.name}#face:{name}", "plates": [plate],
+                                  "sectors": []})
+        for i, a in enumerate(names):
+            for b in names[i + 1:]:
+                if frozenset((a, b)) not in joined:
+                    pairs.append(("faces of one part keep their gaps",
+                                  f"{lay.body.name}: {a} vs {b}", f"{lay.body.name}#face:{a}",
+                                  f"{lay.body.name}#face:{b}", "self_gap"))
+    return pairs
+
+
+def check_fit(case: design.Case, workdir: Path, rules: dfm.Rules | None = None) -> dfm.Report:
+    """Only the fit checks (contacts, clearances, parts on their holes), the
+    same ones the full pipeline runs. Takes about a second."""
+    rules = rules or dfm.Rules()
+    job = case.design.job()
+    pairs = add_fit_pairs(case, job)
+    job["outputs"] = {"pairs": [{"a": a, "b": b} for _, _, a, b, _ in pairs]}
+    res = kernel.run(job, Path(workdir), "fit")
+    rep = dfm.Report()
+    fit_checks(case, res["pairs"], pairs, rules, rep)
+    hole_checks(case, rep)
+    return rep
 
 
 def kernel_checks(case: design.Case, res: dict, pairs, rules: dfm.Rules, rep: dfm.Report):
@@ -163,61 +188,8 @@ def kernel_checks(case: design.Case, res: dict, pairs, rules: dfm.Rules, rep: df
                 f"{s['readback_solids']} solid(s), volume {s['readback_volume']:.3f} mm³ "
                 f"(model {want[name]:.3f})")
 
-    gaps = []
-    for (label, _, _, rule), pr in zip(pairs, res["pairs"]):
-        overlap, dist = pr["interference_volume"], pr["min_distance"]
-        if rule == "clear":
-            rep.add(f"{label}: no interference", overlap < 1e-6, f"overlap {overlap:.6f} mm³")
-            rep.add(f"{label}: clearance", dist >= r.min_clearance,
-                    f"closest {dist:.3f} mm, need ≥ {r.min_clearance}", dist, r.min_clearance)
-        elif rule == "pcb_clear":
-            rep.add(f"{label}: clearance", overlap < 1e-6 and dist >= r.pcb_clearance,
-                    f"overlap {overlap:.6f} mm³, closest {dist:.2f} mm, need ≥ {r.pcb_clearance}",
-                    dist, r.pcb_clearance)
-        elif rule == "seated":
-            rep.add(f"{label}", overlap < 1e-6 and dist <= r.seated,
-                    f"overlap {overlap:.6f} mm³, gap {dist:.4f} mm (must touch, ≤ {r.seated})",
-                    dist, r.seated)
-        elif rule == "self_gap":
-            gaps.append((label, overlap, dist))
-        else:
-            raise ValueError(f"unknown pair rule {rule}")
-    if gaps:
-        bad = [f"{lb} {dist:.3f} mm" for lb, ov, dist in gaps if ov > 1e-6 or dist < r.min_clearance]
-        tight = min(gaps, key=lambda g: g[2])
-        rep.add("faces of one part keep their gaps", not bad,
-                f"{len(gaps)} unjoined face pairs, tightest {tight[2]:.3f} mm ({tight[0]}), "
-                f"need ≥ {r.min_clearance}" if not bad else "too close: " + ", ".join(bad),
-                tight[2], r.min_clearance)
-
-    # Each screw through its cheek hole and on into its lip's PEM nut hole.
-    off = []
-    for screw, cheek, lip in case.screw_holes:
-        f = design_ref(d, screw)
-        for hole in (cheek, lip):
-            m = mismatch(f, design_ref(d, hole))
-            off.append((m["radial"], m["angle_deg"], f"{screw}→{hole.split(':')[-1]}"))
-    worst_r = max(off)
-    worst_a = max(o[1] for o in off)
-    bad = [w for rr, aa, w in off if rr > MOUNT_TOL["radial"] or aa > MOUNT_TOL["angle_deg"]]
-    rep.add("screws on cheek and lip holes", not bad,
-            f"{len(case.screw_holes)} screws, worst {worst_r[0]:.3f} mm off axis, {worst_a:.3f}°"
-            if not bad else "off axis: " + ", ".join(bad))
-
-    # Every board part on its panel hole: position along and across the hole
-    # axis, and tilt. Only RV1 was aligned; the rest test the board layout.
-    worst, bad = {k: 0.0 for k in MOUNT_TOL}, []
-    for part, hole in case.mounts:
-        m = mismatch(design_ref(d, part), design_ref(d, hole))
-        for k, tol in MOUNT_TOL.items():
-            worst[k] = max(worst[k], abs(m[k]))
-        if any(abs(m[k]) > tol for k, tol in MOUNT_TOL.items()):
-            bad.append(f"{part.split('/')[-1]}→{hole.split(':')[-1].removesuffix('.inside')} "
-                       f"off {m['radial']:.2f} mm")
-    rep.add("board parts on their panel holes", not bad,
-            f"{len(case.mounts)} parts, worst {worst['radial']:.3f} mm across, "
-            f"{worst['axial']:.3f} mm along, {worst['angle_deg']:.3f}°" if not bad
-            else "misaligned: " + ", ".join(bad))
+    fit_checks(case, res["pairs"], pairs, rules, rep)
+    hole_checks(case, rep)
 
     panel_tags = {t for t in d.find("top_panel").component.refs
                   if not t.endswith(".inside") and t.startswith("P")}
@@ -229,6 +201,81 @@ def kernel_checks(case: design.Case, res: dict, pairs, rules: dfm.Rules, rep: df
             f"{len(panel_tags)} panel holes, {len(board_parts)} board parts"
             + ("" if panel_tags == mounted else f"; empty holes {sorted(panel_tags - mounted)}")
             + ("" if board_parts == used else f"; parts without hole {sorted(board_parts - used)}"))
+
+
+def fit_checks(case: design.Case, res_pairs: list[dict], pairs, rules: dfm.Rules,
+               rep: dfm.Report) -> None:
+    """One report row per check, failing by name on any part that breaks it."""
+    r = rules.resolve(case.params.rule.T, case.params.rule.R)
+    rows: dict[str, list[tuple[str, str, float, float]]] = {}
+    for (check, item, _, _, rule), pr in zip(pairs, res_pairs):
+        rows.setdefault(check, []).append(
+            (item, rule, pr["interference_volume"], pr["min_distance"]))
+    for check, items in rows.items():
+        kinds = {k for _, k, _, _ in items}
+        if kinds == {"clear"} and len(items) == 1:
+            (_, _, ov, dist), = items
+            rep.add(f"{check}: no interference", ov < OVERLAP_TOL, f"overlap {ov:.6f} mm³")
+            rep.add(f"{check}: clearance", dist >= r.min_clearance,
+                    f"closest {dist:.3f} mm, need ≥ {r.min_clearance}", dist, r.min_clearance)
+        elif kinds == {"pcb_clear"} and len(items) == 1:
+            (_, _, ov, dist), = items
+            rep.add(f"{check}: clearance", ov < OVERLAP_TOL and dist >= r.pcb_clearance,
+                    f"overlap {ov:.6f} mm³, closest {dist:.2f} mm, need ≥ {r.pcb_clearance}",
+                    dist, r.pcb_clearance)
+        elif kinds <= {"seated", "no_overlap"}:
+            bad = [f"{it} overlaps {ov:.4f} mm³" for it, _, ov, _ in items if ov >= OVERLAP_TOL]
+            bad += [f"{it} {dist:.3f} mm off" for it, k, ov, dist in items
+                    if k == "seated" and ov < OVERLAP_TOL and dist > r.seated]
+            seated = [dist for _, k, _, dist in items if k == "seated"]
+            worst = max(seated, default=0.0)
+            free = len(items) - len(seated)
+            rep.add(check, not bad,
+                    f"{len(seated)} touching, widest gap {worst:.4f} mm (≤ {r.seated})"
+                    + (f", {free} clear of it" if free else "") + ", no overlap"
+                    if not bad else "not seated: " + "; ".join(bad), worst, r.seated)
+        elif kinds == {"self_gap"}:
+            bad = [f"{it} {dist:.3f} mm" for it, _, ov, dist in items
+                   if ov >= OVERLAP_TOL or dist < r.min_clearance]
+            tight = min(items, key=lambda g: g[3])
+            rep.add(check, not bad,
+                    f"{len(items)} unjoined face pairs, tightest {tight[3]:.3f} mm ({tight[0]}), "
+                    f"need ≥ {r.min_clearance}" if not bad else "too close: " + ", ".join(bad),
+                    tight[3], r.min_clearance)
+        else:
+            raise ValueError(f"{check}: unsupported pair rules {sorted(kinds)}")
+
+
+def hole_checks(case: design.Case, rep: dfm.Report) -> None:
+    """Each part on the axis of its hole: across it, along it, and tilt."""
+    d = case.design
+
+    def row(name, noun, n, entries):
+        # entries: (part, hole ref, which of MOUNT_TOL to compare)
+        worst, bad = dict.fromkeys(MOUNT_TOL, 0.0), []
+        for part, hole, keys in entries:
+            m = mismatch(design_ref(d, part), design_ref(d, hole))
+            for k in keys:
+                worst[k] = max(worst[k], abs(m[k]))
+            if any(abs(m[k]) > MOUNT_TOL[k] for k in keys):
+                bad.append(f"{part.split('/')[-1]}→{hole.split(':')[-1].removesuffix('.inside')} "
+                           f"{m['radial']:.2f} mm across, {m['axial']:.2f} mm along, "
+                           f"{m['angle_deg']:.2f}°")
+        rep.add(name, not bad,
+                f"{n} {noun}, worst {worst['radial']:.3f} mm across, {worst['axial']:.3f} mm "
+                f"along, {worst['angle_deg']:.3f}°" if not bad else "misaligned: " + "; ".join(bad))
+
+    every = tuple(MOUNT_TOL)
+    # A screw's depth is set by its cheek hole. The lip's PEM hole sits T plus
+    # the panel clearance behind it, so for the lip only the axis is compared.
+    row("screws on cheek and lip holes", "screws", len(case.screw_holes),
+        [e for s, cheek, lip in case.screw_holes
+         for e in ((s, cheek, every), (s, lip, ("radial", "angle_deg")))])
+    row("feet on their base holes", "feet", len(case.foot_holes),
+        [(f, hole, every) for f, hole in case.foot_holes])
+    # Only RV1 was aligned; the rest test the board layout.
+    row("board parts on their panel holes", "parts", len(case.mounts),
+        [(p, hole, every) for p, hole in case.mounts])
 
 
 def check_dxf(path: Path, fp) -> dfm.Check:
@@ -322,6 +369,7 @@ def main(out_dir: str = "out") -> int:
         sheet_flat(case, flats["bottom_shell"], "Bottom shell", 3, tags["bottom_shell"], 0.5,
                    ["Corner reliefs and closed corners are in the DXF."]),
         sheet_panel(case, res, flats["top_panel"], tags["top_panel"]),
+        sheet_checks(case, rep),
     ]
     pdfs = []
     for i, sh in enumerate(sheets, 1):
