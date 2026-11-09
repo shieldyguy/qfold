@@ -24,12 +24,13 @@ from pathlib import Path
 
 import numpy as np
 
-from . import kernel, parts
-from .assembly import (Design, Occurrence, align, frame, insert_step, sheet_component)
-from .fold import Face, Flange, Hole, SheetLayout, SheetMetalBody, SheetMetalRule, layout
+from qfold import kernel, parts
+from qfold.assembly import (Design, Occurrence, align, frame, insert_step, sheet_component)
+from qfold.fold import Face, Flange, Hole, SheetLayout, SheetMetalBody, SheetMetalRule, layout
+from qfold.project import Project
 
-REPO = Path(__file__).resolve().parent.parent
-BOARD_STEP = REPO / "examples" / "inputs" / "control_board.step"
+HERE = Path(__file__).resolve().parent
+BOARD_STEP = HERE / "control_board.step"
 
 
 @dataclass
@@ -259,7 +260,7 @@ def write_board_step(p: CaseParams, path: Path, workdir: Path, **kw) -> dict:
 def build(p: CaseParams | None = None, board_step: Path = BOARD_STEP,
           workdir: Path | None = None) -> Case:
     p = p or CaseParams()
-    workdir = workdir or (REPO / "out" / "work")
+    workdir = workdir or (HERE / "out" / "work")
     alpha = math.atan2(p.Hb - p.Hf, p.D)
 
     panel = build_panel(p)
@@ -301,3 +302,52 @@ def build(p: CaseParams | None = None, board_step: Path = BOARD_STEP,
     clamped = {f"control_board/{pp.ref}" for pp in panel_parts() if pp.part in parts.CLAMPED}
 
     return Case(p, d, shell, panel, alpha, mounts, clamped, screws, screw_holes, feet, foot_holes)
+
+
+def project(case: Case, rules=None) -> Project:
+    """The synth case as a Project: what must touch, clear and line up."""
+    from . import sheets as synth_sheets
+
+    d = case.design
+    p = Project("synth_case", d, rules=rules, params=case.params, title="Synth case", notes=[
+        "Material, bend radius and K-factor are PLACEHOLDERS: use your fab's values.",
+        "Hole sizes for parts are typical values; confirm with datasheets."])
+    p.clear("bottom_shell", "top_panel", name="bottom_shell vs top_panel")
+    p.seated(case.screws, onto=["bottom_shell", "top_panel"], name="screw heads on cheeks")
+    p.seated(case.feet, onto="bottom_shell", name="feet on base")
+    for occ in d.find("control_board").children():
+        # Pots, switches and buttons clamp to the panel. LEDs, the display and
+        # the PCB sit clear of it; their place is pinned by the hole check.
+        p.seated(occ.path, onto="top_panel", name="board parts against panel",
+                 touch=occ.path in case.clamped)
+    p.clear("control_board", "bottom_shell", min=2.0, name="control board vs bottom_shell")
+    # A screw's depth is set by its cheek hole. The lip's PEM hole sits T plus
+    # the panel clearance behind it, so for the lip only the axis is compared.
+    for s, cheek, lip in case.screw_holes:
+        p.on_hole(s, cheek, name="screws on cheek and lip holes")
+        p.on_hole(s, lip, name="screws on cheek and lip holes", axial=False)
+    for f, hole in case.foot_holes:
+        p.on_hole(f, hole, name="feet on their base holes")
+    for part, hole in case.mounts:  # only RV1 was aligned; the rest test the board layout
+        p.on_hole(part, hole, name="board parts on their panel holes")
+
+    def coverage(b):
+        panel_tags = {t for t in d.find("top_panel").component.refs
+                      if not t.endswith(".inside") and t.startswith("P")}
+        mounted = {h.split(":")[-1].removesuffix(".inside") for _, h in case.mounts}
+        board_parts = {o.name for o in d.find("control_board").children()} - {"PCB"}
+        used = {m.split("/")[-1] for m, _ in case.mounts}
+        b.rep.add("every panel hole has a part, every part a hole",
+                  panel_tags == mounted and board_parts == used,
+                  f"{len(panel_tags)} panel holes, {len(board_parts)} board parts"
+                  + ("" if panel_tags == mounted else f"; empty holes {sorted(panel_tags - mounted)}")
+                  + ("" if board_parts == used
+                     else f"; parts without hole {sorted(board_parts - used)}"))
+    p.check(coverage)
+
+    p.facts.append(("Panel slope", f"{math.degrees(case.slope):.2f}°"))
+    p.extra_parts.append({"component": "PEM CLS-M3-1 nut", "qty": 4,
+                          "source": "clinched in panel lips"})
+    p.renders["render_board"] = "control_board"
+    p.part_sheets = lambda b: synth_sheets.part_sheets(case, b)
+    return p

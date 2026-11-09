@@ -3,7 +3,8 @@ import math
 import numpy as np
 import pytest
 
-from qfold import design, kernel
+from examples.synth_case import design
+from qfold import kernel
 from qfold.fold import Face, Flange, SheetMetalBody, SheetMetalRule, expected_volume_difference, layout
 
 MAT = SheetMetalRule("test", thickness=2.0, bend_radius=1.0, k_factor=0.4)

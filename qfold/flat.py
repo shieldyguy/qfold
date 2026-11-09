@@ -52,6 +52,13 @@ class FlatPattern:
     bends: list[FlatBend] = field(default_factory=list)
     size: tuple[float, float] = (0.0, 0.0)
     area: float = 0.0
+    mirror_x: bool = True  # how the development plane maps to the outside view
+    shift: np.ndarray = field(default_factory=lambda: np.zeros(2))
+
+    def at(self, dev_xy) -> np.ndarray:
+        """A development-plane point (FaceState.to2d) in this pattern's coordinates."""
+        x, y = float(dev_xy[0]), float(dev_xy[1])
+        return (np.array([-x, y]) if self.mirror_x else np.array([x, -y])) + self.shift
 
 
 def flat_pattern(lay: SheetLayout, outline: dict) -> FlatPattern:
@@ -65,7 +72,7 @@ def flat_pattern(lay: SheetLayout, outline: dict) -> FlatPattern:
     def ta(a0, a1):  # CCW arc angles under that reflection
         return (180.0 - a1, 180.0 - a0) if right_handed else (-a1, -a0)
 
-    fp = FlatPattern(lay.body.name, area=outline["area"])
+    fp = FlatPattern(lay.body.name, area=outline["area"], mirror_x=bool(right_handed))
     for e in outline["edges"]:
         if e["type"] == "line":
             fp.lines.append((tp(e["a"]), tp(e["b"])))
@@ -103,6 +110,7 @@ def flat_pattern(lay: SheetLayout, outline: dict) -> FlatPattern:
     for b in fp.bends:
         b.a, b.b = b.a + shift, b.b + shift
     fp.size = (float(hi[0] - lo[0]), float(hi[1] - lo[1]))
+    fp.shift = shift
     return fp
 
 

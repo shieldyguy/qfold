@@ -204,6 +204,8 @@ def check_layout(lay: SheetLayout, rules: Rules, rep: Report) -> None:
                 continue
             if e < shortest:
                 shortest, which = e, b.name
+    if not lay.bends:
+        return
     if missed:
         rep.add(f"{part}: flange length", False,
                 "wall outline doesn't cover its bend: " + ", ".join(sorted(set(missed))))

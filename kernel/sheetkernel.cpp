@@ -1011,13 +1011,18 @@ int main(int argc, char** argv) {
     for (size_t k = 0; k < out["pairs"].size(); ++k) {
       const J& p = out["pairs"][k];
       const TopoDS_Shape a = geom(p["a"]), b = geom(p["b"]);
-      BRepExtrema_DistShapeShape d(a, b);
       res << (k ? "," : "") << "{\"a\":" << quote(label(p["a"])) << ",\"b\":"
-          << quote(label(p["b"])) << ",\"interference_volume\":" << fmt(commonVolume(a, b))
-          << ",\"min_distance\":" << fmt(d.IsDone() ? d.Value() : -1.0);
-      if (d.IsDone() && d.NbSolution() > 0)
-        res << ",\"closest\":[" << pt3(d.PointOnShape1(1)) << "," << pt3(d.PointOnShape2(1))
-            << "]";
+          << quote(label(p["b"])) << ",\"interference_volume\":" << fmt(commonVolume(a, b));
+      // "distance": false skips the closest-distance search (overlap only).
+      if (p["distance"].truthy(true)) {
+        BRepExtrema_DistShapeShape d(a, b);
+        res << ",\"min_distance\":" << fmt(d.IsDone() ? d.Value() : -1.0);
+        if (d.IsDone() && d.NbSolution() > 0)
+          res << ",\"closest\":[" << pt3(d.PointOnShape1(1)) << "," << pt3(d.PointOnShape2(1))
+              << "]";
+      } else {
+        res << ",\"min_distance\":null";
+      }
       res << "}";
     }
     res << "]}";

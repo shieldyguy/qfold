@@ -1,0 +1,1713 @@
+{
+  "project": "pedal_box",
+  "summary": "35 pass, 0 warn, 0 fail",
+  "ok": true,
+  "parameters": {
+    "shop": "jlccnc",
+    "material": "Aluminum 5052",
+    "thickness": "1.5",
+    "W": "140",
+    "D": "100",
+    "H": "40",
+    "corner_relief": "2",
+    "corner_gap": "0.4",
+    "lid_clearance": "0.3",
+    "lip": "14",
+    "pot_body": "10"
+  },
+  "sheet_metal_rules": {
+    "tray": {
+      "material": "JLCCNC Aluminum 5052",
+      "thickness": 1.5,
+      "bend_radius": 1.25,
+      "k_factor": 0.415
+    },
+    "lid": {
+      "material": "JLCCNC Aluminum 5052",
+      "thickness": 1.5,
+      "bend_radius": 1.25,
+      "k_factor": 0.415
+    }
+  },
+  "shop": {
+    "shop": "JLCCNC",
+    "material": "Aluminum 5052",
+    "notes": [
+      "inside radius 1.25 mm = published outer corner radius 2.75 - T",
+      "K 0.415 is the middle of JLCCNC's design-guide range, not shop data. JLCCNC unfolds the STEP you send, so K only affects qfold's own flat pattern",
+      "actual sheet thickness 1.42 mm for nominal 1.5"
+    ],
+    "sources": {
+      "guidelines": "https://jlccnc.com/help/article/sheet-metal-fabrication-guidelines",
+      "materials": "https://jlccnc.com/help/article/materials-supported-in-sheet-metal-fabrication",
+      "ordering": "https://jlccnc.com/help/article/how-to-place-a-sheet-metal-order",
+      "capabilities": "https://jlccnc.com/capabilities/sheet-metal-fabrication",
+      "design_guide": "https://jlccnc.com/blog/sheet-metal-design",
+      "bending_cn": "https://www.jlc-cnc.com/techArticleDetails/ab68a5d89ea041c6baedfeacd751c6b0/2",
+      "materials_cn": "https://www.jlc.com/portal/q7i42901.html"
+    }
+  },
+  "checks": [
+    {
+      "name": "tray: valid solid",
+      "status": "pass",
+      "detail": "valid=True, solids=1, faces=77",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "tray: no self-intersection",
+      "status": "pass",
+      "detail": "folded fuse loses -7.28e-12 mm\u00b3, flat fuse loses -2.18e-11 mm\u00b3 (limit 5.0e-05)",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "tray: flat pattern matches fold",
+      "status": "pass",
+      "detail": "folded\u2212flat volume 190.583148 mm\u00b3, bend allowance predicts 190.583148",
+      "value": 190.58314753371815,
+      "limit": 190.58314753369802
+    },
+    {
+      "name": "tray: hole to bend",
+      "status": "pass",
+      "detail": "tightest 3.52 mm (right_wall_lip PEM CLS-M3 nut to bend right_wall_lip), need \u2265 3.00",
+      "value": 3.515,
+      "limit": 3.0
+    },
+    {
+      "name": "tray: hole to edge",
+      "status": "pass",
+      "detail": "closest 3.51 mm (left_wall_lip PEM CLS-M3 nut), need \u2265 2.25",
+      "value": 3.514999999999997,
+      "limit": 2.25
+    },
+    {
+      "name": "tray: web between holes",
+      "status": "pass",
+      "detail": "narrowest 31.50 mm (back_wall USB-C / DC barrel jack), need \u2265 1.00",
+      "value": 31.49839161649572,
+      "limit": 1.0
+    },
+    {
+      "name": "tray: holes inside their face",
+      "status": "pass",
+      "detail": "every hole lies within its face",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "tray: minimum hole size",
+      "status": "pass",
+      "detail": "all holes \u2265 1.00 mm",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "tray: hardware edge distance",
+      "status": "pass",
+      "detail": "4 hardware holes meet their centre-to-edge minimum",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "tray: bend corner relief",
+      "status": "pass",
+      "detail": "bends end \u2265 2.83 mm apart, need \u2265 1.50",
+      "value": 2.8284271247461903,
+      "limit": 1.5
+    },
+    {
+      "name": "tray: flange length",
+      "status": "pass",
+      "detail": "shortest flat flange 11.25 mm (bend right_wall_lip), need \u2265 5.25",
+      "value": 11.25,
+      "limit": 5.25
+    },
+    {
+      "name": "lid: valid solid",
+      "status": "pass",
+      "detail": "valid=True, solids=1, faces=14",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "lid: no self-intersection",
+      "status": "pass",
+      "detail": "folded fuse loses 0.00e+00 mm\u00b3, flat fuse loses 0.00e+00 mm\u00b3 (limit 1.9e-05)",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "lid: flat pattern matches fold",
+      "status": "pass",
+      "detail": "folded\u2212flat volume 0.000000 mm\u00b3, bend allowance predicts 0.000000",
+      "value": 3.637978807091713e-12,
+      "limit": 0
+    },
+    {
+      "name": "lid: hole to edge",
+      "status": "pass",
+      "detail": "closest 4.88 mm (lid M3 clearance), need \u2265 2.25",
+      "value": 4.875,
+      "limit": 2.25
+    },
+    {
+      "name": "lid: web between holes",
+      "status": "pass",
+      "detail": "narrowest 28.00 mm (lid pot (M7 bushing) / 3 mm LED), need \u2265 1.00",
+      "value": 28.000000000000007,
+      "limit": 1.0
+    },
+    {
+      "name": "lid: holes inside their face",
+      "status": "pass",
+      "detail": "every hole lies within its face",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "lid: minimum hole size",
+      "status": "pass",
+      "detail": "all holes \u2265 1.00 mm",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "tray.step reads back",
+      "status": "pass",
+      "detail": "1 solid(s), volume 49773.024 mm\u00b3 (model 49773.024)",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "lid.step reads back",
+      "status": "pass",
+      "detail": "1 solid(s), volume 19473.683 mm\u00b3 (model 19473.683)",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "assembly.step reads back",
+      "status": "pass",
+      "detail": "15 solid(s), volume 87017.138 mm\u00b3 (model 87017.138)",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "lid rests on the lips",
+      "status": "pass",
+      "detail": "1 touching, widest gap 0.0000 mm (\u2264 0.01), no overlap",
+      "value": 0,
+      "limit": 0.01
+    },
+    {
+      "name": "screw heads on the lid",
+      "status": "pass",
+      "detail": "4 touching, widest gap 0.0000 mm (\u2264 0.01), no overlap",
+      "value": 0,
+      "limit": 0.01
+    },
+    {
+      "name": "pots against the lid",
+      "status": "pass",
+      "detail": "3 touching, widest gap 0.0000 mm (\u2264 0.01), no overlap",
+      "value": 0,
+      "limit": 0.01
+    },
+    {
+      "name": "pots on the PCB",
+      "status": "pass",
+      "detail": "3 touching, widest gap 0.0000 mm (\u2264 0.01), no overlap",
+      "value": 0,
+      "limit": 0.01
+    },
+    {
+      "name": "LED in its hole",
+      "status": "pass",
+      "detail": "1 clear of it, no overlap",
+      "value": 0.0,
+      "limit": 0.01
+    },
+    {
+      "name": "feet on the base",
+      "status": "pass",
+      "detail": "4 touching, widest gap 0.0000 mm (\u2264 0.01), no overlap",
+      "value": 0,
+      "limit": 0.01
+    },
+    {
+      "name": "pcb clear of tray",
+      "status": "pass",
+      "detail": "overlap 0.000000 mm\u00b3, closest 8.559 mm, need \u2265 2",
+      "value": 8.558621384311845,
+      "limit": 2.0
+    },
+    {
+      "name": "faces of one part keep their gaps",
+      "status": "pass",
+      "detail": "15 unjoined face pairs, tightest 0.400 mm (tray: front_wall vs right_wall), need \u2265 0.2",
+      "value": 0.40000000000000013,
+      "limit": 0.2
+    },
+    {
+      "name": "no part overlaps another",
+      "status": "pass",
+      "detail": "15 top-level parts, none overlapping",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "screws through lid and nut",
+      "status": "pass",
+      "detail": "4 parts, worst 0.000 mm across, 0.000 mm along, 0.000\u00b0",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "tray: fits sheet",
+      "status": "pass",
+      "detail": "flat 234.8 \u00d7 174.9 mm, sheet limit 800 \u00d7 800",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "tray_flat.dxf reads back",
+      "status": "pass",
+      "detail": "11 circles, 36 lines, 4 arcs, 6 bends, cut 1077.7 mm, extent 234.765 \u00d7 174.883",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "lid: fits sheet",
+      "status": "pass",
+      "detail": "flat 136.4 \u00d7 96.4 mm, sheet limit 800 \u00d7 800",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "lid_flat.dxf reads back",
+      "status": "pass",
+      "detail": "8 circles, 4 lines, 0 arcs, 0 bends, cut 586.2 mm, extent 136.400 \u00d7 96.400",
+      "value": null,
+      "limit": null
+    }
+  ],
+  "holes": [
+    {
+      "part": "tray",
+      "tag": "F1",
+      "label": "foot screw M3",
+      "size": "\u00d83.4",
+      "face": "base",
+      "x": 15.0,
+      "y": 15.0,
+      "z": 0.0,
+      "facing": "\u2212Z down"
+    },
+    {
+      "part": "tray",
+      "tag": "F2",
+      "label": "foot screw M3",
+      "size": "\u00d83.4",
+      "face": "base",
+      "x": 125.0,
+      "y": 15.0,
+      "z": 0.0,
+      "facing": "\u2212Z down"
+    },
+    {
+      "part": "tray",
+      "tag": "F3",
+      "label": "foot screw M3",
+      "size": "\u00d83.4",
+      "face": "base",
+      "x": 15.0,
+      "y": 85.0,
+      "z": 0.0,
+      "facing": "\u2212Z down"
+    },
+    {
+      "part": "tray",
+      "tag": "F4",
+      "label": "foot screw M3",
+      "size": "\u00d83.4",
+      "face": "base",
+      "x": 125.0,
+      "y": 85.0,
+      "z": 0.0,
+      "facing": "\u2212Z down"
+    },
+    {
+      "part": "tray",
+      "tag": "J1",
+      "label": "1/4\" jack in",
+      "size": "\u00d89.5",
+      "face": "front_wall",
+      "x": 40.0,
+      "y": 0.0,
+      "z": 20.0,
+      "facing": "\u2212Y front"
+    },
+    {
+      "part": "tray",
+      "tag": "J2",
+      "label": "1/4\" jack out",
+      "size": "\u00d89.5",
+      "face": "front_wall",
+      "x": 100.0,
+      "y": 0.0,
+      "z": 20.0,
+      "facing": "\u2212Y front"
+    },
+    {
+      "part": "tray",
+      "tag": "J3",
+      "label": "USB-C",
+      "size": "9.4\u00d73.8 R1.6",
+      "face": "back_wall",
+      "x": 50.0,
+      "y": 100.0,
+      "z": 15.0,
+      "facing": "+Y back"
+    },
+    {
+      "part": "tray",
+      "tag": "J4",
+      "label": "DC barrel jack",
+      "size": "\u00d88.2",
+      "face": "back_wall",
+      "x": 90.0,
+      "y": 100.0,
+      "z": 20.0,
+      "facing": "+Y back"
+    },
+    {
+      "part": "tray",
+      "tag": "N1",
+      "label": "PEM CLS-M3 nut",
+      "size": "\u00d84.22",
+      "face": "right_wall_lip",
+      "x": 131.625,
+      "y": 18.0,
+      "z": 38.5,
+      "facing": "+Z up"
+    },
+    {
+      "part": "tray",
+      "tag": "N2",
+      "label": "PEM CLS-M3 nut",
+      "size": "\u00d84.22",
+      "face": "right_wall_lip",
+      "x": 131.625,
+      "y": 82.0,
+      "z": 38.5,
+      "facing": "+Z up"
+    },
+    {
+      "part": "tray",
+      "tag": "N3",
+      "label": "PEM CLS-M3 nut",
+      "size": "\u00d84.22",
+      "face": "left_wall_lip",
+      "x": 8.375,
+      "y": 18.0,
+      "z": 38.5,
+      "facing": "+Z up"
+    },
+    {
+      "part": "tray",
+      "tag": "N4",
+      "label": "PEM CLS-M3 nut",
+      "size": "\u00d84.22",
+      "face": "left_wall_lip",
+      "x": 8.375,
+      "y": 82.0,
+      "z": 38.5,
+      "facing": "+Z up"
+    },
+    {
+      "part": "lid",
+      "tag": "C1",
+      "label": "M3 clearance",
+      "size": "\u00d83.4",
+      "face": "lid",
+      "x": 131.625,
+      "y": 18.0,
+      "z": 40.0,
+      "facing": "+Z up"
+    },
+    {
+      "part": "lid",
+      "tag": "C2",
+      "label": "M3 clearance",
+      "size": "\u00d83.4",
+      "face": "lid",
+      "x": 131.625,
+      "y": 82.0,
+      "z": 40.0,
+      "facing": "+Z up"
+    },
+    {
+      "part": "lid",
+      "tag": "C3",
+      "label": "M3 clearance",
+      "size": "\u00d83.4",
+      "face": "lid",
+      "x": 8.375,
+      "y": 18.0,
+      "z": 40.0,
+      "facing": "+Z up"
+    },
+    {
+      "part": "lid",
+      "tag": "C4",
+      "label": "M3 clearance",
+      "size": "\u00d83.4",
+      "face": "lid",
+      "x": 8.375,
+      "y": 82.0,
+      "z": 40.0,
+      "facing": "+Z up"
+    },
+    {
+      "part": "lid",
+      "tag": "P1",
+      "label": "pot (M7 bushing)",
+      "size": "\u00d87.2",
+      "face": "lid",
+      "x": 30.0,
+      "y": 50.0,
+      "z": 40.0,
+      "facing": "+Z up"
+    },
+    {
+      "part": "lid",
+      "tag": "P2",
+      "label": "pot (M7 bushing)",
+      "size": "\u00d87.2",
+      "face": "lid",
+      "x": 70.0,
+      "y": 50.0,
+      "z": 40.0,
+      "facing": "+Z up"
+    },
+    {
+      "part": "lid",
+      "tag": "P3",
+      "label": "pot (M7 bushing)",
+      "size": "\u00d87.2",
+      "face": "lid",
+      "x": 110.0,
+      "y": 50.0,
+      "z": 40.0,
+      "facing": "+Z up"
+    },
+    {
+      "part": "lid",
+      "tag": "L1",
+      "label": "3 mm LED",
+      "size": "\u00d83.2",
+      "face": "lid",
+      "x": 70.0,
+      "y": 83.2,
+      "z": 40.0,
+      "facing": "+Z up"
+    }
+  ],
+  "parts_list": [
+    {
+      "component": "tray",
+      "qty": 1,
+      "source": "sheet metal"
+    },
+    {
+      "component": "lid",
+      "qty": 1,
+      "source": "sheet metal"
+    },
+    {
+      "component": "screw_M3x6_pan",
+      "qty": 4,
+      "source": "stand-in"
+    },
+    {
+      "component": "rubber_foot_12x4",
+      "qty": 4,
+      "source": "stand-in"
+    },
+    {
+      "component": "pot_9mm",
+      "qty": 3,
+      "source": "stand-in"
+    },
+    {
+      "component": "led_3mm",
+      "qty": 1,
+      "source": "stand-in"
+    },
+    {
+      "component": "control_board_pcb",
+      "qty": 1,
+      "source": "stand-in"
+    }
+  ],
+  "bodies": {
+    "tray#tray": {
+      "valid": true,
+      "volume": 49773.023717334625,
+      "area": 67984.12890129541,
+      "com": [
+        69.98837460905135,
+        50.08227384876393,
+        13.62783330340408
+      ],
+      "bbox": [
+        -3.6637359812630166e-15,
+        -4.135580766728708e-15,
+        0,
+        140,
+        100,
+        40
+      ],
+      "solids": 1,
+      "faces": 77,
+      "edges": 217,
+      "parts_volume": 49773.02371733462
+    },
+    "lid#lid": {
+      "valid": true,
+      "volume": 19473.683384039618,
+      "area": 26844.26691556626,
+      "com": [
+        68.19999999999999,
+        48.1794329939374,
+        -0.7499999999999998
+      ],
+      "bbox": [
+        0,
+        0,
+        -1.5,
+        136.4,
+        96.4,
+        0
+      ],
+      "solids": 1,
+      "faces": 14,
+      "edges": 36,
+      "parts_volume": 19473.683384039618
+    },
+    "screw_M3x6_pan#screw_M3x6_pan": {
+      "valid": true,
+      "volume": 89.92808970900784,
+      "area": 138.62277583964962,
+      "com": [
+        -3.2592583635375775e-16,
+        -6.271999790694145e-17,
+        -0.8864628820960698
+      ],
+      "bbox": [
+        -2.75,
+        -2.75,
+        -6,
+        2.75,
+        2.75,
+        2
+      ],
+      "solids": 1,
+      "faces": 5,
+      "edges": 6,
+      "parts_volume": 89.92808970900782
+    },
+    "rubber_foot_12x4#rubber_foot_12x4": {
+      "valid": true,
+      "volume": 452.38934211693015,
+      "area": 376.9911184307752,
+      "com": [
+        -1.539231401399628e-15,
+        2.1965901251881392e-16,
+        2.0000000000000004
+      ],
+      "bbox": [
+        -6,
+        -6,
+        0,
+        6,
+        6,
+        4
+      ],
+      "solids": 1,
+      "faces": 3,
+      "edges": 3,
+      "parts_volume": 452.38934211693015
+    },
+    "pot_9mm#pot_9mm": {
+      "valid": true,
+      "volume": 1661.537558266997,
+      "area": 1011.6990816987241,
+      "com": [
+        -2.993491856728434e-17,
+        -1.4262664795699435e-17,
+        0.3355289654693012
+      ],
+      "bbox": [
+        -4.75,
+        -5.5,
+        -10,
+        4.75,
+        5.5,
+        20
+      ],
+      "solids": 1,
+      "faces": 10,
+      "edges": 18,
+      "parts_volume": 1661.537558266997
+    },
+    "led_3mm#led_3mm": {
+      "valid": true,
+      "volume": 56.54866776461627,
+      "area": 89.53539062730911,
+      "com": [
+        -3.84807850349907e-16,
+        5.491475312970348e-17,
+        -2.0000000000000004
+      ],
+      "bbox": [
+        -1.5,
+        -1.5,
+        -6,
+        1.5,
+        1.5,
+        2
+      ],
+      "solids": 1,
+      "faces": 3,
+      "edges": 3,
+      "parts_volume": 56.54866776461627
+    },
+    "control_board_pcb#control_board_pcb": {
+      "valid": true,
+      "volume": 10560,
+      "area": 13743.999999999998,
+      "com": [
+        55,
+        30,
+        -0.8
+      ],
+      "bbox": [
+        0,
+        0,
+        -1.6,
+        110,
+        60,
+        0
+      ],
+      "solids": 1,
+      "faces": 6,
+      "edges": 12,
+      "parts_volume": 10560
+    },
+    "tray#flat": {
+      "valid": true,
+      "volume": 49582.44056980092,
+      "area": 67726.41306034716,
+      "com": [
+        69.98832992380446,
+        50.11816684731708,
+        0.7499999999999999
+      ],
+      "bbox": [
+        -47.382632243846885,
+        -37.44131612192344,
+        0,
+        187.3826322438469,
+        137.44131612192345,
+        1.5
+      ],
+      "solids": 1,
+      "faces": 53,
+      "edges": 153,
+      "parts_volume": 49582.4405698009
+    },
+    "lid#flat": {
+      "valid": true,
+      "volume": 19473.683384039614,
+      "area": 26844.26691556626,
+      "com": [
+        68.2,
+        -48.179432993937404,
+        0.7499999999999997
+      ],
+      "bbox": [
+        0,
+        -96.4,
+        0,
+        136.4,
+        0,
+        1.5
+      ],
+      "solids": 1,
+      "faces": 14,
+      "edges": 36,
+      "parts_volume": 19473.683384039614
+    },
+    "tray#face:base": {
+      "valid": true,
+      "volume": 18986.899783386758,
+      "area": 26066.954867982233,
+      "com": [
+        70.00000000000001,
+        49.99999999999998,
+        0.7499999999999996
+      ],
+      "bbox": [
+        2.75,
+        2.75,
+        0,
+        137.25,
+        97.25,
+        1.5
+      ],
+      "solids": 1,
+      "faces": 18,
+      "edges": 48,
+      "parts_volume": 18986.899783386758
+    },
+    "tray#face:front_wall": {
+      "valid": true,
+      "volume": 7570.665947260141,
+      "area": 10715.50665364083,
+      "com": [
+        69.99999999999999,
+        0.7499999999999979,
+        21.50291125533253
+      ],
+      "bbox": [
+        0,
+        -4.135580766728708e-15,
+        2.7499999999999996,
+        140,
+        1.5,
+        40
+      ],
+      "solids": 1,
+      "faces": 12,
+      "edges": 30,
+      "parts_volume": 7570.665947260141
+    },
+    "tray#face:back_wall": {
+      "valid": true,
+      "volume": 7653.813525449948,
+      "area": 10810.95593497632,
+      "com": [
+        69.92439966593312,
+        99.25,
+        21.519433103874224
+      ],
+      "bbox": [
+        0,
+        98.5,
+        2.7499999999999996,
+        140,
+        100,
+        40
+      ],
+      "solids": 1,
+      "faces": 19,
+      "edges": 51,
+      "parts_volume": 7653.813525449948
+    },
+    "tray#face:right_wall": {
+      "valid": true,
+      "volume": 4738.387499999999,
+      "area": 6705.449999999999,
+      "com": [
+        139.25,
+        50.000000000000014,
+        19.325052232959003
+      ],
+      "bbox": [
+        138.5,
+        1.9,
+        2.7499999999999996,
+        140,
+        98.1,
+        35.75
+      ],
+      "solids": 1,
+      "faces": 10,
+      "edges": 24,
+      "parts_volume": 4738.387499999999
+    },
+    "tray#face:right_wall_lip": {
+      "valid": true,
+      "volume": 1547.6649460408585,
+      "area": 2420.2050090283374,
+      "com": [
+        131.66588821043717,
+        49.99999999999999,
+        37.75000000000001
+      ],
+      "bbox": [
+        126,
+        1.9,
+        37,
+        137.25,
+        98.1,
+        38.5
+      ],
+      "solids": 1,
+      "faces": 8,
+      "edges": 18,
+      "parts_volume": 1547.6649460408585
+    },
+    "tray#face:left_wall": {
+      "valid": true,
+      "volume": 4738.387499999999,
+      "area": 6705.449999999999,
+      "com": [
+        0.749999999999998,
+        50,
+        19.325052232959003
+      ],
+      "bbox": [
+        -3.6637359812630166e-15,
+        1.9,
+        2.7499999999999996,
+        1.5,
+        98.1,
+        35.75
+      ],
+      "solids": 1,
+      "faces": 10,
+      "edges": 24,
+      "parts_volume": 4738.387499999999
+    },
+    "tray#face:left_wall_lip": {
+      "valid": true,
+      "volume": 1547.6649460408582,
+      "area": 2420.2050090283374,
+      "com": [
+        8.334111789562792,
+        50,
+        37.750000000000014
+      ],
+      "bbox": [
+        2.749999999999996,
+        1.9,
+        37,
+        13.999999999999996,
+        98.1,
+        38.5
+      ],
+      "solids": 1,
+      "faces": 8,
+      "edges": 18,
+      "parts_volume": 1547.6649460408582
+    },
+    "lid#face:lid": {
+      "valid": true,
+      "volume": 19473.683384039618,
+      "area": 26844.26691556626,
+      "com": [
+        68.19999999999999,
+        48.1794329939374,
+        -0.7499999999999998
+      ],
+      "bbox": [
+        0,
+        0,
+        -1.5,
+        136.4,
+        96.4,
+        0
+      ],
+      "solids": 1,
+      "faces": 14,
+      "edges": 36,
+      "parts_volume": 19473.683384039618
+    }
+  },
+  "envelope": [
+    -3.6637359812630166e-15,
+    -4.135580766728708e-15,
+    -4,
+    140,
+    100,
+    58.5
+  ],
+  "pairs": [
+    {
+      "label": "lid rests on the lips",
+      "item": "lid",
+      "a": "lid",
+      "b": "tray",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          137.25,
+          98.09999999999998,
+          38.5
+        ],
+        [
+          137.25,
+          98.09999999999998,
+          38.5
+        ]
+      ]
+    },
+    {
+      "label": "screw heads on the lid",
+      "item": "screw_1",
+      "a": "screw_1",
+      "b": "lid",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          134.375,
+          18,
+          40
+        ],
+        [
+          134.375,
+          18,
+          40
+        ]
+      ]
+    },
+    {
+      "label": "screw heads on the lid",
+      "item": "screw_2",
+      "a": "screw_2",
+      "b": "lid",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          134.375,
+          82,
+          40
+        ],
+        [
+          134.375,
+          82,
+          40
+        ]
+      ]
+    },
+    {
+      "label": "screw heads on the lid",
+      "item": "screw_3",
+      "a": "screw_3",
+      "b": "lid",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          11.125,
+          18,
+          40
+        ],
+        [
+          11.125,
+          18,
+          40
+        ]
+      ]
+    },
+    {
+      "label": "screw heads on the lid",
+      "item": "screw_4",
+      "a": "screw_4",
+      "b": "lid",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          11.125,
+          82,
+          40
+        ],
+        [
+          11.125,
+          82,
+          40
+        ]
+      ]
+    },
+    {
+      "label": "pots against the lid",
+      "item": "pot_1",
+      "a": "pot_1",
+      "b": "lid",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          25.250000000000004,
+          44.5,
+          38.5
+        ],
+        [
+          25.250000000000004,
+          44.5,
+          38.5
+        ]
+      ]
+    },
+    {
+      "label": "pots against the lid",
+      "item": "pot_2",
+      "a": "pot_2",
+      "b": "lid",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          65.25,
+          44.5,
+          38.5
+        ],
+        [
+          65.25,
+          44.5,
+          38.5
+        ]
+      ]
+    },
+    {
+      "label": "pots against the lid",
+      "item": "pot_3",
+      "a": "pot_3",
+      "b": "lid",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          105.25,
+          44.5,
+          38.5
+        ],
+        [
+          105.25,
+          44.5,
+          38.5
+        ]
+      ]
+    },
+    {
+      "label": "pots on the PCB",
+      "item": "pot_1",
+      "a": "pot_1",
+      "b": "pcb",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          25.250000000000004,
+          44.5,
+          28.5
+        ],
+        [
+          25.250000000000004,
+          44.5,
+          28.5
+        ]
+      ]
+    },
+    {
+      "label": "pots on the PCB",
+      "item": "pot_2",
+      "a": "pot_2",
+      "b": "pcb",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          65.25,
+          44.5,
+          28.5
+        ],
+        [
+          65.25,
+          44.5,
+          28.5
+        ]
+      ]
+    },
+    {
+      "label": "pots on the PCB",
+      "item": "pot_3",
+      "a": "pot_3",
+      "b": "pcb",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          105.25,
+          44.5,
+          28.5
+        ],
+        [
+          105.25,
+          44.5,
+          28.5
+        ]
+      ]
+    },
+    {
+      "label": "LED in its hole",
+      "item": "led",
+      "a": "led",
+      "b": "lid",
+      "interference_volume": 0,
+      "min_distance": 0.09999999999998803,
+      "closest": [
+        [
+          71.5,
+          83.2,
+          40
+        ],
+        [
+          71.6,
+          83.2,
+          40
+        ]
+      ]
+    },
+    {
+      "label": "feet on the base",
+      "item": "foot_1",
+      "a": "foot_1",
+      "b": "tray",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          21,
+          15.000000000000002,
+          0
+        ],
+        [
+          21,
+          15.000000000000002,
+          0
+        ]
+      ]
+    },
+    {
+      "label": "feet on the base",
+      "item": "foot_2",
+      "a": "foot_2",
+      "b": "tray",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          131,
+          15.000000000000002,
+          0
+        ],
+        [
+          131,
+          15.000000000000002,
+          0
+        ]
+      ]
+    },
+    {
+      "label": "feet on the base",
+      "item": "foot_3",
+      "a": "foot_3",
+      "b": "tray",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          21,
+          85,
+          0
+        ],
+        [
+          21,
+          85,
+          0
+        ]
+      ]
+    },
+    {
+      "label": "feet on the base",
+      "item": "foot_4",
+      "a": "foot_4",
+      "b": "tray",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          131,
+          85,
+          0
+        ],
+        [
+          131,
+          85,
+          0
+        ]
+      ]
+    },
+    {
+      "label": "pcb clear of tray",
+      "item": "",
+      "a": "pcb",
+      "b": "tray",
+      "interference_volume": 0,
+      "min_distance": 8.558621384311845,
+      "closest": [
+        [
+          15,
+          20,
+          28.5
+        ],
+        [
+          13.999999999999996,
+          20,
+          37
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "item": "tray: base vs right_wall_lip",
+      "a": "tray#face:base",
+      "b": "tray#face:right_wall_lip",
+      "interference_volume": 0,
+      "min_distance": 35.5,
+      "closest": [
+        [
+          137.25,
+          95.25,
+          1.5
+        ],
+        [
+          137.25,
+          95.25,
+          37
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "item": "tray: base vs left_wall_lip",
+      "a": "tray#face:base",
+      "b": "tray#face:left_wall_lip",
+      "interference_volume": 0,
+      "min_distance": 35.5,
+      "closest": [
+        [
+          2.75,
+          95.25,
+          1.5
+        ],
+        [
+          2.7499999999999964,
+          95.25,
+          37
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "item": "tray: front_wall vs back_wall",
+      "a": "tray#face:front_wall",
+      "b": "tray#face:back_wall",
+      "interference_volume": 0,
+      "min_distance": 97,
+      "closest": [
+        [
+          4.75,
+          1.5,
+          2.7499999999999996
+        ],
+        [
+          4.75,
+          98.5,
+          2.7499999999999996
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "item": "tray: front_wall vs right_wall",
+      "a": "tray#face:front_wall",
+      "b": "tray#face:right_wall",
+      "interference_volume": 0,
+      "min_distance": 0.40000000000000013,
+      "closest": [
+        [
+          140,
+          1.4999999999999998,
+          5.5
+        ],
+        [
+          140,
+          1.9,
+          5.5
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "item": "tray: front_wall vs right_wall_lip",
+      "a": "tray#face:front_wall",
+      "b": "tray#face:right_wall_lip",
+      "interference_volume": 0,
+      "min_distance": 0.4000000000000019,
+      "closest": [
+        [
+          137.25,
+          1.499999999999998,
+          38.5
+        ],
+        [
+          137.25,
+          1.9,
+          38.5
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "item": "tray: front_wall vs left_wall",
+      "a": "tray#face:front_wall",
+      "b": "tray#face:left_wall",
+      "interference_volume": 0,
+      "min_distance": 0.40000000000000013,
+      "closest": [
+        [
+          0,
+          1.4999999999999998,
+          5.5
+        ],
+        [
+          -3.0531133177191805e-16,
+          1.9,
+          5.5
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "item": "tray: front_wall vs left_wall_lip",
+      "a": "tray#face:front_wall",
+      "b": "tray#face:left_wall_lip",
+      "interference_volume": 0,
+      "min_distance": 0.4000000000000019,
+      "closest": [
+        [
+          2.749999999999996,
+          1.499999999999998,
+          38.5
+        ],
+        [
+          2.749999999999996,
+          1.9,
+          38.5
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "item": "tray: back_wall vs right_wall",
+      "a": "tray#face:back_wall",
+      "b": "tray#face:right_wall",
+      "interference_volume": 0,
+      "min_distance": 0.4000000000000057,
+      "closest": [
+        [
+          140,
+          98.5,
+          5.5
+        ],
+        [
+          140,
+          98.1,
+          5.5
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "item": "tray: back_wall vs right_wall_lip",
+      "a": "tray#face:back_wall",
+      "b": "tray#face:right_wall_lip",
+      "interference_volume": 0,
+      "min_distance": 0.4000000000000057,
+      "closest": [
+        [
+          137.25,
+          98.5,
+          38.5
+        ],
+        [
+          137.25,
+          98.1,
+          38.5
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "item": "tray: back_wall vs left_wall",
+      "a": "tray#face:back_wall",
+      "b": "tray#face:left_wall",
+      "interference_volume": 0,
+      "min_distance": 0.4000000000000057,
+      "closest": [
+        [
+          0,
+          98.5,
+          5.5
+        ],
+        [
+          -3.0531133177191805e-16,
+          98.1,
+          5.5
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "item": "tray: back_wall vs left_wall_lip",
+      "a": "tray#face:back_wall",
+      "b": "tray#face:left_wall_lip",
+      "interference_volume": 0,
+      "min_distance": 0.4000000000000057,
+      "closest": [
+        [
+          2.749999999999996,
+          98.5,
+          38.5
+        ],
+        [
+          2.749999999999996,
+          98.1,
+          38.5
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "item": "tray: right_wall vs left_wall",
+      "a": "tray#face:right_wall",
+      "b": "tray#face:left_wall",
+      "interference_volume": 0,
+      "min_distance": 137,
+      "closest": [
+        [
+          138.5,
+          4.75,
+          2.7499999999999996
+        ],
+        [
+          1.5,
+          4.75,
+          2.7499999999999996
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "item": "tray: right_wall vs left_wall_lip",
+      "a": "tray#face:right_wall",
+      "b": "tray#face:left_wall_lip",
+      "interference_volume": 0,
+      "min_distance": 124.50627494226947,
+      "closest": [
+        [
+          138.5,
+          3.9000000000000057,
+          35.75
+        ],
+        [
+          13.999999999999996,
+          3.9,
+          37
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "item": "tray: right_wall_lip vs left_wall",
+      "a": "tray#face:right_wall_lip",
+      "b": "tray#face:left_wall",
+      "interference_volume": 0,
+      "min_distance": 124.50627494226947,
+      "closest": [
+        [
+          126,
+          3.9,
+          37
+        ],
+        [
+          1.4999999999999964,
+          3.9000000000000057,
+          35.75
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "item": "tray: right_wall_lip vs left_wall_lip",
+      "a": "tray#face:right_wall_lip",
+      "b": "tray#face:left_wall_lip",
+      "interference_volume": 0,
+      "min_distance": 112,
+      "closest": [
+        [
+          126,
+          3.9,
+          38.5
+        ],
+        [
+          13.999999999999996,
+          3.9,
+          38.5
+        ]
+      ]
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "tray",
+      "a": "tray",
+      "b": "lid+screw_1+screw_2+screw_3+screw_4+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+led+pcb",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "lid",
+      "a": "lid",
+      "b": "tray+screw_1+screw_2+screw_3+screw_4+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+led+pcb",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "screw_1",
+      "a": "screw_1",
+      "b": "tray+lid+screw_2+screw_3+screw_4+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+led+pcb",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "screw_2",
+      "a": "screw_2",
+      "b": "tray+lid+screw_1+screw_3+screw_4+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+led+pcb",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "screw_3",
+      "a": "screw_3",
+      "b": "tray+lid+screw_1+screw_2+screw_4+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+led+pcb",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "screw_4",
+      "a": "screw_4",
+      "b": "tray+lid+screw_1+screw_2+screw_3+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+led+pcb",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "foot_1",
+      "a": "foot_1",
+      "b": "tray+lid+screw_1+screw_2+screw_3+screw_4+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+led+pcb",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "foot_2",
+      "a": "foot_2",
+      "b": "tray+lid+screw_1+screw_2+screw_3+screw_4+foot_1+foot_3+foot_4+pot_1+pot_2+pot_3+led+pcb",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "foot_3",
+      "a": "foot_3",
+      "b": "tray+lid+screw_1+screw_2+screw_3+screw_4+foot_1+foot_2+foot_4+pot_1+pot_2+pot_3+led+pcb",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "foot_4",
+      "a": "foot_4",
+      "b": "tray+lid+screw_1+screw_2+screw_3+screw_4+foot_1+foot_2+foot_3+pot_1+pot_2+pot_3+led+pcb",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "pot_1",
+      "a": "pot_1",
+      "b": "tray+lid+screw_1+screw_2+screw_3+screw_4+foot_1+foot_2+foot_3+foot_4+pot_2+pot_3+led+pcb",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "pot_2",
+      "a": "pot_2",
+      "b": "tray+lid+screw_1+screw_2+screw_3+screw_4+foot_1+foot_2+foot_3+foot_4+pot_1+pot_3+led+pcb",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "pot_3",
+      "a": "pot_3",
+      "b": "tray+lid+screw_1+screw_2+screw_3+screw_4+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+led+pcb",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "led",
+      "a": "led",
+      "b": "tray+lid+screw_1+screw_2+screw_3+screw_4+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pcb",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "pcb",
+      "a": "pcb",
+      "b": "tray+lid+screw_1+screw_2+screw_3+screw_4+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+led",
+      "interference_volume": 0,
+      "min_distance": null
+    }
+  ],
+  "flat_sizes": {
+    "tray": [
+      234.7652644876938,
+      174.8826322438469
+    ],
+    "lid": [
+      136.4,
+      96.4
+    ]
+  },
+  "facts": {}
+}

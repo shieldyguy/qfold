@@ -12,6 +12,7 @@ import base64
 import datetime as _dt
 import html
 import math
+import textwrap
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -208,8 +209,15 @@ def table(sh: Sheet, x, y, cols: list[tuple[str, float, str]], rows: list[list[s
     return y + n * row_h
 
 
-def frame(sh: Sheet, title: str, part: str, sheet_no: int, of: int, material: str, notes: list[str],
-          scale: str, rev: str = "A"):
+SHEET_NO = "@@SHEET@@"  # replaced by the runner once the sheet count is known
+
+
+def wrap(s: str, n: int) -> list[str]:
+    return textwrap.wrap(s, n) or [""]
+
+
+def frame(sh: Sheet, title: str, part: str, sheet_no: int | None, of: int | None, material: str,
+          notes: list[str], scale: str, rev: str = "A"):
     m = 10.0
     sh.rect(m, m, sh.w - 2 * m, sh.h - 2 * m, "frame")
     # Title block, bottom right.
@@ -231,11 +239,16 @@ def frame(sh: Sheet, title: str, part: str, sheet_no: int, of: int, material: st
     sh.text(bx + 108, by + 29, "UNITS", 1.9)
     sh.text(bx + 108, by + 33.5, "mm", 3.0)
     sh.text(bx + 143, by + 17, "SHEET", 1.9)
-    sh.text(bx + 143, by + 21.5, f"{sheet_no} of {of}", 3.2)
+    sh.text(bx + 143, by + 21.5, f"{sheet_no} of {of}" if sheet_no else SHEET_NO, 3.2)
     sh.text(bx + 143, by + 29, "REV / DATE", 1.9)
     sh.text(bx + 143, by + 33.5, f"{rev}  {_dt.date.today().isoformat()}", 2.6)
     # Notes, above the title block.
-    ny = by - 3 - 4.0 * len(notes)
-    sh.text(bx, ny - 2, "NOTES", 2.8, weight="bold")
+    lines = []
     for i, n in enumerate(notes):
-        sh.text(bx, ny + 3.6 + i * 4.0, f"{i + 1}. {n}", 2.35)
+        for j, part_line in enumerate(wrap(n, 118)):
+            lines.append((f"{i + 1}. " if j == 0 else "    ") + part_line)
+    ny = by - 3 - 4.0 * len(lines)
+    sh.text(bx, ny - 2, "NOTES", 2.8, weight="bold")
+    for i, line in enumerate(lines):
+        sh.text(bx, ny + 3.6 + i * 4.0, line, 2.35)
+    sh.notes_top = ny - 6  # nothing else should be drawn right of bx below this

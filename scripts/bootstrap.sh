@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Set up a checkout in seconds without compiling OpenCascade:
-#   0. check the platform and the tools the pipeline needs
+#   0. check the platform and the tools a build needs
 #   1. fetch prebuilt OpenCascade from a pinned commit, verify its libraries
 #   2. fetch a pinned ezdxf release from git if ezdxf isn't importable
 #   3. build sheetkernel against the prebuilt libraries and smoke-test it

@@ -1,7 +1,8 @@
 import numpy as np
 import pytest
 
-from qfold import design, kernel
+from examples.synth_case import design
+from qfold import kernel
 from qfold.assembly import (Component, Design, align, frame, insert_step, mismatch, rigid_inv,
                             rot_x, rot_z, translate)
 

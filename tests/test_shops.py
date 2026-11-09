@@ -4,7 +4,8 @@ import math
 
 import pytest
 
-from qfold import design, dfm, shops
+from examples.synth_case import design
+from qfold import dfm, shops
 from qfold.fold import Face, Flange, SheetMetalBody, layout
 
 IN = shops.IN

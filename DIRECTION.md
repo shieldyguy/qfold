@@ -35,24 +35,23 @@ keybed touch the PEM nuts. Two failures qfold must prevent:
 - **Failing loudly is fine.** A bad parameter that breaks the build in ten
   seconds is useful information; don't guard against it in advance.
 
+## Done
+
+- **Generic runner** (`qfold/project.py`). One `Project` takes any design and
+  produces every standard check, declared fits, STEP, DXF, renders, default
+  drawing sheets, the holes-as-assembled table and the parameter table. The
+  synth case and the pedal box both run on it; `qfold/` holds only the tool
+  and each design lives under `examples/`.
+- **`hole_at`**: place a hole by its position on the finished part.
+
 ## Next, in order
 
-1. **Generic runner.** One call takes any design and produces: all standard
-   checks on every sheet part, declared fit rules, STEP, DXF, renders, a
-   default drawing sheet per part (flat pattern, hole table, bend table),
-   a table of every hole's final position, and the parameter table in
-   `report.json` and on the drawing. The synth case moves onto it and must
-   still pass its 39 checks.
-2. **Generated reliefs.** The fold engine cuts bend and corner reliefs,
+1. **Generated reliefs.** The fold engine cuts bend and corner reliefs,
    sized from the shop's rules, closed corners by default. Today they are
    hand-drawn into face outlines, oversized and inconsistent.
-3. **Keybed case v2**, built on 1 and 2, with the keybed and boards as STEP.
-4. **Fresh-agent test.** A new agent, given the README and a spec, builds a
+2. **Keybed case v2**, with the keybed and boards as STEP.
+3. **Fresh-agent test.** A new agent, given the README and a spec, builds a
    correct box without reading qfold's internals.
-
-Small helper allowed alongside 1: place a wall hole "as seen from outside"
-(x from the left, z from the bottom), since wall coordinates are easy to
-mirror.
 
 ## Known limits
 
@@ -68,8 +67,8 @@ mirror.
 ## Process
 
 Commits go straight to `main` (no PRs; it's one owner and one agent).
-Every change keeps `scripts/bootstrap.sh` and the example pipeline green on
-a fresh clone.
+Every change keeps `scripts/bootstrap.sh` and both examples green on a fresh
+clone, and regenerates their committed `out/` folders.
 
 ## Open questions
 

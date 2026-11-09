@@ -2,88 +2,185 @@
 
 Lightweight, agent-friendly sheet metal CAD. You describe a sheet metal body
 as a tree of flat faces joined by flanges. qfold turns that into exact solids
-and flat patterns, assembles them with STEP parts using `align`, and checks,
+and flat patterns, assembles them with other parts using `align`, and checks,
 renders and draws the result. The geometry kernel is
-[OpenCascade](https://github.com/Open-Cascade-SAS/OCCT), the same one under
-FreeCAD and build123d, driven by a small C++ tool. Names follow Autodesk
-Fusion: Design, Component, Occurrence, Body, Flange, Sheet Metal Rule.
+[OpenCascade](https://github.com/Open-Cascade-SAS/OCCT), driven by a small C++
+tool. Names follow Autodesk Fusion: Design, Component, Occurrence, Body,
+Flange, Sheet Metal Rule.
 
 Where this is going and what we decided not to build: [DIRECTION.md](DIRECTION.md).
 
-The worked example is a desktop synth case. It has a folded bottom shell (base,
-front lip, tall rear wall, wedge cheeks) and a sloped top panel with folded lips
-that carry PEM nuts. A control board inserted from a STEP file sits under the
-panel, with pots, switches, buttons, LEDs and an OLED through the panel holes.
+![Synth case render](examples/synth_case/out/render_iso.png)
 
-![Synth case render](examples/synth_case/render_iso.png)
+## Quick start
 
-## What one run produces
+```bash
+scripts/bootstrap.sh              # once per checkout: about 40 s, needs only git
+python -m examples.pedal_box out  # build a design: about 15 s
+```
 
-`python -m qfold.pipeline out` builds the synth case in about 25 seconds and
-writes:
+A design is one Python file that builds a `Design` and hands it to a
+`Project`. The project does the rest. Every build writes, into the output
+folder:
 
 | File | What it is |
 | --- | --- |
-| `bottom_shell.step`, `top_panel.step` | Each sheet metal part, exact B-rep, mm |
-| `assembly.step` | The whole design, with named components and occurrences |
-| `*_flat.dxf` | Flat patterns: `CUT` layer, `BEND` centre lines, `NOTES` |
-| `synth_case_drawing.pdf` | 5 A3 sheets: assembly and parts list, shell views, shell flat, panel, checks |
-| `preview/sheet-*.png` | PNG of each sheet |
-| `render_iso.png`, `render_board.png` | Shaded renders of the assembly and the inserted board |
-| `report.json` | Every measurement, check result and the parts list |
+| `<part>.step`, `assembly.step` | Each sheet metal part and the whole design, exact B-rep, mm |
+| `<part>_flat.dxf` | Flat patterns: `CUT` layer, `BEND` centre lines, `NOTES` |
+| `<name>_drawing.pdf`, `preview/sheet-*.png` | Assembly sheet, one sheet per part (flat pattern, hole and bend tables, views), holes as assembled, checks |
+| `render_iso.png` | Shaded render |
+| `report.json` | Parameters, every check, every hole's final position, sizes, parts list |
 
-See [`examples/synth_case`](examples/synth_case) for a committed run.
+It prints one line per check and exits non-zero if any fails.
+
+Two examples, both with committed output in their `out/` folder:
+
+- [`examples/pedal_box`](examples/pedal_box/__main__.py): a tray with lips and
+  a flat lid, 160 lines. **Copy this to start a new design.**
+- [`examples/synth_case`](examples/synth_case): a sloped desktop synth case
+  with a control board inserted from a STEP file and its own drawing sheets.
+
+## Your first design
+
+Copy `examples/pedal_box` to `designs/<name>/` and run it with
+`python -m designs.<name> out`. The pieces, in the order the file uses them:
+
+**1. Parameters.** One dataclass at the top. It is recorded in `report.json`
+and on the drawing, so every output can be traced to the numbers that made it.
+
+**2. Shop and material.** `shops.spec("jlccnc", "Aluminum 5052", 1.5)` gives
+the sheet metal rule (thickness, bend radius, K) and that shop's limits.
+See Shop data below.
+
+**3. Sheet metal bodies.** A body is a root `Face` with `Flange`s on its
+edges, each carrying another `Face` (which can have flanges of its own):
+
+```python
+Face(name, outline, holes=[], flanges=[])       # outline: (u, v) points in the face's plane
+Flange(name, p0, d, o, v0, v1, angle, wall)     # on a straight edge of the parent face
+SheetMetalBody(name, rule, root_face)
+```
+
+- A flange's edge starts at `p0` and runs along unit vector `d`; `o` is the
+  unit vector pointing out of the parent. The bend covers `v0..v1` along `d`.
+- The wall's own coordinates: `u` runs away from the bend (0 at the bend),
+  `v` runs along `d` (same numbers as `v0..v1`).
+- A positive angle folds toward the material side. With the default root
+  frame (`N = +z`) the root's own surface is the outside bottom and walls
+  fold up. `N=(0, 0, -1)` makes the surface the top, with material below.
+- A 90° wall's outside face sits `a = R + T` outside its bend line. So for a
+  box of outside width W, the base runs between bend lines at `a` and `W - a`,
+  and a wall of outside height H has `u` up to `H - a`.
+- Reliefs are part of the outlines for now: stop each bend short of the
+  corner and notch the wall beside the bend ends, as `pedal_box` does.
+
+**4. Holes.** On the root face, give `Hole(..., c=(u, v))`. On walls, place
+holes by where they are on the finished part, which avoids mirroring them:
+
+```python
+hole_at(tray, "back_wall", (50, D, 15), Hole("circle", d=8.2, label="DC jack", tag="J4"))
+```
+
+Kinds: `circle` (d), `rrect` (w, h, r, rot), `poly` (pts). A `tag` makes the
+hole a named reference; `edge_cl` sets a minimum centre-to-edge distance for
+pressed-in hardware.
+
+**5. Assembly.** `sheet_component(name, layout(body))` makes a component with
+a ref on every tagged hole: `"J4"` on the outside surface, `"J4.inside"` on
+the inside, both with z pointing out of the part. Add components to a
+`Design` and place them with `align`:
+
+```python
+lid_occ = d.add(lid, "lid")
+align(lid_occ, "origin", onto=tray_occ.ref("lid_seat"))     # a ref you added with add_ref
+align(d.add(screw, "screw_1"), "origin", onto=lid_occ.ref("C1"))
+align(board, "RV1", onto=panel.ref("P6.inside"))            # an inserted STEP, by one part
+```
+
+`offset`, `angle` (about the target's z) and `flip` adjust the result.
+Stand-in hardware is in `qfold/parts.py` (origin at the mounting point, z out
+of the case). Real parts come in with `insert_step`.
+
+**6. Project.** Say what must hold, then build:
+
+```python
+p = Project("pedal_box", design, shop=shop, params=params)
+p.seated(["screw_1", "screw_2"], onto="lid", name="screw heads on the lid")  # touching, no overlap
+p.seated("led", onto="lid", touch=False)        # in its hole with clearance: no overlap only
+p.clear("pcb", "tray", min=2.0)                 # at least this far apart
+p.on_hole("screw_1", "lid:C1")                  # on the hole's axis, at its depth, square to it
+p.check(fn)                                     # anything else: fn(build) adds rows to build.rep
+sys.exit(p.main())
+```
+
+Occurrences are named by path (`"lid"`, `"control_board/RV1"`), holes by
+`"path:tag"`. `p.check_fit(workdir)` runs only the fit checks, in about two
+seconds, for a quick answer while moving parts around.
+
+**7. Look at the result.** Checks prove the model is consistent, not that it
+is what you meant: a hole in the wrong place passes them all. Read the
+"Holes as assembled" sheet (or `holes` in `report.json`), which lists every
+hole's final x, y, z and the way it faces, and look at `render_iso.png` and
+the part sheets.
 
 ## Checks
 
-Every run checks its own output. The example passes all 39:
+Every build runs these without being asked:
 
-- **Kernel:** each part is one valid solid that doesn't intersect itself. The
-  fused solid must hold exactly the volume of its unfused plates and bends,
-  folded and flat. Folded minus flat volume must equal what the bend allowance
-  predicts (θ·L·T²·(0.5 − K) per bend). Together these show the flat pattern
-  and the folded part are the same sheet. They don't prove the bend allowance
-  matches your press brake; that's what the fab's K-factor is for.
-- **Gaps inside a part:** faces that only meet at a corner, such as a cheek and
-  the rear wall, must keep `min_clearance` apart.
-- **Assembly:** no interference between any parts. The shell and panel keep
-  their clearance, and the board clears the base. Each part is checked on its
-  own, so one bad screw fails by name even when the other three are fine.
-  Parts held against another must touch it: every screw head on its cheek,
-  every foot on the base, and every pot, switch and button on the panel (LEDs
-  and the display sit in their holes with clearance). Each screw sits on its
-  cheek hole's axis at the right depth and runs on through its lip's PEM hole.
-  Each foot sits on its base hole.
-- **Board fit:** every part on the inserted board sits on its own panel hole,
-  checked across the hole, along its axis and for tilt. Every panel hole has a
-  part, and every part has a hole. Only one pot is aligned; the other 24
-  parts test whether the board layout matches the panel.
+- **Each sheet metal part:** it is one valid solid that doesn't intersect
+  itself. The fused solid must hold exactly the volume of its unfused plates
+  and bends, folded and flat. Folded minus flat volume must equal what the
+  bend allowance predicts (θ·L·T²·(0.5 − K) per bend). Together these show
+  the flat pattern and the folded part are the same sheet. They don't prove
+  the bend allowance matches the press brake; that's what the shop's
+  K-factor is for.
 - **DFM:** hole to bend (for each bend's own radius), hole to edge, web between
   holes, holes inside their face, minimum hole size, hardware centre-to-edge
-  distance (PEM), bend corner relief, minimum flange length, sheet size.
+  distance, bend corner relief, minimum flange length, sheet size. Limits come
+  from the shop, or from the defaults in `dfm.Rules`.
+- **Gaps inside a part:** faces that only meet at a corner, such as two walls,
+  must keep `min_clearance` apart.
+- **Assembly:** no top-level part may overlap the rest. (What's inside an
+  inserted STEP is taken as given.)
 - **Files:** every STEP is read back and its volume and solid count compared
   with the model. Every DXF is re-opened and checked against the flat pattern:
   extent, each circle's centre and diameter, line and arc counts, total cut
   length, and the bend lines with their DN/UP labels.
 
-`pipeline.check_fit(case, workdir)` runs just the assembly and board fit
-checks in about a second, for a quick answer while moving parts around.
+And the fits the design declares (`seated`, `clear`, `on_hole`). Each part is
+checked on its own, so one lifted screw fails by name even when the other
+three are fine. The synth case adds one of its own: every panel hole has a
+board part and every board part a hole.
 
-These caught two real problems while the example was being built. The first
-was a PEM nut too close to the lip bend, fixed by deepening the lip. The second
-was the panel's back edge poking 0.01 mm into the rear wall, fixed by allowing
-for the edge's tilt. An independent review then found gaps in the checks
-themselves: a self-intersecting variant passed, two checks could pass with a
-part missing entirely, and bends met at sharp corners without relief. The
-self-intersection, contact, screw-axis, corner-relief and DXF census checks
-above came out of that review, each with a test that breaks the design on
-purpose. A second round found that contact was still checked per group, so one
-lifted foot or a screw slid far along its own axis passed while the others
-touched. Contact and hole checks now run per part.
+The tests break designs on purpose to show the checks bite: a
+self-intersecting corner, bends meeting without relief, a hole crossing an
+edge, and single parts lifted, slid or pushed in by fractions of a millimetre.
 
-## Assemblies
+## How it works
 
-qfold uses Fusion's model, without the timeline or joints:
+```
+qfold/
+  fold.py      sheet metal body -> folded plates + bend sectors, and flat pattern
+  assembly.py  Design, Component, Occurrence, Body, refs, align, insert_step
+  project.py   Project: declare fits, then build, check, export, draw
+  dfm.py       manufacturing rules on the layout
+  shops.py     fab shop bend tables and limits (data in shop_data/*.json)
+  parts.py     stand-in hardware (pots, switches, screws, feet, PCB)
+  flat.py      flat pattern in outside-face view, DXF export
+  sheets.py    the default drawing sheets
+  drawing.py   SVG sheets: views from hidden-line removal, dims, tables
+  render.py    numpy z-buffer renderer (no GPU or display)
+  kernel.py    runs sheetkernel
+kernel/        sheetkernel (C++/OCCT): bodies + placed instances in, answers out
+examples/      pedal_box (the template), synth_case
+```
+
+Python owns the design, the fold math and the assembly tree. The kernel owns
+geometry truth and stays stateless: it sees a flat list of body prototypes and
+world-placed instances, never the tree. Both states of a sheet metal body come
+from the same description, so there is no unfold step that can fail. Sizes on
+the drawings are the kernel's measurements of the solids. Hole tables come
+from the model tree. None are typed in.
 
 | Fusion | qfold |
 | --- | --- |
@@ -96,73 +193,17 @@ qfold uses Fusion's model, without the timeline or joints:
 | Parts List | `Design.parts_list()` |
 | Sheet Metal Rule, Flange | `SheetMetalRule`, `Flange` |
 
-A ref is a named frame (origin plus axes) on a component. Sheet metal
-components get one per tagged hole: `P6` on the outside surface and
-`P6.inside` on the inside, both with z out of the outside face. `align` moves
-an occurrence so one of its refs lands on another frame:
+Placement happens once per run, with no solver. The design is rebuilt from
+code each time, so an align against "hole P6" follows the hole when it moves.
 
-```python
-board = insert_step(design, "control_board.step", kernel.inspect_step(path, work))
-align(board, "RV1", onto=panel.ref("P6.inside"))        # pot RV1's origin onto hole P6
-align(screw, "origin", onto=shell.ref("S1"))            # under the head, onto the cheek
-align(panel, "origin", onto=shell.ref("panel_seat"))    # a ref the shell defines
-```
+Other conventions:
 
-`offset`, `angle` (about the target's z axis) and `flip` adjust the result.
-Placement happens once per run, with no solver. The design is rebuilt from code
-each time, so an align against "hole P6" follows the hole when it moves.
-
-The stand-in board (`examples/inputs/control_board.step`) is generated by
-`design.write_board_step` and written as a named assembly STEP, the way KiCad
-exports a board. To use a real board, replace the file and keep the
-designators in `design.panel_parts()`.
-
-## How it works
-
-```
-design.py    parameters -> sheet metal bodies (faces, flanges, tagged holes)
-             -> a Design: components, occurrences, align
-fold.py      sheet metal body -> folded plates + bend sectors, and flat pattern
-assembly.py  Design, Component, Occurrence, Body, refs, align, insert_step
-parts.py     stand-in hardware (pots, switches, screws, feet, PCB)
-kernel/      sheetkernel (C++/OCCT): bodies + placed instances in, answers out
-dfm.py       manufacturing rules on the layout
-shops.py     fab shop bend tables and limits (data in shop_data/*.json)
-flat.py      flat pattern in outside-face view, DXF export
-render.py    numpy z-buffer renderer (no GPU or display)
-drawing.py   SVG sheets: views from hidden-line removal, dims, tables
-sheets.py    the synth case's five sheets
-pipeline.py  runs it all, writes report.json
-```
-
-Python owns the design, the fold math and the assembly tree. The kernel owns
-geometry truth and stays stateless: it sees a flat list of body prototypes and
-world-placed instances, never the tree. Both states of a sheet metal body come
-from the same description, so there is no unfold step that can fail. Overall
-dimensions on the drawings are the kernel's measurements of the solids. Hole
-tables and feature dimensions come from the model tree. None are typed in.
-
-### Conventions
-
-- Each face has a frame (O, U, V, N). Its 2D (u, v) coordinates lie on the
-  *reference surface*, and material spans 0..T along N.
-- A flange hangs off a straight parent edge (start p0, direction d, outward o).
-  A positive angle folds toward the material side, so the reference surface is
-  the outside of the bend and outer dimensions are reference dimensions.
 - Bend allowance is θ·(R + K·T), with R the inside radius.
-- Flat patterns are shown from the outside face. `DN` means the bend folds away
-  from the viewer.
-
-## Placeholders to replace before cutting
-
-These are marked on every drawing:
-
-- Material, inside radius (R1.6) and K-factor (0.42): use your fabricator's
-  values (see Shop data below).
-- DFM thresholds in `dfm.Rules`, or a shop's from `qfold.shops`.
-- Hole sizes for jacks, pots, switches and the PEM centre-to-edge minimum:
-  check the part datasheets.
-- Stand-in hardware dimensions in `parts.py`: swap in vendor STEP models.
+- Flat patterns are shown from the outside face. `DN` means the bend folds
+  away from the viewer.
+- The synth case's values (R1.6, K 0.42, hole sizes, stand-in hardware) are
+  placeholders. A real design takes its rule from a shop and its parts from
+  vendor STEP files.
 
 ## Shop data
 
@@ -216,11 +257,11 @@ The synth case passes SendCutSend's limits in 1.6 mm 5052 and JLCCNC's in 1.5 mm
 ## Setup
 
 On a fresh checkout, one command gets everything and runs the tests. It takes
-under 30 seconds and needs only git, so it works in sandboxes without PyPI:
+about 40 seconds and needs only git, so it works in sandboxes without PyPI:
 
 ```bash
 scripts/bootstrap.sh
-python -m qfold.pipeline out
+python -m examples.pedal_box out
 ```
 
 The bootstrap script:
@@ -269,8 +310,5 @@ the manifest stop a moved branch from being used anyway.
 
 ## Next
 
-- Shop and material as design parameters, with R, K and the DFM limits looked up
-- Hems, jogs and non-90° bends in the example
-- A real KiCad board STEP in place of the stand-in, and vendor part models
-- A rear-wall board for the jacks, aligned the same way as the panel board
-- An MCP server so an agent can call build, measure, render and check as tools
+See [DIRECTION.md](DIRECTION.md). In short: reliefs generated by the fold
+engine instead of drawn into outlines, then the first real design.

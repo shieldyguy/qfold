@@ -4,7 +4,8 @@ import math
 import numpy as np
 import pytest
 
-from qfold import design, dfm, kernel, pipeline
+from examples.synth_case import design
+from qfold import dfm, kernel
 from qfold.assembly import align, translate
 from qfold.flat import flat_pattern
 from qfold.fold import Face, Flange, Hole, SheetMetalBody, SheetMetalRule, layout
@@ -53,7 +54,7 @@ def fit_dir(tmp_path_factory):
 
 
 def _failures(case, workdir):
-    rep = pipeline.check_fit(case, workdir)
+    rep = design.project(case).check_fit(workdir)
     return {c.name: c.detail for c in rep.checks if c.status != "pass"}
 
 
@@ -75,11 +76,13 @@ MISPLACED = [
     ("screw_1", (0, 0, 1), {"screw heads on cheeks": "screw_1 0.200 mm off",
                             "screws on cheek and lip holes": "1.00 mm along"}),
     ("screw_1", (0, 0, -0.06), {"screw heads on cheeks": "screw_1 overlaps",
-                                "screws on cheek and lip holes": "-0.06 mm along"}),
+                                "screws on cheek and lip holes": "-0.06 mm along",
+                                "no part overlaps another": "screw_1 overlaps the rest"}),
     ("control_board/RV5", (0, 0, -2), {"board parts against panel": "RV5 0.100 mm off",
                                        "board parts on their panel holes": "RV5→P10"}),
     ("control_board/D2", (0.5, 0, 0), {"board parts against panel": "D2 overlaps",
-                                       "board parts on their panel holes": "D2→P3"}),
+                                       "board parts on their panel holes": "D2→P3",
+                                       "no part overlaps another": "control_board overlaps"}),
 ]
 
 

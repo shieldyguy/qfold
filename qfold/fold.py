@@ -272,3 +272,27 @@ def expected_volume_difference(lay: SheetLayout) -> float:
     T, K = lay.body.rule.T, lay.body.rule.K
     return sum(math.radians(abs(b.bend.angle)) * (b.bend.v1 - b.bend.v0) * T * T * (0.5 - K)
                for b in lay.bends)
+
+
+def hole_at(body: SheetMetalBody, face: str, xyz, hole: Hole) -> Hole:
+    """Add `hole` to the named face, centred where the point xyz lies on it.
+
+    xyz is in the body's own folded coordinates, so a jack on the back wall is
+    placed by where it is on the finished part ("x = 90, z = 15"), not by the
+    wall's local (u, v), which is easy to mirror. The point may be on the
+    face's outside or inside surface, or anywhere between; a point off the
+    face's plane is an error.
+    """
+    faces = layout(body).faces
+    if face not in faces:
+        raise KeyError(f"{body.name} has no face {face!r}; it has: {', '.join(faces)}")
+    st = faces[face]
+    rel = np.asarray(xyz, float) - st.O
+    s = float(rel @ st.N)
+    T = body.rule.T
+    if not -1e-6 <= s <= T + 1e-6:
+        raise ValueError(f"{body.name}/{face}: point {tuple(xyz)} is {s:.3f} mm from the face's "
+                         f"outside surface (material spans 0..{T:g}); it isn't on this face")
+    hole.c = (float(rel @ st.U), float(rel @ st.V))
+    st.face.holes.append(hole)
+    return hole

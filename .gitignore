@@ -4,4 +4,7 @@ __pycache__/
 kernel/build/
 .occt/
 .deps/
-out/
+/out/
+/out_*/
+work/
+stl/

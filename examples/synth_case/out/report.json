@@ -1,6 +1,42 @@
 {
+  "project": "synth_case",
   "summary": "39 pass, 0 warn, 0 fail",
   "ok": true,
+  "parameters": {
+    "W": "320",
+    "D": "160",
+    "Hf": "26",
+    "Hb": "58",
+    "rule.material": "Aluminium 5052-H32 (placeholder)",
+    "rule.thickness": "1.6",
+    "rule.bend_radius": "1.6",
+    "rule.k_factor": "0.42",
+    "corner_gap": "0.4",
+    "panel_clearance": "0.3",
+    "front_lip_clearance": "0.5",
+    "relief_depth": "None",
+    "relief_width": "2",
+    "corner_relief": "2",
+    "lip_depth": "18",
+    "pem_edge_cl": "4.8",
+    "board_gap": "10",
+    "board_inset": "8"
+  },
+  "sheet_metal_rules": {
+    "bottom_shell": {
+      "material": "Aluminium 5052-H32 (placeholder)",
+      "thickness": 1.6,
+      "bend_radius": 1.6,
+      "k_factor": 0.42
+    },
+    "top_panel": {
+      "material": "Aluminium 5052-H32 (placeholder)",
+      "thickness": 1.6,
+      "bend_radius": 1.6,
+      "k_factor": 0.42
+    }
+  },
+  "shop": null,
   "checks": [
     {
       "name": "bottom_shell: valid solid",
@@ -22,125 +58,6 @@
       "detail": "folded\u2212flat volume 295.448442 mm\u00b3, bend allowance predicts 295.448442",
       "value": 295.44844216902857,
       "limit": 295.44844216902317
-    },
-    {
-      "name": "top_panel: valid solid",
-      "status": "pass",
-      "detail": "valid=True, solids=1, faces=70",
-      "value": null,
-      "limit": null
-    },
-    {
-      "name": "top_panel: no self-intersection",
-      "status": "pass",
-      "detail": "folded fuse loses 0.00e+00 mm\u00b3, flat fuse loses -7.28e-11 mm\u00b3 (limit 8.5e-05)",
-      "value": null,
-      "limit": null
-    },
-    {
-      "name": "top_panel: flat pattern matches fold",
-      "status": "pass",
-      "detail": "folded\u2212flat volume 93.235471 mm\u00b3, bend allowance predicts 93.235471",
-      "value": 93.2354710859654,
-      "limit": 93.23547108593426
-    },
-    {
-      "name": "bottom_shell.step reads back",
-      "status": "pass",
-      "detail": "1 solid(s), volume 137537.324 mm\u00b3 (model 137537.324)",
-      "value": null,
-      "limit": null
-    },
-    {
-      "name": "top_panel.step reads back",
-      "status": "pass",
-      "detail": "1 solid(s), volume 84810.012 mm\u00b3 (model 84810.012)",
-      "value": null,
-      "limit": null
-    },
-    {
-      "name": "assembly.step reads back",
-      "status": "pass",
-      "detail": "36 solid(s), volume 335258.135 mm\u00b3 (model 335258.135)",
-      "value": null,
-      "limit": null
-    },
-    {
-      "name": "bottom_shell vs top_panel: no interference",
-      "status": "pass",
-      "detail": "overlap 0.000000 mm\u00b3",
-      "value": null,
-      "limit": null
-    },
-    {
-      "name": "bottom_shell vs top_panel: clearance",
-      "status": "pass",
-      "detail": "closest 0.300 mm, need \u2265 0.2",
-      "value": 0.2999999999998977,
-      "limit": 0.2
-    },
-    {
-      "name": "screw heads on cheeks",
-      "status": "pass",
-      "detail": "4 touching, widest gap 0.0000 mm (\u2264 0.01), no overlap",
-      "value": 5.684341886080802e-14,
-      "limit": 0.01
-    },
-    {
-      "name": "feet on base",
-      "status": "pass",
-      "detail": "4 touching, widest gap 0.0000 mm (\u2264 0.01), no overlap",
-      "value": 0,
-      "limit": 0.01
-    },
-    {
-      "name": "board parts against panel",
-      "status": "pass",
-      "detail": "20 touching, widest gap 0.0000 mm (\u2264 0.01), 6 clear of it, no overlap",
-      "value": 0,
-      "limit": 0.01
-    },
-    {
-      "name": "control board vs bottom_shell: clearance",
-      "status": "pass",
-      "detail": "overlap 0.000000 mm\u00b3, closest 5.87 mm, need \u2265 2.0",
-      "value": 5.869698237928162,
-      "limit": 2.0
-    },
-    {
-      "name": "faces of one part keep their gaps",
-      "status": "pass",
-      "detail": "7 unjoined face pairs, tightest 0.400 mm (bottom_shell: back_wall vs cheek_right), need \u2265 0.2",
-      "value": 0.39999999999997726,
-      "limit": 0.2
-    },
-    {
-      "name": "screws on cheek and lip holes",
-      "status": "pass",
-      "detail": "4 screws, worst 0.000 mm across, 0.000 mm along, 0.000\u00b0",
-      "value": null,
-      "limit": null
-    },
-    {
-      "name": "feet on their base holes",
-      "status": "pass",
-      "detail": "4 feet, worst 0.000 mm across, 0.000 mm along, 0.000\u00b0",
-      "value": null,
-      "limit": null
-    },
-    {
-      "name": "board parts on their panel holes",
-      "status": "pass",
-      "detail": "25 parts, worst 0.000 mm across, 0.000 mm along, 0.000\u00b0",
-      "value": null,
-      "limit": null
-    },
-    {
-      "name": "every panel hole has a part, every part a hole",
-      "status": "pass",
-      "detail": "25 panel holes, 25 board parts",
-      "value": null,
-      "limit": null
     },
     {
       "name": "bottom_shell: hole to bend",
@@ -190,6 +107,27 @@
       "detail": "shortest flat flange 20.67 mm (bend front), need \u2265 6.40",
       "value": 20.66831375565031,
       "limit": 6.4
+    },
+    {
+      "name": "top_panel: valid solid",
+      "status": "pass",
+      "detail": "valid=True, solids=1, faces=70",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "top_panel: no self-intersection",
+      "status": "pass",
+      "detail": "folded fuse loses 0.00e+00 mm\u00b3, flat fuse loses -7.28e-11 mm\u00b3 (limit 8.5e-05)",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "top_panel: flat pattern matches fold",
+      "status": "pass",
+      "detail": "folded\u2212flat volume 93.235471 mm\u00b3, bend allowance predicts 93.235471",
+      "value": 93.2354710859654,
+      "limit": 93.23547108593426
     },
     {
       "name": "top_panel: hole to bend",
@@ -248,6 +186,104 @@
       "limit": 6.4
     },
     {
+      "name": "bottom_shell.step reads back",
+      "status": "pass",
+      "detail": "1 solid(s), volume 137537.324 mm\u00b3 (model 137537.324)",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "top_panel.step reads back",
+      "status": "pass",
+      "detail": "1 solid(s), volume 84810.012 mm\u00b3 (model 84810.012)",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "assembly.step reads back",
+      "status": "pass",
+      "detail": "36 solid(s), volume 335258.135 mm\u00b3 (model 335258.135)",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "bottom_shell vs top_panel",
+      "status": "pass",
+      "detail": "overlap 0.000000 mm\u00b3, closest 0.300 mm, need \u2265 0.2",
+      "value": 0.2999999999998977,
+      "limit": 0.2
+    },
+    {
+      "name": "screw heads on cheeks",
+      "status": "pass",
+      "detail": "4 touching, widest gap 0.0000 mm (\u2264 0.01), no overlap",
+      "value": 5.684341886080802e-14,
+      "limit": 0.01
+    },
+    {
+      "name": "feet on base",
+      "status": "pass",
+      "detail": "4 touching, widest gap 0.0000 mm (\u2264 0.01), no overlap",
+      "value": 0,
+      "limit": 0.01
+    },
+    {
+      "name": "board parts against panel",
+      "status": "pass",
+      "detail": "20 touching, widest gap 0.0000 mm (\u2264 0.01), 6 clear of it, no overlap",
+      "value": 0,
+      "limit": 0.01
+    },
+    {
+      "name": "control board vs bottom_shell",
+      "status": "pass",
+      "detail": "overlap 0.000000 mm\u00b3, closest 5.870 mm, need \u2265 2",
+      "value": 5.869698237928162,
+      "limit": 2.0
+    },
+    {
+      "name": "faces of one part keep their gaps",
+      "status": "pass",
+      "detail": "7 unjoined face pairs, tightest 0.400 mm (bottom_shell: back_wall vs cheek_right), need \u2265 0.2",
+      "value": 0.39999999999997726,
+      "limit": 0.2
+    },
+    {
+      "name": "no part overlaps another",
+      "status": "pass",
+      "detail": "11 top-level parts, none overlapping",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "screws on cheek and lip holes",
+      "status": "pass",
+      "detail": "4 parts, worst 0.000 mm across, 0.000 mm along, 0.000\u00b0",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "feet on their base holes",
+      "status": "pass",
+      "detail": "4 parts, worst 0.000 mm across, 0.000 mm along, 0.000\u00b0",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "board parts on their panel holes",
+      "status": "pass",
+      "detail": "25 parts, worst 0.000 mm across, 0.000 mm along, 0.000\u00b0",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "every panel hole has a part, every part a hole",
+      "status": "pass",
+      "detail": "25 panel holes, 25 board parts",
+      "value": null,
+      "limit": null
+    },
+    {
       "name": "bottom_shell: fits sheet",
       "status": "pass",
       "detail": "flat 429.5 \u00d7 236.2 mm, sheet limit 1200 \u00d7 600",
@@ -274,6 +310,602 @@
       "detail": "28 circles, 28 lines, 4 arcs, 2 bends, cut 1806.3 mm, extent 346.538 \u00d7 160.911",
       "value": null,
       "limit": null
+    }
+  ],
+  "holes": [
+    {
+      "part": "bottom_shell",
+      "tag": "A1",
+      "label": "foot screw M3",
+      "size": "\u00d83.4",
+      "face": "base",
+      "x": 12.0,
+      "y": 12.0,
+      "z": 0.0,
+      "facing": "\u2212Z down"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "A2",
+      "label": "foot screw M3",
+      "size": "\u00d83.4",
+      "face": "base",
+      "x": 12.0,
+      "y": 148.0,
+      "z": 0.0,
+      "facing": "\u2212Z down"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "A3",
+      "label": "foot screw M3",
+      "size": "\u00d83.4",
+      "face": "base",
+      "x": 308.0,
+      "y": 12.0,
+      "z": 0.0,
+      "facing": "\u2212Z down"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "A4",
+      "label": "foot screw M3",
+      "size": "\u00d83.4",
+      "face": "base",
+      "x": 308.0,
+      "y": 148.0,
+      "z": 0.0,
+      "facing": "\u2212Z down"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "A5",
+      "label": "vent slot",
+      "size": "36\u00d75 R2.5",
+      "face": "base",
+      "x": 50.0,
+      "y": 130.0,
+      "z": 0.0,
+      "facing": "\u2212Z down"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "A6",
+      "label": "vent slot",
+      "size": "36\u00d75 R2.5",
+      "face": "base",
+      "x": 94.0,
+      "y": 130.0,
+      "z": 0.0,
+      "facing": "\u2212Z down"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "A7",
+      "label": "vent slot",
+      "size": "36\u00d75 R2.5",
+      "face": "base",
+      "x": 138.0,
+      "y": 130.0,
+      "z": 0.0,
+      "facing": "\u2212Z down"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "A8",
+      "label": "vent slot",
+      "size": "36\u00d75 R2.5",
+      "face": "base",
+      "x": 182.0,
+      "y": 130.0,
+      "z": 0.0,
+      "facing": "\u2212Z down"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "A9",
+      "label": "vent slot",
+      "size": "36\u00d75 R2.5",
+      "face": "base",
+      "x": 226.0,
+      "y": 130.0,
+      "z": 0.0,
+      "facing": "\u2212Z down"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "A10",
+      "label": "vent slot",
+      "size": "36\u00d75 R2.5",
+      "face": "base",
+      "x": 270.0,
+      "y": 130.0,
+      "z": 0.0,
+      "facing": "\u2212Z down"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "R1",
+      "label": "DC barrel jack",
+      "size": "\u00d88.2",
+      "face": "back_wall",
+      "x": 30.0,
+      "y": 160.0,
+      "z": 26.0,
+      "facing": "+Y back"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "R2",
+      "label": "power switch (M6)",
+      "size": "\u00d86.4",
+      "face": "back_wall",
+      "x": 52.0,
+      "y": 160.0,
+      "z": 26.0,
+      "facing": "+Y back"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "R3",
+      "label": "USB-C",
+      "size": "9.4\u00d73.8 R1.6",
+      "face": "back_wall",
+      "x": 75.0,
+      "y": 160.0,
+      "z": 26.0,
+      "facing": "+Y back"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "R4",
+      "label": "MIDI DIN in",
+      "size": "\u00d815.6",
+      "face": "back_wall",
+      "x": 105.0,
+      "y": 160.0,
+      "z": 26.0,
+      "facing": "+Y back"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "R5",
+      "label": "MIDI DIN out",
+      "size": "\u00d815.6",
+      "face": "back_wall",
+      "x": 135.0,
+      "y": 160.0,
+      "z": 26.0,
+      "facing": "+Y back"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "R6",
+      "label": "3.5 mm jack",
+      "size": "\u00d86.2",
+      "face": "back_wall",
+      "x": 175.0,
+      "y": 160.0,
+      "z": 26.0,
+      "facing": "+Y back"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "R7",
+      "label": "3.5 mm jack",
+      "size": "\u00d86.2",
+      "face": "back_wall",
+      "x": 195.0,
+      "y": 160.0,
+      "z": 26.0,
+      "facing": "+Y back"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "R8",
+      "label": "3.5 mm jack",
+      "size": "\u00d86.2",
+      "face": "back_wall",
+      "x": 215.0,
+      "y": 160.0,
+      "z": 26.0,
+      "facing": "+Y back"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "R9",
+      "label": "3.5 mm jack",
+      "size": "\u00d86.2",
+      "face": "back_wall",
+      "x": 235.0,
+      "y": 160.0,
+      "z": 26.0,
+      "facing": "+Y back"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "R10",
+      "label": "3.5 mm jack",
+      "size": "\u00d86.2",
+      "face": "back_wall",
+      "x": 255.0,
+      "y": 160.0,
+      "z": 26.0,
+      "facing": "+Y back"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "R11",
+      "label": "3.5 mm jack",
+      "size": "\u00d86.2",
+      "face": "back_wall",
+      "x": 275.0,
+      "y": 160.0,
+      "z": 26.0,
+      "facing": "+Y back"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "S1",
+      "label": "M3 clearance (right)",
+      "size": "\u00d83.4",
+      "face": "cheek_right",
+      "x": 320.0,
+      "y": 31.594309,
+      "z": 20.999039,
+      "facing": "+X right"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "S2",
+      "label": "M3 clearance (right)",
+      "size": "\u00d83.4",
+      "face": "cheek_right",
+      "x": 320.0,
+      "y": 130.545683,
+      "z": 40.789313,
+      "facing": "+X right"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "S3",
+      "label": "M3 clearance (left)",
+      "size": "\u00d83.4",
+      "face": "cheek_left",
+      "x": 0.0,
+      "y": 31.594309,
+      "z": 20.999039,
+      "facing": "\u2212X left"
+    },
+    {
+      "part": "bottom_shell",
+      "tag": "S4",
+      "label": "M3 clearance (left)",
+      "size": "\u00d83.4",
+      "face": "cheek_left",
+      "x": 0.0,
+      "y": 130.545683,
+      "z": 40.789313,
+      "facing": "\u2212X left"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P1",
+      "label": "OLED window",
+      "size": "36\u00d720 R1",
+      "face": "panel",
+      "x": 43.9,
+      "y": 113.747358,
+      "z": 48.749472,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P2",
+      "label": "3 mm LED",
+      "size": "\u00d83.2",
+      "face": "panel",
+      "x": 73.9,
+      "y": 125.514326,
+      "z": 51.102865,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P3",
+      "label": "3 mm LED",
+      "size": "\u00d83.2",
+      "face": "panel",
+      "x": 73.9,
+      "y": 117.669681,
+      "z": 49.533936,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P4",
+      "label": "3 mm LED",
+      "size": "\u00d83.2",
+      "face": "panel",
+      "x": 73.9,
+      "y": 109.825036,
+      "z": 47.965007,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P5",
+      "label": "3 mm LED",
+      "size": "\u00d83.2",
+      "face": "panel",
+      "x": 73.9,
+      "y": 101.98039,
+      "z": 46.396078,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P6",
+      "label": "9 mm pot (M7 bushing)",
+      "size": "\u00d87.2",
+      "face": "panel",
+      "x": 111.9,
+      "y": 113.747358,
+      "z": 48.749472,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P7",
+      "label": "9 mm pot (M7 bushing)",
+      "size": "\u00d87.2",
+      "face": "panel",
+      "x": 156.9,
+      "y": 113.747358,
+      "z": 48.749472,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P8",
+      "label": "9 mm pot (M7 bushing)",
+      "size": "\u00d87.2",
+      "face": "panel",
+      "x": 201.9,
+      "y": 113.747358,
+      "z": 48.749472,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P9",
+      "label": "9 mm pot (M7 bushing)",
+      "size": "\u00d87.2",
+      "face": "panel",
+      "x": 246.9,
+      "y": 113.747358,
+      "z": 48.749472,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P10",
+      "label": "9 mm pot (M7 bushing)",
+      "size": "\u00d87.2",
+      "face": "panel",
+      "x": 291.9,
+      "y": 113.747358,
+      "z": 48.749472,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P11",
+      "label": "9 mm pot (M7 bushing)",
+      "size": "\u00d87.2",
+      "face": "panel",
+      "x": 111.9,
+      "y": 70.601809,
+      "z": 40.120362,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P12",
+      "label": "9 mm pot (M7 bushing)",
+      "size": "\u00d87.2",
+      "face": "panel",
+      "x": 156.9,
+      "y": 70.601809,
+      "z": 40.120362,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P13",
+      "label": "9 mm pot (M7 bushing)",
+      "size": "\u00d87.2",
+      "face": "panel",
+      "x": 201.9,
+      "y": 70.601809,
+      "z": 40.120362,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P14",
+      "label": "9 mm pot (M7 bushing)",
+      "size": "\u00d87.2",
+      "face": "panel",
+      "x": 246.9,
+      "y": 70.601809,
+      "z": 40.120362,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P15",
+      "label": "9 mm pot (M7 bushing)",
+      "size": "\u00d87.2",
+      "face": "panel",
+      "x": 291.9,
+      "y": 70.601809,
+      "z": 40.120362,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P16",
+      "label": "toggle switch (M6)",
+      "size": "\u00d86.4",
+      "face": "panel",
+      "x": 31.9,
+      "y": 70.601809,
+      "z": 40.120362,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P17",
+      "label": "toggle switch (M6)",
+      "size": "\u00d86.4",
+      "face": "panel",
+      "x": 63.9,
+      "y": 70.601809,
+      "z": 40.120362,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P18",
+      "label": "12 mm button",
+      "size": "\u00d812.2",
+      "face": "panel",
+      "x": 41.9,
+      "y": 29.41742,
+      "z": 31.883484,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P19",
+      "label": "12 mm button",
+      "size": "\u00d812.2",
+      "face": "panel",
+      "x": 75.9,
+      "y": 29.41742,
+      "z": 31.883484,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P20",
+      "label": "12 mm button",
+      "size": "\u00d812.2",
+      "face": "panel",
+      "x": 109.9,
+      "y": 29.41742,
+      "z": 31.883484,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P21",
+      "label": "12 mm button",
+      "size": "\u00d812.2",
+      "face": "panel",
+      "x": 143.9,
+      "y": 29.41742,
+      "z": 31.883484,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P22",
+      "label": "12 mm button",
+      "size": "\u00d812.2",
+      "face": "panel",
+      "x": 177.9,
+      "y": 29.41742,
+      "z": 31.883484,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P23",
+      "label": "12 mm button",
+      "size": "\u00d812.2",
+      "face": "panel",
+      "x": 211.9,
+      "y": 29.41742,
+      "z": 31.883484,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P24",
+      "label": "12 mm button",
+      "size": "\u00d812.2",
+      "face": "panel",
+      "x": 245.9,
+      "y": 29.41742,
+      "z": 31.883484,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "P25",
+      "label": "12 mm button",
+      "size": "\u00d812.2",
+      "face": "panel",
+      "x": 279.9,
+      "y": 29.41742,
+      "z": 31.883484,
+      "facing": "0.00, -0.20, 0.98"
+    },
+    {
+      "part": "top_panel",
+      "tag": "L1",
+      "label": "PEM CLS-M3 nut",
+      "size": "\u00d84.22",
+      "face": "lip_right",
+      "x": 318.1,
+      "y": 31.594309,
+      "z": 20.999039,
+      "facing": "+X right"
+    },
+    {
+      "part": "top_panel",
+      "tag": "L2",
+      "label": "PEM CLS-M3 nut",
+      "size": "\u00d84.22",
+      "face": "lip_right",
+      "x": 318.1,
+      "y": 130.545683,
+      "z": 40.789313,
+      "facing": "+X right"
+    },
+    {
+      "part": "top_panel",
+      "tag": "L3",
+      "label": "PEM CLS-M3 nut",
+      "size": "\u00d84.22",
+      "face": "lip_left",
+      "x": 1.9,
+      "y": 31.594309,
+      "z": 20.999039,
+      "facing": "\u2212X left"
+    },
+    {
+      "part": "top_panel",
+      "tag": "L4",
+      "label": "PEM CLS-M3 nut",
+      "size": "\u00d84.22",
+      "face": "lip_left",
+      "x": 1.9,
+      "y": 130.545683,
+      "z": 40.789313,
+      "facing": "\u2212X left"
     }
   ],
   "parts_list": [
@@ -326,6 +958,11 @@
       "component": "button_12mm",
       "qty": 8,
       "source": "STEP: control_board.step"
+    },
+    {
+      "component": "PEM CLS-M3-1 nut",
+      "qty": 4,
+      "source": "clinched in panel lips"
     }
   ],
   "bodies": {
@@ -775,6 +1412,7 @@
   "pairs": [
     {
       "label": "bottom_shell vs top_panel",
+      "item": "",
       "a": "bottom_shell",
       "b": "top_panel",
       "interference_volume": 0,
@@ -794,6 +1432,7 @@
     },
     {
       "label": "screw heads on cheeks",
+      "item": "screw_1",
       "a": "screw_1",
       "b": "bottom_shell+top_panel",
       "interference_volume": 0,
@@ -813,6 +1452,7 @@
     },
     {
       "label": "screw heads on cheeks",
+      "item": "screw_2",
       "a": "screw_2",
       "b": "bottom_shell+top_panel",
       "interference_volume": 0,
@@ -832,6 +1472,7 @@
     },
     {
       "label": "screw heads on cheeks",
+      "item": "screw_3",
       "a": "screw_3",
       "b": "bottom_shell+top_panel",
       "interference_volume": 0,
@@ -851,6 +1492,7 @@
     },
     {
       "label": "screw heads on cheeks",
+      "item": "screw_4",
       "a": "screw_4",
       "b": "bottom_shell+top_panel",
       "interference_volume": 0,
@@ -870,6 +1512,7 @@
     },
     {
       "label": "feet on base",
+      "item": "foot_1",
       "a": "foot_1",
       "b": "bottom_shell",
       "interference_volume": 0,
@@ -889,6 +1532,7 @@
     },
     {
       "label": "feet on base",
+      "item": "foot_2",
       "a": "foot_2",
       "b": "bottom_shell",
       "interference_volume": 0,
@@ -908,6 +1552,7 @@
     },
     {
       "label": "feet on base",
+      "item": "foot_3",
       "a": "foot_3",
       "b": "bottom_shell",
       "interference_volume": 0,
@@ -927,6 +1572,7 @@
     },
     {
       "label": "feet on base",
+      "item": "foot_4",
       "a": "foot_4",
       "b": "bottom_shell",
       "interference_volume": 0,
@@ -946,6 +1592,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "PCB",
       "a": "control_board/PCB",
       "b": "top_panel",
       "interference_volume": 0,
@@ -965,6 +1612,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "U1",
       "a": "control_board/U1",
       "b": "top_panel",
       "interference_volume": 0,
@@ -984,6 +1632,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "D1",
       "a": "control_board/D1",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1003,6 +1652,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "D2",
       "a": "control_board/D2",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1022,6 +1672,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "D3",
       "a": "control_board/D3",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1041,6 +1692,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "D4",
       "a": "control_board/D4",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1060,6 +1712,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "RV1",
       "a": "control_board/RV1",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1079,6 +1732,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "RV2",
       "a": "control_board/RV2",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1098,6 +1752,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "RV3",
       "a": "control_board/RV3",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1117,6 +1772,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "RV4",
       "a": "control_board/RV4",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1136,6 +1792,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "RV5",
       "a": "control_board/RV5",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1155,6 +1812,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "RV6",
       "a": "control_board/RV6",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1174,6 +1832,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "RV7",
       "a": "control_board/RV7",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1193,6 +1852,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "RV8",
       "a": "control_board/RV8",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1212,6 +1872,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "RV9",
       "a": "control_board/RV9",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1231,6 +1892,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "RV10",
       "a": "control_board/RV10",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1250,6 +1912,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "SW1",
       "a": "control_board/SW1",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1269,6 +1932,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "SW2",
       "a": "control_board/SW2",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1288,6 +1952,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "SW3",
       "a": "control_board/SW3",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1307,6 +1972,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "SW4",
       "a": "control_board/SW4",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1326,6 +1992,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "SW5",
       "a": "control_board/SW5",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1345,6 +2012,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "SW6",
       "a": "control_board/SW6",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1364,6 +2032,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "SW7",
       "a": "control_board/SW7",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1383,6 +2052,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "SW8",
       "a": "control_board/SW8",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1402,6 +2072,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "SW9",
       "a": "control_board/SW9",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1421,6 +2092,7 @@
     },
     {
       "label": "board parts against panel",
+      "item": "SW10",
       "a": "control_board/SW10",
       "b": "top_panel",
       "interference_volume": 0,
@@ -1440,6 +2112,7 @@
     },
     {
       "label": "control board vs bottom_shell",
+      "item": "",
       "a": "control_board/PCB+control_board/U1+control_board/D1+control_board/D2+control_board/D3+control_board/D4+control_board/RV1+control_board/RV2+control_board/RV3+control_board/RV4+control_board/RV5+control_board/RV6+control_board/RV7+control_board/RV8+control_board/RV9+control_board/RV10+control_board/SW1+control_board/SW2+control_board/SW3+control_board/SW4+control_board/SW5+control_board/SW6+control_board/SW7+control_board/SW8+control_board/SW9+control_board/SW10",
       "b": "bottom_shell",
       "interference_volume": 0,
@@ -1459,6 +2132,7 @@
     },
     {
       "label": "faces of one part keep their gaps",
+      "item": "bottom_shell: front_lip vs back_wall",
       "a": "bottom_shell#face:front_lip",
       "b": "bottom_shell#face:back_wall",
       "interference_volume": 0,
@@ -1478,6 +2152,7 @@
     },
     {
       "label": "faces of one part keep their gaps",
+      "item": "bottom_shell: front_lip vs cheek_right",
       "a": "bottom_shell#face:front_lip",
       "b": "bottom_shell#face:cheek_right",
       "interference_volume": 0,
@@ -1497,6 +2172,7 @@
     },
     {
       "label": "faces of one part keep their gaps",
+      "item": "bottom_shell: front_lip vs cheek_left",
       "a": "bottom_shell#face:front_lip",
       "b": "bottom_shell#face:cheek_left",
       "interference_volume": 0,
@@ -1516,6 +2192,7 @@
     },
     {
       "label": "faces of one part keep their gaps",
+      "item": "bottom_shell: back_wall vs cheek_right",
       "a": "bottom_shell#face:back_wall",
       "b": "bottom_shell#face:cheek_right",
       "interference_volume": 0,
@@ -1535,6 +2212,7 @@
     },
     {
       "label": "faces of one part keep their gaps",
+      "item": "bottom_shell: back_wall vs cheek_left",
       "a": "bottom_shell#face:back_wall",
       "b": "bottom_shell#face:cheek_left",
       "interference_volume": 0,
@@ -1554,6 +2232,7 @@
     },
     {
       "label": "faces of one part keep their gaps",
+      "item": "bottom_shell: cheek_right vs cheek_left",
       "a": "bottom_shell#face:cheek_right",
       "b": "bottom_shell#face:cheek_left",
       "interference_volume": 0,
@@ -1573,6 +2252,7 @@
     },
     {
       "label": "faces of one part keep their gaps",
+      "item": "top_panel: lip_right vs lip_left",
       "a": "top_panel#face:lip_right",
       "b": "top_panel#face:lip_left",
       "interference_volume": 0,
@@ -1589,6 +2269,94 @@
           -3.1999999999999997
         ]
       ]
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "bottom_shell",
+      "a": "bottom_shell",
+      "b": "top_panel+screw_1+screw_2+screw_3+screw_4+foot_1+foot_2+foot_3+foot_4+control_board/PCB+control_board/U1+control_board/D1+control_board/D2+control_board/D3+control_board/D4+control_board/RV1+control_board/RV2+control_board/RV3+control_board/RV4+control_board/RV5+control_board/RV6+control_board/RV7+control_board/RV8+control_board/RV9+control_board/RV10+control_board/SW1+control_board/SW2+control_board/SW3+control_board/SW4+control_board/SW5+control_board/SW6+control_board/SW7+control_board/SW8+control_board/SW9+control_board/SW10",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "top_panel",
+      "a": "top_panel",
+      "b": "bottom_shell+screw_1+screw_2+screw_3+screw_4+foot_1+foot_2+foot_3+foot_4+control_board/PCB+control_board/U1+control_board/D1+control_board/D2+control_board/D3+control_board/D4+control_board/RV1+control_board/RV2+control_board/RV3+control_board/RV4+control_board/RV5+control_board/RV6+control_board/RV7+control_board/RV8+control_board/RV9+control_board/RV10+control_board/SW1+control_board/SW2+control_board/SW3+control_board/SW4+control_board/SW5+control_board/SW6+control_board/SW7+control_board/SW8+control_board/SW9+control_board/SW10",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "screw_1",
+      "a": "screw_1",
+      "b": "bottom_shell+top_panel+screw_2+screw_3+screw_4+foot_1+foot_2+foot_3+foot_4+control_board/PCB+control_board/U1+control_board/D1+control_board/D2+control_board/D3+control_board/D4+control_board/RV1+control_board/RV2+control_board/RV3+control_board/RV4+control_board/RV5+control_board/RV6+control_board/RV7+control_board/RV8+control_board/RV9+control_board/RV10+control_board/SW1+control_board/SW2+control_board/SW3+control_board/SW4+control_board/SW5+control_board/SW6+control_board/SW7+control_board/SW8+control_board/SW9+control_board/SW10",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "screw_2",
+      "a": "screw_2",
+      "b": "bottom_shell+top_panel+screw_1+screw_3+screw_4+foot_1+foot_2+foot_3+foot_4+control_board/PCB+control_board/U1+control_board/D1+control_board/D2+control_board/D3+control_board/D4+control_board/RV1+control_board/RV2+control_board/RV3+control_board/RV4+control_board/RV5+control_board/RV6+control_board/RV7+control_board/RV8+control_board/RV9+control_board/RV10+control_board/SW1+control_board/SW2+control_board/SW3+control_board/SW4+control_board/SW5+control_board/SW6+control_board/SW7+control_board/SW8+control_board/SW9+control_board/SW10",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "screw_3",
+      "a": "screw_3",
+      "b": "bottom_shell+top_panel+screw_1+screw_2+screw_4+foot_1+foot_2+foot_3+foot_4+control_board/PCB+control_board/U1+control_board/D1+control_board/D2+control_board/D3+control_board/D4+control_board/RV1+control_board/RV2+control_board/RV3+control_board/RV4+control_board/RV5+control_board/RV6+control_board/RV7+control_board/RV8+control_board/RV9+control_board/RV10+control_board/SW1+control_board/SW2+control_board/SW3+control_board/SW4+control_board/SW5+control_board/SW6+control_board/SW7+control_board/SW8+control_board/SW9+control_board/SW10",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "screw_4",
+      "a": "screw_4",
+      "b": "bottom_shell+top_panel+screw_1+screw_2+screw_3+foot_1+foot_2+foot_3+foot_4+control_board/PCB+control_board/U1+control_board/D1+control_board/D2+control_board/D3+control_board/D4+control_board/RV1+control_board/RV2+control_board/RV3+control_board/RV4+control_board/RV5+control_board/RV6+control_board/RV7+control_board/RV8+control_board/RV9+control_board/RV10+control_board/SW1+control_board/SW2+control_board/SW3+control_board/SW4+control_board/SW5+control_board/SW6+control_board/SW7+control_board/SW8+control_board/SW9+control_board/SW10",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "foot_1",
+      "a": "foot_1",
+      "b": "bottom_shell+top_panel+screw_1+screw_2+screw_3+screw_4+foot_2+foot_3+foot_4+control_board/PCB+control_board/U1+control_board/D1+control_board/D2+control_board/D3+control_board/D4+control_board/RV1+control_board/RV2+control_board/RV3+control_board/RV4+control_board/RV5+control_board/RV6+control_board/RV7+control_board/RV8+control_board/RV9+control_board/RV10+control_board/SW1+control_board/SW2+control_board/SW3+control_board/SW4+control_board/SW5+control_board/SW6+control_board/SW7+control_board/SW8+control_board/SW9+control_board/SW10",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "foot_2",
+      "a": "foot_2",
+      "b": "bottom_shell+top_panel+screw_1+screw_2+screw_3+screw_4+foot_1+foot_3+foot_4+control_board/PCB+control_board/U1+control_board/D1+control_board/D2+control_board/D3+control_board/D4+control_board/RV1+control_board/RV2+control_board/RV3+control_board/RV4+control_board/RV5+control_board/RV6+control_board/RV7+control_board/RV8+control_board/RV9+control_board/RV10+control_board/SW1+control_board/SW2+control_board/SW3+control_board/SW4+control_board/SW5+control_board/SW6+control_board/SW7+control_board/SW8+control_board/SW9+control_board/SW10",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "foot_3",
+      "a": "foot_3",
+      "b": "bottom_shell+top_panel+screw_1+screw_2+screw_3+screw_4+foot_1+foot_2+foot_4+control_board/PCB+control_board/U1+control_board/D1+control_board/D2+control_board/D3+control_board/D4+control_board/RV1+control_board/RV2+control_board/RV3+control_board/RV4+control_board/RV5+control_board/RV6+control_board/RV7+control_board/RV8+control_board/RV9+control_board/RV10+control_board/SW1+control_board/SW2+control_board/SW3+control_board/SW4+control_board/SW5+control_board/SW6+control_board/SW7+control_board/SW8+control_board/SW9+control_board/SW10",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "foot_4",
+      "a": "foot_4",
+      "b": "bottom_shell+top_panel+screw_1+screw_2+screw_3+screw_4+foot_1+foot_2+foot_3+control_board/PCB+control_board/U1+control_board/D1+control_board/D2+control_board/D3+control_board/D4+control_board/RV1+control_board/RV2+control_board/RV3+control_board/RV4+control_board/RV5+control_board/RV6+control_board/RV7+control_board/RV8+control_board/RV9+control_board/RV10+control_board/SW1+control_board/SW2+control_board/SW3+control_board/SW4+control_board/SW5+control_board/SW6+control_board/SW7+control_board/SW8+control_board/SW9+control_board/SW10",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "control_board",
+      "a": "control_board/PCB+control_board/U1+control_board/D1+control_board/D2+control_board/D3+control_board/D4+control_board/RV1+control_board/RV2+control_board/RV3+control_board/RV4+control_board/RV5+control_board/RV6+control_board/RV7+control_board/RV8+control_board/RV9+control_board/RV10+control_board/SW1+control_board/SW2+control_board/SW3+control_board/SW4+control_board/SW5+control_board/SW6+control_board/SW7+control_board/SW8+control_board/SW9+control_board/SW10",
+      "b": "bottom_shell+top_panel+screw_1+screw_2+screw_3+screw_4+foot_1+foot_2+foot_3+foot_4",
+      "interference_volume": 0,
+      "min_distance": null
     }
   ],
   "flat_sizes": {
@@ -1601,5 +2369,7 @@
       160.91099701980386
     ]
   },
-  "slope_deg": 11.309932474020213
+  "facts": {
+    "Panel slope": "11.31\u00b0"
+  }
 }
