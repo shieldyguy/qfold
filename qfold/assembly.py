@@ -338,15 +338,22 @@ def cyl(p, d, length, direction=(0, 0, 1)) -> dict:
             "len": length}
 
 
-def insert_step(parent, path: str | Path, tree: list[dict], name: str | None = None,
-                color=(60, 60, 60), colors: dict[str, tuple] | None = None) -> Occurrence:
+def insert_step(parent, path: str | Path, tree: list[dict] | None = None,
+                name: str | None = None, color=(60, 60, 60),
+                colors: dict[str, tuple] | None = None) -> Occurrence:
     """Insert a STEP file (Fusion: Insert into Current Design).
 
-    `tree` is the file's product tree from the kernel (kernel.inspect_step).
-    Each product becomes a Component, each instance an Occurrence, so names
-    and sub-assemblies survive. `parent` is a Design or an Occurrence.
-    `colors` maps component names to render colours; others get `color`.
+    Each product in the file becomes a Component and each instance an
+    Occurrence, so names and sub-assemblies survive: a part named RV1 in the
+    file is the occurrence "<name>/RV1", and `align(board, "RV1", onto=...)`
+    places the whole board by that part's origin. `parent` is a Design or an
+    Occurrence. `colors` maps component names to render colours; others get
+    `color`. `tree` is the file's product tree (kernel.inspect_step); it is
+    read from the file when not given.
     """
+    if tree is None:
+        from . import kernel
+        tree = kernel.inspect_step(Path(path))
     path = str(Path(path).resolve())
     stem = Path(path).stem
     cache: dict[str, Component] = {}

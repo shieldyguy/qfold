@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -54,8 +55,13 @@ def run(job: dict, workdir: Path, tag: str = "kernel") -> dict:
     return res
 
 
-def inspect_step(path: Path, workdir: Path) -> list[dict]:
+def inspect_step(path: Path, workdir: Path | None = None) -> list[dict]:
     """The product tree of a STEP file: names, local transforms, paths."""
     path = Path(path).resolve()
-    res = run({"outputs": {"inspect_step": [str(path)]}}, workdir, tag="inspect")
-    return res["inspect_step"][str(path)]
+    if not path.exists():
+        raise FileNotFoundError(f"no STEP file at {path}")
+    job = {"outputs": {"inspect_step": [str(path)]}}
+    if workdir is not None:
+        return run(job, Path(workdir), tag="inspect")["inspect_step"][str(path)]
+    with tempfile.TemporaryDirectory() as tmp:
+        return run(job, Path(tmp), tag="inspect")["inspect_step"][str(path)]

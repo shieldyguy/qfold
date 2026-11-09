@@ -1,0 +1,779 @@
+{
+  "project": "chassis",
+  "summary": "20 pass, 0 warn, 0 fail",
+  "ok": true,
+  "parameters": {
+    "shop": "sendcutsend",
+    "material": "5052 Aluminum",
+    "thickness": "1.6",
+    "W": "340",
+    "D": "180",
+    "H": "45",
+    "standoff": "8"
+  },
+  "sheet_metal_rules": {
+    "chassis": {
+      "material": "SendCutSend 5052 Aluminum",
+      "thickness": 1.6001999999999998,
+      "bend_radius": 0.889,
+      "k_factor": 0.45495201963108145
+    }
+  },
+  "shop": {
+    "shop": "SendCutSend",
+    "material": "5052 Aluminum",
+    "notes": [
+      "K 0.455 reproduces BD90 0.096 in (printed K 0.42)",
+      "max bend length 44 in (1118 mm)"
+    ],
+    "sources": {
+      "bend_table": "https://sendcutsend.com/bending-calculator/",
+      "bend_sizes": "https://sendcutsend.com/materials/processing-min-max/",
+      "bending_specs": "https://sendcutsend.com/faq/what-are-your-material-bending-specifications/",
+      "feature_to_bend": "https://sendcutsend.com/guidelines/bend-deformation/",
+      "flange_measurement": "https://sendcutsend.com/blog/design-considerations-when-planning-sheet-metal-bends/",
+      "minimum_geometry": "https://sendcutsend.com/faq/what-are-best-practices-for-minimum-geometry/",
+      "hardware_and_holes": "https://sendcutsend.com/blog/how-to-apply-hole-distance-specifications/",
+      "cut_sizes": "https://sendcutsend.com/materials/min-max/"
+    }
+  },
+  "checks": [
+    {
+      "name": "chassis: valid solid",
+      "status": "pass",
+      "detail": "valid=True, solids=1, faces=22",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "chassis: no self-intersection",
+      "status": "pass",
+      "detail": "folded fuse loses 1.16e-10 mm\u00b3, flat fuse loses -2.91e-11 mm\u00b3 (limit 1.2e-04)",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "chassis: flat pattern matches fold",
+      "status": "pass",
+      "detail": "folded\u2212flat volume 65.229828 mm\u00b3, bend allowance predicts 65.229828",
+      "value": 65.22982824879,
+      "limit": 65.22982824885617
+    },
+    {
+      "name": "chassis: hole to bend",
+      "status": "pass",
+      "detail": "tightest 15.81 mm (base standoff screw M3 to bend left), need \u2265 4.72",
+      "value": 15.8108,
+      "limit": 4.724399999999999
+    },
+    {
+      "name": "chassis: hole to edge",
+      "status": "pass",
+      "detail": "closest 15.81 mm (base standoff screw M3), need \u2265 1.60",
+      "value": 15.8108,
+      "limit": 1.6001999999999998
+    },
+    {
+      "name": "chassis: web between holes",
+      "status": "pass",
+      "detail": "narrowest 95.50 mm (right_wall rack ear M4 / rack ear M4), need \u2265 1.60",
+      "value": 95.5,
+      "limit": 1.6001999999999998
+    },
+    {
+      "name": "chassis: holes inside their face",
+      "status": "pass",
+      "detail": "every hole lies within its face",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "chassis: minimum hole size",
+      "status": "pass",
+      "detail": "all holes \u2265 0.80 mm",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "chassis: bend corner relief",
+      "status": "pass",
+      "detail": "bends end \u2265 335.02 mm apart, need \u2265 1.60",
+      "value": 335.02160000000003,
+      "limit": 1.6001999999999998
+    },
+    {
+      "name": "chassis: flange length",
+      "status": "pass",
+      "detail": "shortest flat flange 42.51 mm (bend right), need \u2265 5.21",
+      "value": 42.5108,
+      "limit": 5.206999999999999
+    },
+    {
+      "name": "chassis.step reads back",
+      "status": "pass",
+      "detail": "1 solid(s), volume 122356.101 mm\u00b3 (model 122356.101)",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "assembly.step reads back",
+      "status": "pass",
+      "detail": "31 solid(s), volume 234002.409 mm\u00b3 (model 234002.409)",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "standoffs on the base",
+      "status": "pass",
+      "detail": "4 touching, widest gap 0.0000 mm (\u2264 0.01), no overlap",
+      "value": 0,
+      "limit": 0.01
+    },
+    {
+      "name": "board on its standoffs",
+      "status": "pass",
+      "detail": "1 touching, widest gap 0.0000 mm (\u2264 0.01), no overlap",
+      "value": 0,
+      "limit": 0.01
+    },
+    {
+      "name": "board clear of chassis",
+      "status": "pass",
+      "detail": "overlap 0.000000 mm\u00b3, closest 8.000 mm, need \u2265 3",
+      "value": 7.999999999999999,
+      "limit": 3.0
+    },
+    {
+      "name": "faces of one part keep their gaps",
+      "status": "pass",
+      "detail": "1 unjoined face pairs, tightest 336.800 mm (chassis: right_wall vs left_wall), need \u2265 0.2",
+      "value": 336.79960000000005,
+      "limit": 0.2
+    },
+    {
+      "name": "no part overlaps another",
+      "status": "pass",
+      "detail": "6 top-level parts, none overlapping",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "standoffs on their holes",
+      "status": "pass",
+      "detail": "4 parts, worst 0.000 mm across, 0.000 mm along, 0.000\u00b0",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "chassis: fits sheet",
+      "status": "pass",
+      "detail": "flat 425.1 \u00d7 180.0 mm, sheet limit 1117.6 \u00d7 762",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "chassis_flat.dxf reads back",
+      "status": "pass",
+      "detail": "8 circles, 4 lines, 0 arcs, 2 bends, cut 1309.5 mm, extent 425.123 \u00d7 180.000",
+      "value": null,
+      "limit": null
+    }
+  ],
+  "holes": [
+    {
+      "part": "chassis",
+      "tag": "M1",
+      "label": "standoff screw M3",
+      "size": "\u00d83.4",
+      "face": "base",
+      "x": 20.0,
+      "y": 20.0,
+      "z": 0.0,
+      "facing": "\u2212Z down"
+    },
+    {
+      "part": "chassis",
+      "tag": "M2",
+      "label": "standoff screw M3",
+      "size": "\u00d83.4",
+      "face": "base",
+      "x": 320.0,
+      "y": 20.0,
+      "z": 0.0,
+      "facing": "\u2212Z down"
+    },
+    {
+      "part": "chassis",
+      "tag": "M3",
+      "label": "standoff screw M3",
+      "size": "\u00d83.4",
+      "face": "base",
+      "x": 20.0,
+      "y": 160.0,
+      "z": 0.0,
+      "facing": "\u2212Z down"
+    },
+    {
+      "part": "chassis",
+      "tag": "M4",
+      "label": "standoff screw M3",
+      "size": "\u00d83.4",
+      "face": "base",
+      "x": 320.0,
+      "y": 160.0,
+      "z": 0.0,
+      "facing": "\u2212Z down"
+    },
+    {
+      "part": "chassis",
+      "tag": "E1",
+      "label": "rack ear M4",
+      "size": "\u00d84.5",
+      "face": "right_wall",
+      "x": 340.0,
+      "y": 40.0,
+      "z": 25.0,
+      "facing": "+X right"
+    },
+    {
+      "part": "chassis",
+      "tag": "E2",
+      "label": "rack ear M4",
+      "size": "\u00d84.5",
+      "face": "right_wall",
+      "x": 340.0,
+      "y": 140.0,
+      "z": 25.0,
+      "facing": "+X right"
+    },
+    {
+      "part": "chassis",
+      "tag": "E3",
+      "label": "rack ear M4",
+      "size": "\u00d84.5",
+      "face": "left_wall",
+      "x": 0.0,
+      "y": 40.0,
+      "z": 25.0,
+      "facing": "\u2212X left"
+    },
+    {
+      "part": "chassis",
+      "tag": "E4",
+      "label": "rack ear M4",
+      "size": "\u00d84.5",
+      "face": "left_wall",
+      "x": 0.0,
+      "y": 140.0,
+      "z": 25.0,
+      "facing": "\u2212X left"
+    }
+  ],
+  "parts_list": [
+    {
+      "component": "chassis",
+      "qty": 1,
+      "source": "sheet metal"
+    },
+    {
+      "component": "standoff_M3x8",
+      "qty": 4,
+      "source": "stand-in"
+    },
+    {
+      "component": "control_board_pcb",
+      "qty": 1,
+      "source": "STEP: control_board.step"
+    },
+    {
+      "component": "oled_096",
+      "qty": 1,
+      "source": "STEP: control_board.step"
+    },
+    {
+      "component": "led_3mm",
+      "qty": 4,
+      "source": "STEP: control_board.step"
+    },
+    {
+      "component": "pot_9mm",
+      "qty": 10,
+      "source": "STEP: control_board.step"
+    },
+    {
+      "component": "toggle_m6",
+      "qty": 2,
+      "source": "STEP: control_board.step"
+    },
+    {
+      "component": "button_12mm",
+      "qty": 8,
+      "source": "STEP: control_board.step"
+    }
+  ],
+  "bodies": {
+    "chassis#chassis": {
+      "valid": true,
+      "volume": 122356.1013769391,
+      "area": 155022.23081438337,
+      "com": [
+        169.9999999999999,
+        90.00000000000014,
+        5.378915222503445
+      ],
+      "bbox": [
+        -4.719646895523511e-15,
+        0,
+        0,
+        340,
+        180,
+        45
+      ],
+      "solids": 1,
+      "faces": 22,
+      "edges": 60,
+      "parts_volume": 122356.10137693922
+    },
+    "standoff_M3x8#standoff_M3x8": {
+      "valid": true,
+      "volume": 226.19467105846508,
+      "area": 207.34511513692638,
+      "com": [
+        -7.69615700699814e-16,
+        1.0982950625940696e-16,
+        4.000000000000001
+      ],
+      "bbox": [
+        -3,
+        -3,
+        0,
+        3,
+        3,
+        8
+      ],
+      "solids": 1,
+      "faces": 3,
+      "edges": 3,
+      "parts_volume": 226.19467105846508
+    },
+    "control_board:control_board_pcb#control_board_pcb": {
+      "valid": true,
+      "volume": 69603.65008855033,
+      "area": 88428.91780115126,
+      "com": [
+        150.1,
+        72.4554985099,
+        -0.8
+      ],
+      "bbox": [
+        0,
+        0,
+        -1.6,
+        300.2,
+        144.9109970198,
+        0
+      ],
+      "solids": 1,
+      "faces": 6,
+      "edges": 12
+    },
+    "control_board:oled_096#oled_096": {
+      "valid": true,
+      "volume": 6650,
+      "area": 2410,
+      "com": [
+        -3.860946650110906e-16,
+        2.0782039414336766e-16,
+        -5
+      ],
+      "bbox": [
+        -17.5,
+        -9.5,
+        -10,
+        17.5,
+        9.5,
+        0
+      ],
+      "solids": 1,
+      "faces": 6,
+      "edges": 12
+    },
+    "control_board:led_3mm#led_3mm": {
+      "valid": true,
+      "volume": 84.82300164692441,
+      "area": 127.23450247039406,
+      "com": [
+        1.256515429713982e-16,
+        -4.769092802342056e-17,
+        -4.000000000000001
+      ],
+      "bbox": [
+        -1.5,
+        -1.5,
+        -10,
+        1.5,
+        1.5,
+        2
+      ],
+      "solids": 1,
+      "faces": 3,
+      "edges": 3
+    },
+    "control_board:pot_9mm#pot_9mm": {
+      "valid": true,
+      "volume": 1661.5375582670147,
+      "area": 1011.69908169875,
+      "com": [
+        2.8147376287123345e-14,
+        -5.422910792239936e-17,
+        0.33552896546936933
+      ],
+      "bbox": [
+        -4.75,
+        -5.5,
+        -10,
+        4.75,
+        5.5,
+        20
+      ],
+      "solids": 1,
+      "faces": 10,
+      "edges": 18
+    },
+    "control_board:toggle_m6#toggle_m6": {
+      "valid": true,
+      "volume": 1315.6747553525129,
+      "area": 863.6194490192498,
+      "com": [
+        1.3482587034588283e-14,
+        -3.8063961229174335e-17,
+        -2.6870992076851397
+      ],
+      "bbox": [
+        -6.5,
+        -4,
+        -10,
+        6.5,
+        4,
+        18
+      ],
+      "solids": 1,
+      "faces": 10,
+      "edges": 18
+    },
+    "control_board:button_12mm#button_12mm": {
+      "valid": true,
+      "volume": 1862.7327074670573,
+      "area": 913.7698991265759,
+      "com": [
+        3.648967875548685e-14,
+        -1.997457133081445e-18,
+        -3.411404416528874
+      ],
+      "bbox": [
+        -6,
+        -6,
+        -10,
+        6,
+        6,
+        4
+      ],
+      "solids": 1,
+      "faces": 8,
+      "edges": 15
+    },
+    "chassis#flat": {
+      "valid": true,
+      "volume": 122290.87154869045,
+      "area": 154939.97894408976,
+      "com": [
+        170,
+        89.99999999999997,
+        0.8000999999999998
+      ],
+      "bbox": [
+        -42.561600000000006,
+        0,
+        0,
+        382.56160000000006,
+        180,
+        1.6002
+      ],
+      "solids": 1,
+      "faces": 14,
+      "edges": 36,
+      "parts_volume": 122290.87154869043
+    },
+    "chassis#face:base": {
+      "valid": true,
+      "volume": 96440.16741651698,
+      "area": 122251.78710776313,
+      "com": [
+        170.00000000000006,
+        90,
+        0.8000999999999999
+      ],
+      "bbox": [
+        2.4891999999999825,
+        0,
+        0,
+        337.5108,
+        180,
+        1.6002
+      ],
+      "solids": 1,
+      "faces": 10,
+      "edges": 24,
+      "parts_volume": 96440.16741651698
+    },
+    "chassis#face:right_wall": {
+      "valid": true,
+      "volume": 12193.740626086652,
+      "area": 15997.638902163273,
+      "com": [
+        339.1999,
+        90,
+        23.739359601156877
+      ],
+      "bbox": [
+        338.3998,
+        0,
+        2.4891999999999967,
+        340,
+        180,
+        45
+      ],
+      "solids": 1,
+      "faces": 8,
+      "edges": 18,
+      "parts_volume": 12193.740626086652
+    },
+    "chassis#face:left_wall": {
+      "valid": true,
+      "volume": 12193.740626086721,
+      "area": 15997.638902163273,
+      "com": [
+        0.8000999999999973,
+        90,
+        23.739359601156874
+      ],
+      "bbox": [
+        -4.719646895523511e-15,
+        0,
+        2.4891999999999967,
+        1.6001999999999998,
+        180,
+        45
+      ],
+      "solids": 1,
+      "faces": 8,
+      "edges": 18,
+      "parts_volume": 12193.740626086721
+    }
+  },
+  "envelope": [
+    -4.719646895523511e-15,
+    0,
+    0,
+    340,
+    180,
+    45
+  ],
+  "pairs": [
+    {
+      "label": "standoffs on the base",
+      "item": "standoff_1",
+      "a": "standoff_1",
+      "b": "chassis",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          23,
+          20,
+          1.6001999999999998
+        ],
+        [
+          23,
+          20,
+          1.6001999999999998
+        ]
+      ]
+    },
+    {
+      "label": "standoffs on the base",
+      "item": "standoff_2",
+      "a": "standoff_2",
+      "b": "chassis",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          323,
+          20,
+          1.6001999999999998
+        ],
+        [
+          323,
+          20,
+          1.6001999999999998
+        ]
+      ]
+    },
+    {
+      "label": "standoffs on the base",
+      "item": "standoff_3",
+      "a": "standoff_3",
+      "b": "chassis",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          23,
+          160,
+          1.6001999999999998
+        ],
+        [
+          23,
+          160,
+          1.6001999999999998
+        ]
+      ]
+    },
+    {
+      "label": "standoffs on the base",
+      "item": "standoff_4",
+      "a": "standoff_4",
+      "b": "chassis",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          323,
+          160,
+          1.6001999999999998
+        ],
+        [
+          323,
+          160,
+          1.6001999999999998
+        ]
+      ]
+    },
+    {
+      "label": "board on its standoffs",
+      "item": "PCB",
+      "a": "board/PCB",
+      "b": "standoff_1+standoff_2+standoff_3+standoff_4",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          23,
+          20,
+          9.6002
+        ],
+        [
+          23,
+          20,
+          9.6002
+        ]
+      ]
+    },
+    {
+      "label": "board clear of chassis",
+      "item": "",
+      "a": "board/PCB+board/U1+board/D1+board/D2+board/D3+board/D4+board/RV1+board/RV2+board/RV3+board/RV4+board/RV5+board/RV6+board/RV7+board/RV8+board/RV9+board/RV10+board/SW1+board/SW2+board/SW3+board/SW4+board/SW5+board/SW6+board/SW7+board/SW8+board/SW9+board/SW10",
+      "b": "chassis",
+      "interference_volume": 0,
+      "min_distance": 7.999999999999999,
+      "closest": [
+        [
+          14,
+          14,
+          9.6002
+        ],
+        [
+          14,
+          14,
+          1.6002
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "item": "chassis: right_wall vs left_wall",
+      "a": "chassis#face:right_wall",
+      "b": "chassis#face:left_wall",
+      "interference_volume": 0,
+      "min_distance": 336.79960000000005,
+      "closest": [
+        [
+          338.3998,
+          0,
+          2.4891999999999994
+        ],
+        [
+          1.6001999999999998,
+          0,
+          2.4891999999999994
+        ]
+      ]
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "chassis",
+      "a": "chassis",
+      "b": "standoff_1+standoff_2+standoff_3+standoff_4+board/PCB+board/U1+board/D1+board/D2+board/D3+board/D4+board/RV1+board/RV2+board/RV3+board/RV4+board/RV5+board/RV6+board/RV7+board/RV8+board/RV9+board/RV10+board/SW1+board/SW2+board/SW3+board/SW4+board/SW5+board/SW6+board/SW7+board/SW8+board/SW9+board/SW10",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "standoff_1",
+      "a": "standoff_1",
+      "b": "chassis+standoff_2+standoff_3+standoff_4+board/PCB+board/U1+board/D1+board/D2+board/D3+board/D4+board/RV1+board/RV2+board/RV3+board/RV4+board/RV5+board/RV6+board/RV7+board/RV8+board/RV9+board/RV10+board/SW1+board/SW2+board/SW3+board/SW4+board/SW5+board/SW6+board/SW7+board/SW8+board/SW9+board/SW10",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "standoff_2",
+      "a": "standoff_2",
+      "b": "chassis+standoff_1+standoff_3+standoff_4+board/PCB+board/U1+board/D1+board/D2+board/D3+board/D4+board/RV1+board/RV2+board/RV3+board/RV4+board/RV5+board/RV6+board/RV7+board/RV8+board/RV9+board/RV10+board/SW1+board/SW2+board/SW3+board/SW4+board/SW5+board/SW6+board/SW7+board/SW8+board/SW9+board/SW10",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "standoff_3",
+      "a": "standoff_3",
+      "b": "chassis+standoff_1+standoff_2+standoff_4+board/PCB+board/U1+board/D1+board/D2+board/D3+board/D4+board/RV1+board/RV2+board/RV3+board/RV4+board/RV5+board/RV6+board/RV7+board/RV8+board/RV9+board/RV10+board/SW1+board/SW2+board/SW3+board/SW4+board/SW5+board/SW6+board/SW7+board/SW8+board/SW9+board/SW10",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "standoff_4",
+      "a": "standoff_4",
+      "b": "chassis+standoff_1+standoff_2+standoff_3+board/PCB+board/U1+board/D1+board/D2+board/D3+board/D4+board/RV1+board/RV2+board/RV3+board/RV4+board/RV5+board/RV6+board/RV7+board/RV8+board/RV9+board/RV10+board/SW1+board/SW2+board/SW3+board/SW4+board/SW5+board/SW6+board/SW7+board/SW8+board/SW9+board/SW10",
+      "interference_volume": 0,
+      "min_distance": null
+    },
+    {
+      "label": "no part overlaps another",
+      "item": "board",
+      "a": "board/PCB+board/U1+board/D1+board/D2+board/D3+board/D4+board/RV1+board/RV2+board/RV3+board/RV4+board/RV5+board/RV6+board/RV7+board/RV8+board/RV9+board/RV10+board/SW1+board/SW2+board/SW3+board/SW4+board/SW5+board/SW6+board/SW7+board/SW8+board/SW9+board/SW10",
+      "b": "chassis+standoff_1+standoff_2+standoff_3+standoff_4",
+      "interference_volume": 0,
+      "min_distance": null
+    }
+  ],
+  "flat_sizes": {
+    "chassis": [
+      425.12320000000005,
+      180.0
+    ]
+  },
+  "facts": {}
+}

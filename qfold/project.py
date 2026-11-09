@@ -29,6 +29,7 @@ from __future__ import annotations
 import dataclasses
 import io
 import json
+import os
 import subprocess
 import sys
 from dataclasses import asdict, dataclass, field
@@ -137,7 +138,8 @@ class Project:
     def on_hole(self, part: str, hole: str, name: str = "parts on their holes",
                 axial: bool = True) -> None:
         """The part's origin must sit on the hole's axis ("path:tag"), at its
-        depth (unless axial=False) and square to it."""
+        depth (unless axial=False), with its z axis along the hole's, either
+        way round (a standoff on the inside face points in)."""
         self._holes.append((name, part, hole,
                             tuple(MOUNT_TOL) if axial else ("radial", "angle_deg")))
 
@@ -292,6 +294,7 @@ class Project:
             worst, bad = dict.fromkeys(MOUNT_TOL, 0.0), []
             for part, hole, keys in entries:
                 m = mismatch(design_ref(d, part), design_ref(d, hole))
+                m["angle_deg"] = min(m["angle_deg"], 180.0 - m["angle_deg"])
                 for k in keys:
                     worst[k] = max(worst[k], abs(m[k]))
                 if any(abs(m[k]) > MOUNT_TOL[k] for k in keys):
@@ -450,9 +453,12 @@ class Project:
         }
         (out / "report.json").write_text(json.dumps(report, indent=2, default=float))
         if not quiet:
-            print(f"{self.name}: {rep.summary()}  ->  {out}")
-            for c in rep.checks:
-                print(f"[{c.status:4}] {c.name}: {c.detail}")
+            lines = [f"{self.name}: {rep.summary()}  ->  {out}"]
+            lines += [f"[{c.status:4}] {c.name}: {c.detail}" for c in rep.checks]
+            try:
+                print("\n".join(lines), flush=True)
+            except BrokenPipeError:  # output piped to head: the build is done
+                sys.stdout = open(os.devnull, "w")
         return rep
 
     def main(self, argv=None) -> int:

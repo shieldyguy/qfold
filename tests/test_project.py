@@ -79,3 +79,13 @@ def test_moving_one_part_fails_the_fits_it_breaks(tmp_path, path, move, expect):
     occ = proj.design.find(path)
     align(occ, "origin", onto=occ.world() @ translate(move))
     assert set(_failed(proj, tmp_path)) == expect
+
+
+def test_chassis_with_inserted_step_fits(tmp_path):
+    from examples.chassis.__main__ import build as chassis
+    proj = chassis()
+    assert _failed(proj, tmp_path) == {}  # standoffs point inward: on_hole takes either way
+    assert proj.design.find("board/RV1").component.name == "pot_9mm"
+    occ = proj.design.find("standoff_2")
+    align(occ, "origin", onto=occ.world() @ translate((3, 0, 0)))
+    assert set(_failed(proj, tmp_path)) == {"standoffs on their holes"}

@@ -15,7 +15,7 @@ Where this is going and what we decided not to build: [DIRECTION.md](DIRECTION.m
 ## Quick start
 
 ```bash
-scripts/bootstrap.sh              # once per checkout: about 40 s, needs only git
+scripts/bootstrap.sh              # once per checkout: about a minute, needs only git
 python -m examples.pedal_box out  # build a design: about 15 s
 ```
 
@@ -33,10 +33,12 @@ folder:
 
 It prints one line per check and exits non-zero if any fails.
 
-Two examples, both with committed output in their `out/` folder:
+Three examples, each with committed output in their `out/` folder:
 
 - [`examples/pedal_box`](examples/pedal_box/__main__.py): a tray with lips and
   a flat lid, 160 lines. **Copy this to start a new design.**
+- [`examples/chassis`](examples/chassis/__main__.py): a U-channel with a
+  board inserted from a STEP file on standoffs, 70 lines.
 - [`examples/synth_case`](examples/synth_case): a sloped desktop synth case
   with a control board inserted from a STEP file and its own drawing sheets.
 
@@ -97,9 +99,23 @@ align(d.add(screw, "screw_1"), "origin", onto=lid_occ.ref("C1"))
 align(board, "RV1", onto=panel.ref("P6.inside"))            # an inserted STEP, by one part
 ```
 
-`offset`, `angle` (about the target's z) and `flip` adjust the result.
-Stand-in hardware is in `qfold/parts.py` (origin at the mounting point, z out
-of the case). Real parts come in with `insert_step`.
+`offset`, `angle` (about the target's z) and `flip` (turn the part over, for
+one that stands on an inside face) adjust the result. `frame((x, y, z))` makes
+a target from plain coordinates.
+
+Other parts come from three places:
+
+```python
+parts.screw_m3x6()                                   # stand-ins in qfold/parts.py
+post = prim_component("standoff_M3x8", [cyl((0, 0, 0), 6.0, 8.0)])   # your own: cyl(base point,
+                                                     # diameter, length), box(corner, dx, dy, dz)
+board = insert_step(d, "board.step", name="board")   # a real part or assembly
+```
+
+A part's origin is its mounting point, with z pointing out of the case. An
+inserted STEP keeps its product names: a part called `RV1` in the file is the
+occurrence `"board/RV1"`, and `align(board, "RV1", onto=...)` places the whole
+board by that part.
 
 **6. Project.** Say what must hold, then build:
 
@@ -172,7 +188,7 @@ qfold/
   render.py    numpy z-buffer renderer (no GPU or display)
   kernel.py    runs sheetkernel
 kernel/        sheetkernel (C++/OCCT): bodies + placed instances in, answers out
-examples/      pedal_box (the template), synth_case
+examples/      pedal_box (the template), chassis, synth_case
 ```
 
 Python owns the design, the fold math and the assembly tree. The kernel owns
@@ -257,7 +273,7 @@ The synth case passes SendCutSend's limits in 1.6 mm 5052 and JLCCNC's in 1.5 mm
 ## Setup
 
 On a fresh checkout, one command gets everything and runs the tests. It takes
-about 40 seconds and needs only git, so it works in sandboxes without PyPI:
+about a minute and needs only git, so it works in sandboxes without PyPI:
 
 ```bash
 scripts/bootstrap.sh
