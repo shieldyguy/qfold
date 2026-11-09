@@ -147,18 +147,23 @@ scripts/bootstrap.sh
 python -m qfold.pipeline out
 ```
 
-The bootstrap script does three things:
+The bootstrap script:
 
+- **Checks the platform and tools.** It stops early, with a clear message, if
+  the machine isn't Linux x86_64 or is missing git, g++, `rsvg-convert`,
+  `qpdf`, `pdftoppm`, numpy, Pillow or pytest.
 - **Fetches OpenCascade.** It shallow-clones the
   `prebuilt/occt-7.9.3-linux-x86_64` branch into `.occt/install`. That branch
-  holds compiled libraries and headers only, for Linux x86_64 on Ubuntu 24.04.
-- **Gets ezdxf.** If `ezdxf` isn't importable, it clones ezdxf into `.deps/`.
-  qfold finds it there on its own.
-- **Builds sheetkernel.** It compiles the kernel against those libraries, which
-  takes seconds.
-
-You also need Python 3.11+ with numpy, Pillow and pytest, plus `rsvg-convert`,
-`qpdf` and `pdftoppm`.
+  holds compiled libraries and headers only, for Linux x86_64 on Ubuntu 24.04
+  (glibc 2.38+). The clone must match the commit pinned in the script, and the
+  libraries must match `scripts/occt-prebuilt.sha256`. A moved branch or an
+  altered library stops the bootstrap instead of being linked silently. An
+  interrupted clone is cleared and retried.
+- **Gets ezdxf.** If `ezdxf` isn't importable, it sparse-clones the pinned
+  release (`src/` only) into `.deps/`. An installed ezdxf takes precedence.
+- **Builds sheetkernel and smoke-tests it.** Compiling takes seconds. It then
+  checks that every shared library resolves and that a tiny job returns the
+  right volume, so glibc or library problems show up here in one line.
 
 On another platform, or to change OpenCascade's build options, build it from
 source once and point the kernel at it. This takes about 40 minutes on 2 cores:
@@ -168,9 +173,15 @@ scripts/build_occt.sh .occt
 kernel/build.sh                # uses .occt/install by default, or set OCCT_DIR
 ```
 
-To publish a new prebuilt branch, commit the stripped `lib/` and
-`include/opencascade/` together with the OCCT licence files on an orphan
-branch, and update `occt_branch` in `scripts/bootstrap.sh`.
+To publish a new prebuilt branch:
+
+1. Commit the stripped `lib/` and `include/opencascade/`, with the OCCT licence
+   files, on an orphan branch.
+2. Regenerate the manifest: `(cd <install> && sha256sum lib/*.so.*.*.*) >
+   scripts/occt-prebuilt.sha256`.
+3. Update `occt_branch` and `occt_sha` in `scripts/bootstrap.sh`.
+
+Don't move an existing prebuilt branch; publish a new one.
 
 ## Next
 
