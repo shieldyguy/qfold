@@ -181,10 +181,17 @@ s.notes  # anything to know, e.g. where K came from
 | --- | --- | --- |
 | SendCutSend | per material and thickness, 10 materials | die-based hole to bend, min flange, min hole, max bent size, max bend length |
 | OSH Cut | not public: in their app (app.oshcut.com/catalog) | min hole, web, part size and tolerance per thickness for 5052, A1008, 304, G90 |
-| JLCCNC | not public: set by their quote tool | design-guide multiples of T; 0.5–6 mm in 5052, 304, 201, cold-rolled, galvanized |
+| JLCCNC | radius per thickness (outer corner radius − T); K not published | min flange per thickness, hole to bend, edge, web, min hole, 800 mm max; 11 stock thicknesses, nominal and actual |
 
-For OSH Cut and JLCCNC, `rule` stays None until you pass `bend_radius=` and
-`k_factor=` read from their app. The limits are there either way. Names are
+For OSH Cut, `rule` stays None until you pass `bend_radius=` and
+`k_factor=` read from their app. The limits are there either way.
+
+JLCCNC requires a STEP model for orders and lays out the flat pattern from it
+itself, so its unpublished K never reaches the part. It only shapes qfold's
+own flat drawing. qfold uses the middle of JLCCNC's design-guide range unless
+you pass `k_factor=`. The minimum flanges and the 3 mm hole-to-bend rule come
+from JLC's Chinese bending article. JLCCNC stocks 1.5 mm, not 1.6, and its
+1.5 mm sheet is actually 1.42 mm thick: the notes give the actual thickness. Names are
 the shop's own: `shops.materials(shop)` lists them with their stock
 thicknesses, and a wrong name or thickness lists the valid ones.
 
@@ -202,7 +209,7 @@ How the published numbers map to qfold's checks:
 - "Cut features at least half the die width from the bend centre line"
   becomes the hole-to-bend distance from the tangent line: (die − BA)/2.
 
-The synth case passes SendCutSend's limits in 1.6 mm 5052 as designed.
+The synth case passes SendCutSend's limits in 1.6 mm 5052 and JLCCNC's in 1.5 mm 5052, as designed.
 
 ## Setup
 

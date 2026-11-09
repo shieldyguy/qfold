@@ -9,10 +9,12 @@ in the shop's own units, with the source pages and the date they were read.
 * `rules`: dfm.Rules with the limits that shop publishes. Anything it doesn't
   publish keeps qfold's default (see dfm.Rules).
 
-OSH Cut and JLCCNC don't publish bend radius or K-factor outside their apps,
-so their `rule` is None until you pass `bend_radius` and `k_factor` read from
-the app (or a test bend). Names are the shop's own; `materials(shop)` lists
-them.
+OSH Cut doesn't publish bend radius or K-factor outside its app, so its
+`rule` is None until you pass `bend_radius` and `k_factor` read from there.
+JLCCNC publishes the radius but not K. It unfolds the STEP you send itself, so
+K only shapes qfold's own flat pattern, and the middle of JLCCNC's design-guide
+range is used unless you pass one. Names are the shop's own; `materials(shop)`
+lists them.
 
     s = shops.spec("sendcutsend", "5052 Aluminum", 1.6)
     CaseParams(rule=s.rule)  # and dfm checks with s.rules
@@ -58,23 +60,27 @@ def _rows(data: dict, material: str) -> list[dict]:
     if m is None:
         raise ValueError(f"{data['shop']} has no material {material!r}; it has: "
                          + ", ".join(repr(k) for k in data["materials"]))
-    return [dict(zip(m["columns"], r)) for r in m.get("rows", [])]
+    table = m if "rows" in m else data["stock"]  # one stock table for every material
+    return [dict(zip(table["columns"], r)) for r in table["rows"]]
+
+
+def _mm(data: dict) -> float:
+    return IN if data["units"] == "in" else 1.0
 
 
 def materials(shop: str) -> dict[str, list[float]]:
-    """Material names and their stock thicknesses in mm (empty: any thickness
-    in the shop's range)."""
+    """Material names and their stock thicknesses in mm."""
     data = load(shop)
-    scale = IN if data["units"] == "in" else 1.0
-    return {name: [round(r["T"] * scale, 3) for r in _rows(data, name)]
+    return {name: [round(r["T"] * _mm(data), 3) for r in _rows(data, name)]
             for name in data["materials"]}
 
 
 def _pick(data: dict, material: str, thickness: float, tol: float) -> dict:
-    rows = _rows(data, material)
-    best = min(rows, key=lambda r: abs(r["T"] * IN - thickness))
-    if abs(best["T"] * IN - thickness) > tol:
-        offered = ", ".join(f"{r['T'] * IN:.2f} mm ({r['T']:.3f} in)" for r in rows)
+    rows, s = _rows(data, material), _mm(data)
+    best = min(rows, key=lambda r: abs(r["T"] * s - thickness))
+    if abs(best["T"] * s - thickness) > tol:
+        offered = ", ".join(f"{r['T'] * IN:.2f} mm ({r['T']:.3f} in)" if s == IN
+                            else f"{r['T']:g} mm" for r in rows)
         raise ValueError(f"{data['shop']} {material} isn't offered at {thickness:g} mm; "
                          f"thicknesses: {offered}")
     return best
@@ -140,22 +146,35 @@ def _oshcut(data, material, thickness, bend_radius, k_factor, tol) -> ShopSpec:
 
 
 def _jlccnc(data, material, thickness, bend_radius, k_factor, tol) -> ShopSpec:
-    _rows(data, material)  # validates the name
+    r = _pick(data, material, thickness, tol)
     g = data["general"]
-    lo, hi = g["thickness_range"]
-    if not lo <= thickness <= hi:
-        raise ValueError(f"JLCCNC sheet metal is {lo:g}-{hi:g} mm thick, not {thickness:g}")
-    T = thickness
+    T = r["T"]
+    R = bend_radius if bend_radius is not None else (
+        r["R_outer"] - T if r["R_outer"] is not None else None)
+    K = k_factor if k_factor is not None else data["k_midpoint"][material]
+    notes = []
+    if bend_radius is None and R is not None:
+        notes.append(f"inside radius {R:g} mm = published outer corner radius "
+                     f"{r['R_outer']:g} - T")
+    if R is None:
+        notes.append(f"no published bend radius at {T:g} mm: pass bend_radius= and k_factor=")
+    if k_factor is None:
+        notes.append(f"K {K} is the middle of JLCCNC's design-guide range, not shop data. "
+                     "JLCCNC unfolds the STEP you send, so K only affects qfold's own flat "
+                     "pattern")
+    notes.append(f"actual sheet thickness {r['T_actual']:g} mm for nominal {T:g}")
+    # Minimum flange: published for 1-3 mm, else the article's V/2 + 2 mm with
+    # V = 6 T. Read as outside-to-edge; the flat wall past the bend is R + T
+    # shorter (R taken as 0 when unknown, the stricter case).
+    flange = r["flange"] if r["flange"] is not None else g["v_die_per_T"] * T / 2 + 2
     rules = Rules(
-        hole_to_bend=g["hole_to_bend_tangent_per_T"] * T,
+        # 2 T from the bend tangent (design guide), and nothing within 3 mm of
+        # the bend (bending article; taken from the tangent, the stricter case).
+        hole_to_bend=max(2 * T, 3.0),
         hole_to_edge=g["hole_to_edge_per_T"] * T,
         hole_web=g["min_hole_spacing"],
         min_hole=max(1.0, T / 2),
-        min_flange=g["min_flange_per_T"] * T)
-    notes = ["limits are JLCCNC's design-guide multiples of T, not per-thickness shop data"]
-    if bend_radius is None:
-        notes.append("bend radius and K-factor aren't published (the quote tool sets them): "
-                     "pass bend_radius= and k_factor=; the guide suggests R about 1 T")
-    rule = SheetMetalRule(f"JLCCNC {material}", T, bend_radius, k_factor) \
-        if bend_radius is not None else None
-    return ShopSpec(data["shop"], material, T, rule, rules, {}, tuple(notes), data["sources"])
+        min_flange=flange - ((R or 0.0) + T),
+        max_sheet=(g["max_length"], g["max_length"]))
+    rule = SheetMetalRule(f"JLCCNC {material}", T, R, K) if R is not None else None
+    return ShopSpec(data["shop"], material, T, rule, rules, r, tuple(notes), data["sources"])

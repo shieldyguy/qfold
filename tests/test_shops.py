@@ -66,8 +66,10 @@ def test_flat_pattern_uses_the_shops_bend_deduction(name, row):
     assert bend.R == pytest.approx(row["R"] * IN)
 
 
-def test_synth_case_meets_sendcutsend_limits():
-    s = shops.spec("sendcutsend", "5052 Aluminum", 1.6)
+@pytest.mark.parametrize("shop, material, T", [("sendcutsend", "5052 Aluminum", 1.6),
+                                               ("jlccnc", "Aluminum 5052", 1.5)])
+def test_synth_case_meets_shop_limits(shop, material, T):
+    s = shops.spec(shop, material, T)
     p = design.CaseParams(rule=s.rule)
     for lay in (design.build_shell_only(p), design.build_panel(p)):
         rep = dfm.Report()
@@ -95,10 +97,26 @@ def test_unpublished_bend_data_needs_to_be_supplied():
     assert o.rules.hole_web == pytest.approx(0.021 * IN)
     o = shops.spec("oshcut", "5052-H32 Aluminum", 1.6, bend_radius=1.0, k_factor=0.4)
     assert (o.rule.T, o.rule.R, o.rule.K) == (pytest.approx(1.6002), 1.0, 0.4)
+
+
+def test_jlccnc_radius_from_outer_corner_table():
     j = shops.spec("jlccnc", "Aluminum 5052", 2.0)
-    assert j.rule is None
-    assert (j.rules.hole_to_bend, j.rules.hole_to_edge, j.rules.min_flange,
-            j.rules.min_hole) == (4.0, 3.0, 6.0, 1.0)
+    # Outer corner R3.7 at 2 mm; the inside radius is T less.
+    assert (j.rule.T, j.rule.R) == (2.0, pytest.approx(1.7))
+    assert j.rule.K == 0.415 and any("only affects qfold's own flat" in n for n in j.notes)
+    assert any("actual sheet thickness 1.95" in n for n in j.notes)
+    # Published flange 10 mm, outside to edge: the flat wall past the bend is R + T less.
+    assert j.rules.min_flange == pytest.approx(10 - 3.7)
+    assert (j.rules.hole_to_bend, j.rules.hole_to_edge, j.rules.min_hole) == (4.0, 3.0, 1.0)
+    # 1 mm: the 3 mm-from-bend rule beats 2 T.
+    assert shops.spec("jlccnc", "Aluminum 5052", 1.0).rules.hole_to_bend == 3.0
+    # 4 mm has no flange table entry: V/2 + 2 with V = 6 T, outside to edge.
+    assert shops.spec("jlccnc", "Cold Rolled Steel", 4.0).rules.min_flange == \
+        pytest.approx(6 * 4 / 2 + 2 - (4 + 4))
+    # 0.8 mm is stocked but its radius isn't published.
+    assert shops.spec("jlccnc", "Aluminum 5052", 0.8).rule is None
+    k = shops.spec("jlccnc", "Aluminum 5052", 0.8, bend_radius=0.8, k_factor=0.4).rule
+    assert (k.R, k.K) == (0.8, 0.4)
 
 
 @pytest.mark.parametrize("args, kw, words", [
@@ -108,7 +126,8 @@ def test_unpublished_bend_data_needs_to_be_supplied():
     (("sendcutsend", "5052 Aluminum", 1.6), {"bend_radius": 1, "k_factor": 0.4}, "fixed radius"),
     (("oshcut", "5052-H32 Aluminum", 12.7), {}, "doesn't bend"),
     (("oshcut", "5052-H32 Aluminum", 1.6), {"bend_radius": 1}, "together"),
-    (("jlccnc", "Aluminum 5052", 8.0), {}, "0.5-6 mm"),
+    (("jlccnc", "Aluminum 5052", 1.6), {}, "1.5 mm, 2 mm"),
+    (("jlccnc", "Aluminum 6061", 1.5), {}, "'Aluminum 5052'"),
 ])
 def test_lookup_errors_name_the_options(args, kw, words):
     with pytest.raises(ValueError) as e:
