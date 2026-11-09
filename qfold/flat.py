@@ -17,7 +17,7 @@ from pathlib import Path
 
 import numpy as np
 
-from .fold import Layout
+from .fold import SheetLayout
 
 # Prefer an installed ezdxf. Fall back to a git checkout in .deps (made by
 # scripts/bootstrap.sh) or QFOLD_EZDXF_SRC, so PyPI isn't needed.
@@ -54,8 +54,8 @@ class FlatPattern:
     area: float = 0.0
 
 
-def flat_pattern(lay: Layout, outline: dict) -> FlatPattern:
-    U, V, N = (np.array(x, float) for x in (lay.part.U, lay.part.V, lay.part.N))
+def flat_pattern(lay: SheetLayout, outline: dict) -> FlatPattern:
+    U, V, N = (np.array(x, float) for x in (lay.body.U, lay.body.V, lay.body.N))
     right_handed = np.dot(np.cross(U, V), N) > 0
 
     def tp(p):  # development plane -> outside view
@@ -65,7 +65,7 @@ def flat_pattern(lay: Layout, outline: dict) -> FlatPattern:
     def ta(a0, a1):  # CCW arc angles under that reflection
         return (180.0 - a1, 180.0 - a0) if right_handed else (-a1, -a0)
 
-    fp = FlatPattern(lay.part.name, area=outline["area"])
+    fp = FlatPattern(lay.body.name, area=outline["area"])
     for e in outline["edges"]:
         if e["type"] == "line":
             fp.lines.append((tp(e["a"]), tp(e["b"])))
@@ -85,11 +85,12 @@ def flat_pattern(lay: Layout, outline: dict) -> FlatPattern:
     pts = [p for ln in fp.lines for p in ln]
     for c, r in fp.circles:
         pts += [c - r, c + r]
-    for c, r, a0, a1 in fp.arcs:
+    for c, r, a0, a1 in fp.arcs:  # exact: end points plus any axis crossings
         span = (a1 - a0) % 360.0 or 360.0
-        for t in np.linspace(0, span, 37):
-            ang = math.radians(a0 + t)
-            pts.append(c + r * np.array([math.cos(ang), math.sin(ang)]))
+        angles = [a0, a0 + span] + [q for q in range(-360, 721, 90) if a0 < q < a0 + span]
+        for ang in angles:
+            t = math.radians(ang)
+            pts.append(c + r * np.array([math.cos(t), math.sin(t)]))
     for p in fp.polys:
         pts += list(p)
     allp = np.array(pts)
@@ -103,6 +104,14 @@ def flat_pattern(lay: Layout, outline: dict) -> FlatPattern:
         b.a, b.b = b.a + shift, b.b + shift
     fp.size = (float(hi[0] - lo[0]), float(hi[1] - lo[1]))
     return fp
+
+
+def cut_length(fp: FlatPattern) -> float:
+    total = sum(float(np.linalg.norm(b - a)) for a, b in fp.lines)
+    total += sum(2 * math.pi * r for _, r in fp.circles)
+    total += sum(math.radians((a1 - a0) % 360.0 or 360.0) * r for _, r, a0, a1 in fp.arcs)
+    total += sum(float(np.sum(np.linalg.norm(np.diff(p, axis=0), axis=1))) for p in fp.polys)
+    return total
 
 
 def write_dxf(fp: FlatPattern, path: Path, material: str, thickness: float) -> None:

@@ -1,5 +1,5 @@
 {
-  "summary": "26 pass, 0 warn, 0 fail",
+  "summary": "39 pass, 0 warn, 0 fail",
   "ok": true,
   "checks": [
     {
@@ -10,11 +10,18 @@
       "limit": null
     },
     {
+      "name": "bottom_shell: no self-intersection",
+      "status": "pass",
+      "detail": "folded fuse loses 2.62e-10 mm\u00b3, flat fuse loses -5.82e-11 mm\u00b3 (limit 1.4e-04)",
+      "value": null,
+      "limit": null
+    },
+    {
       "name": "bottom_shell: flat pattern matches fold",
       "status": "pass",
-      "detail": "folded\u2212flat volume 300.5956 mm\u00b3, bend allowance predicts 300.5956",
-      "value": 300.59560000000056,
-      "limit": 300.59562757266474
+      "detail": "folded\u2212flat volume 295.448442 mm\u00b3, bend allowance predicts 295.448442",
+      "value": 295.44844216902857,
+      "limit": 295.44844216902317
     },
     {
       "name": "top_panel: valid solid",
@@ -24,30 +31,23 @@
       "limit": null
     },
     {
-      "name": "top_panel: flat pattern matches fold",
+      "name": "top_panel: no self-intersection",
       "status": "pass",
-      "detail": "folded\u2212flat volume 93.2355 mm\u00b3, bend allowance predicts 93.2355",
-      "value": 93.23546999999962,
-      "limit": 93.23547108593426
-    },
-    {
-      "name": "bottom_shell vs top_panel: no interference",
-      "status": "pass",
-      "detail": "overlap volume 0.000000 mm\u00b3",
+      "detail": "folded fuse loses 0.00e+00 mm\u00b3, flat fuse loses -7.28e-11 mm\u00b3 (limit 8.5e-05)",
       "value": null,
       "limit": null
     },
     {
-      "name": "bottom_shell vs top_panel: clearance",
+      "name": "top_panel: flat pattern matches fold",
       "status": "pass",
-      "detail": "closest 0.300 mm, need \u2265 0.2",
-      "value": 0.3,
-      "limit": 0.2
+      "detail": "folded\u2212flat volume 93.235471 mm\u00b3, bend allowance predicts 93.235471",
+      "value": 93.2354710859654,
+      "limit": 93.23547108593426
     },
     {
       "name": "bottom_shell.step reads back",
       "status": "pass",
-      "detail": "1 solid(s), volume 137741.354 mm\u00b3 (model 137741.354)",
+      "detail": "1 solid(s), volume 137537.324 mm\u00b3 (model 137537.324)",
       "value": null,
       "limit": null
     },
@@ -61,28 +61,91 @@
     {
       "name": "assembly.step reads back",
       "status": "pass",
-      "detail": "2 solid(s), volume 222551.367 mm\u00b3 (model 222551.366)",
+      "detail": "36 solid(s), volume 335258.135 mm\u00b3 (model 335258.135)",
       "value": null,
       "limit": null
     },
     {
-      "name": "screws pass through cheek and lip holes",
+      "name": "bottom_shell vs top_panel: no interference",
       "status": "pass",
-      "detail": "4 M3 shanks clear both parts",
+      "detail": "overlap 0.000000 mm\u00b3",
       "value": null,
       "limit": null
     },
     {
-      "name": "PCB keep-out clears the case",
+      "name": "bottom_shell vs top_panel: clearance",
       "status": "pass",
-      "detail": "closest 4.30 mm to the case, need \u2265 2.0",
-      "value": 4.300769157,
+      "detail": "closest 0.300 mm, need \u2265 0.2",
+      "value": 0.2999999999998977,
+      "limit": 0.2
+    },
+    {
+      "name": "screw heads on cheeks",
+      "status": "pass",
+      "detail": "4 touching, widest gap 0.0000 mm (\u2264 0.01), no overlap",
+      "value": 5.684341886080802e-14,
+      "limit": 0.01
+    },
+    {
+      "name": "feet on base",
+      "status": "pass",
+      "detail": "4 touching, widest gap 0.0000 mm (\u2264 0.01), no overlap",
+      "value": 0,
+      "limit": 0.01
+    },
+    {
+      "name": "board parts against panel",
+      "status": "pass",
+      "detail": "20 touching, widest gap 0.0000 mm (\u2264 0.01), 6 clear of it, no overlap",
+      "value": 0,
+      "limit": 0.01
+    },
+    {
+      "name": "control board vs bottom_shell: clearance",
+      "status": "pass",
+      "detail": "overlap 0.000000 mm\u00b3, closest 5.87 mm, need \u2265 2.0",
+      "value": 5.869698237928162,
       "limit": 2.0
+    },
+    {
+      "name": "faces of one part keep their gaps",
+      "status": "pass",
+      "detail": "7 unjoined face pairs, tightest 0.400 mm (bottom_shell: back_wall vs cheek_right), need \u2265 0.2",
+      "value": 0.39999999999997726,
+      "limit": 0.2
+    },
+    {
+      "name": "screws on cheek and lip holes",
+      "status": "pass",
+      "detail": "4 screws, worst 0.000 mm across, 0.000 mm along, 0.000\u00b0",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "feet on their base holes",
+      "status": "pass",
+      "detail": "4 feet, worst 0.000 mm across, 0.000 mm along, 0.000\u00b0",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "board parts on their panel holes",
+      "status": "pass",
+      "detail": "25 parts, worst 0.000 mm across, 0.000 mm along, 0.000\u00b0",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "every panel hole has a part, every part a hole",
+      "status": "pass",
+      "detail": "25 panel holes, 25 board parts",
+      "value": null,
+      "limit": null
     },
     {
       "name": "bottom_shell: hole to bend",
       "status": "pass",
-      "detail": "closest 7.10 mm (base foot screw M3 to bend front), need \u2265 4.80",
+      "detail": "tightest 7.10 mm (base foot screw M3 to bend front), need \u2265 4.80",
       "value": 7.1000000000000005,
       "limit": 4.800000000000001
     },
@@ -101,11 +164,25 @@
       "limit": 1.6
     },
     {
+      "name": "bottom_shell: holes inside their face",
+      "status": "pass",
+      "detail": "every hole lies within its face",
+      "value": null,
+      "limit": null
+    },
+    {
       "name": "bottom_shell: minimum hole size",
       "status": "pass",
       "detail": "all holes \u2265 1.60 mm",
       "value": null,
       "limit": null
+    },
+    {
+      "name": "bottom_shell: bend corner relief",
+      "status": "pass",
+      "detail": "bends end \u2265 2.83 mm apart, need \u2265 1.60",
+      "value": 2.8284271247461903,
+      "limit": 1.6
     },
     {
       "name": "bottom_shell: flange length",
@@ -117,7 +194,7 @@
     {
       "name": "top_panel: hole to bend",
       "status": "pass",
-      "detail": "closest 5.79 mm (lip_right PEM CLS-M3 nut to bend panel_right), need \u2265 4.80",
+      "detail": "tightest 5.79 mm (lip_right PEM CLS-M3 nut to bend panel_right), need \u2265 4.80",
       "value": 5.790000000000001,
       "limit": 4.800000000000001
     },
@@ -136,6 +213,13 @@
       "limit": 1.6
     },
     {
+      "name": "top_panel: holes inside their face",
+      "status": "pass",
+      "detail": "every hole lies within its face",
+      "value": null,
+      "limit": null
+    },
+    {
       "name": "top_panel: minimum hole size",
       "status": "pass",
       "detail": "all holes \u2265 1.60 mm",
@@ -148,6 +232,13 @@
       "detail": "4 hardware holes meet their centre-to-edge minimum",
       "value": null,
       "limit": null
+    },
+    {
+      "name": "top_panel: bend corner relief",
+      "status": "pass",
+      "detail": "bends end \u2265 309.80 mm apart, need \u2265 1.60",
+      "value": 309.8,
+      "limit": 1.6
     },
     {
       "name": "top_panel: flange length",
@@ -166,7 +257,7 @@
     {
       "name": "bottom_shell_flat.dxf reads back",
       "status": "pass",
-      "detail": "78 cut entities, 4 bend lines, extent 429.538 \u00d7 236.206 mm",
+      "detail": "18 circles, 44 lines, 16 arcs, 4 bends, cut 2178.6 mm, extent 429.538 \u00d7 236.206",
       "value": null,
       "limit": null
     },
@@ -180,24 +271,76 @@
     {
       "name": "top_panel_flat.dxf reads back",
       "status": "pass",
-      "detail": "60 cut entities, 2 bend lines, extent 346.538 \u00d7 160.911 mm",
+      "detail": "28 circles, 28 lines, 4 arcs, 2 bends, cut 1806.3 mm, extent 346.538 \u00d7 160.911",
       "value": null,
       "limit": null
     }
   ],
+  "parts_list": [
+    {
+      "component": "bottom_shell",
+      "qty": 1,
+      "source": "sheet metal"
+    },
+    {
+      "component": "top_panel",
+      "qty": 1,
+      "source": "sheet metal"
+    },
+    {
+      "component": "screw_M3x6_pan",
+      "qty": 4,
+      "source": "stand-in"
+    },
+    {
+      "component": "rubber_foot_12x4",
+      "qty": 4,
+      "source": "stand-in"
+    },
+    {
+      "component": "control_board_pcb",
+      "qty": 1,
+      "source": "STEP: control_board.step"
+    },
+    {
+      "component": "oled_096",
+      "qty": 1,
+      "source": "STEP: control_board.step"
+    },
+    {
+      "component": "led_3mm",
+      "qty": 4,
+      "source": "STEP: control_board.step"
+    },
+    {
+      "component": "pot_9mm",
+      "qty": 10,
+      "source": "STEP: control_board.step"
+    },
+    {
+      "component": "toggle_m6",
+      "qty": 2,
+      "source": "STEP: control_board.step"
+    },
+    {
+      "component": "button_12mm",
+      "qty": 8,
+      "source": "STEP: control_board.step"
+    }
+  ],
   "bodies": {
-    "bottom_shell": {
+    "bottom_shell#bottom_shell": {
       "valid": true,
-      "volume": 137741.354,
-      "area": 175613.7792,
+      "volume": 137537.3243229567,
+      "area": 175409.9419975502,
       "com": [
-        160.1940503,
-        90.2818049,
-        10.87943421
+        160.19433814492714,
+        90.29705744577518,
+        10.891431817683612
       ],
       "bbox": [
-        -6.039613254e-15,
-        -2.294643781e-15,
+        -6.039613253960851e-15,
+        -2.2946437811699816e-15,
         0,
         320,
         160,
@@ -205,167 +348,1257 @@
       ],
       "solids": 1,
       "faces": 96,
-      "edges": 266
+      "edges": 282,
+      "parts_volume": 137537.32432295696
     },
-    "top_panel": {
+    "top_panel#top_panel": {
       "valid": true,
-      "volume": 84810.01248,
-      "area": 108903.808,
+      "volume": 84810.01247791975,
+      "area": 108903.80802529819,
       "com": [
-        159.5257447,
-        80.74810218,
-        -1.578423088
+        159.52574466252707,
+        80.74810217928204,
+        -1.5784230875353913
       ],
       "bbox": [
-        -1.643130076e-15,
+        -1.6431300764452318e-15,
         0,
         -18,
         316.2,
-        160.910997,
+        160.91099701980386,
         0
       ],
       "solids": 1,
       "faces": 70,
-      "edges": 188
+      "edges": 188,
+      "parts_volume": 84810.01247791975
     },
-    "bottom_shell_flat": {
+    "screw_M3x6_pan#screw_M3x6_pan": {
       "valid": true,
-      "volume": 137440.7584,
-      "area": 175235.461,
+      "volume": 89.92808970900784,
+      "area": 138.62277583964962,
       "com": [
-        160.1944747,
-        95.06048625,
+        -3.2592583635375775e-16,
+        -6.271999790694145e-17,
+        -0.8864628820960698
+      ],
+      "bbox": [
+        -2.75,
+        -2.75,
+        -6,
+        2.75,
+        2.75,
+        2
+      ],
+      "solids": 1,
+      "faces": 5,
+      "edges": 6,
+      "parts_volume": 89.92808970900782
+    },
+    "rubber_foot_12x4#rubber_foot_12x4": {
+      "valid": true,
+      "volume": 452.38934211693015,
+      "area": 376.9911184307752,
+      "com": [
+        -1.539231401399628e-15,
+        2.1965901251881392e-16,
+        2.0000000000000004
+      ],
+      "bbox": [
+        -6,
+        -6,
+        0,
+        6,
+        6,
+        4
+      ],
+      "solids": 1,
+      "faces": 3,
+      "edges": 3,
+      "parts_volume": 452.38934211693015
+    },
+    "control_board:control_board_pcb#control_board_pcb": {
+      "valid": true,
+      "volume": 69603.65008855033,
+      "area": 88428.91780115126,
+      "com": [
+        150.1,
+        72.4554985099,
+        -0.8
+      ],
+      "bbox": [
+        0,
+        0,
+        -1.6,
+        300.2,
+        144.9109970198,
+        0
+      ],
+      "solids": 1,
+      "faces": 6,
+      "edges": 12
+    },
+    "control_board:oled_096#oled_096": {
+      "valid": true,
+      "volume": 6650,
+      "area": 2410,
+      "com": [
+        -3.860946650110906e-16,
+        2.0782039414336766e-16,
+        -5
+      ],
+      "bbox": [
+        -17.5,
+        -9.5,
+        -10,
+        17.5,
+        9.5,
+        0
+      ],
+      "solids": 1,
+      "faces": 6,
+      "edges": 12
+    },
+    "control_board:led_3mm#led_3mm": {
+      "valid": true,
+      "volume": 84.82300164692441,
+      "area": 127.23450247039406,
+      "com": [
+        1.256515429713982e-16,
+        -4.769092802342056e-17,
+        -4.000000000000001
+      ],
+      "bbox": [
+        -1.5,
+        -1.5,
+        -10,
+        1.5,
+        1.5,
+        2
+      ],
+      "solids": 1,
+      "faces": 3,
+      "edges": 3
+    },
+    "control_board:pot_9mm#pot_9mm": {
+      "valid": true,
+      "volume": 1661.5375582670147,
+      "area": 1011.69908169875,
+      "com": [
+        2.8147376287123345e-14,
+        -5.422910792239936e-17,
+        0.33552896546936933
+      ],
+      "bbox": [
+        -4.75,
+        -5.5,
+        -10,
+        4.75,
+        5.5,
+        20
+      ],
+      "solids": 1,
+      "faces": 10,
+      "edges": 18
+    },
+    "control_board:toggle_m6#toggle_m6": {
+      "valid": true,
+      "volume": 1315.6747553525129,
+      "area": 863.6194490192498,
+      "com": [
+        1.3482587034588283e-14,
+        -3.8063961229174335e-17,
+        -2.6870992076851397
+      ],
+      "bbox": [
+        -6.5,
+        -4,
+        -10,
+        6.5,
+        4,
+        18
+      ],
+      "solids": 1,
+      "faces": 10,
+      "edges": 18
+    },
+    "control_board:button_12mm#button_12mm": {
+      "valid": true,
+      "volume": 1862.7327074670573,
+      "area": 913.7698991265759,
+      "com": [
+        3.648967875548685e-14,
+        -1.997457133081445e-18,
+        -3.411404416528874
+      ],
+      "bbox": [
+        -6,
+        -6,
+        -10,
+        6,
+        6,
+        4
+      ],
+      "solids": 1,
+      "faces": 8,
+      "edges": 15
+    },
+    "bottom_shell#flat": {
+      "valid": true,
+      "volume": 137241.875880788,
+      "area": 175038.05785213737,
+      "com": [
+        160.19475650777548,
+        95.08231098989958,
         0.8
       ],
       "bbox": [
-        -54.76884925,
-        -21.03716301,
+        -54.768849254478,
+        -21.037163010128314,
         0,
-        374.7688493,
-        215.1688493,
+        374.76884925447797,
+        215.168849254478,
         1.6
       ],
       "solids": 1,
       "faces": 80,
-      "edges": 234
+      "edges": 234,
+      "parts_volume": 137241.87588078793
     },
-    "top_panel_flat": {
+    "top_panel#flat": {
       "valid": true,
-      "volume": 84716.77701,
-      "area": 108785.9769,
+      "volume": 84716.77700683386,
+      "area": 108785.9768900898,
       "com": [
-        159.5273138,
-        -80.74842421,
-        0.8
+        159.52731377291983,
+        -80.74842420570836,
+        0.7999999999999998
       ],
       "bbox": [
-        -15.16884925,
-        -160.910997,
+        -15.168849254478006,
+        -160.91099701980386,
         0,
-        331.3688493,
+        331.368849254478,
         0,
         1.6
       ],
       "solids": 1,
       "faces": 62,
-      "edges": 180
+      "edges": 180,
+      "parts_volume": 84716.77700683378
+    },
+    "bottom_shell#face:base": {
+      "valid": true,
+      "volume": 75310.1335430638,
+      "area": 96447.06443234411,
+      "com": [
+        160.00000000000003,
+        78.88693892817439,
+        0.800000000000001
+      ],
+      "bbox": [
+        3.2,
+        3.2,
+        0,
+        316.8,
+        156.8,
+        1.6
+      ],
+      "solids": 1,
+      "faces": 42,
+      "edges": 120,
+      "parts_volume": 75310.13354306377
+    },
+    "bottom_shell#face:front_lip": {
+      "valid": true,
+      "volume": 10528.928642892959,
+      "area": 14251.299407634277,
+      "com": [
+        160,
+        0.7999999999999989,
+        13.578328170195377
+      ],
+      "bbox": [
+        0,
+        -2.2946437811699816e-15,
+        3.1999999999999997,
+        320,
+        1.6,
+        23.86831375565031
+      ],
+      "solids": 1,
+      "faces": 10,
+      "edges": 24,
+      "parts_volume": 10528.928642892959
+    },
+    "bottom_shell#face:back_wall": {
+      "valid": true,
+      "volume": 26913.28674405184,
+      "area": 35296.016888847895,
+      "com": [
+        160.99314322777752,
+        159.19999999999993,
+        30.837529464095425
+      ],
+      "bbox": [
+        0,
+        158.39999999999998,
+        3.1999999999999997,
+        320,
+        160,
+        58
+      ],
+      "solids": 1,
+      "faces": 28,
+      "edges": 78,
+      "parts_volume": 26913.28674405184
+    },
+    "bottom_shell#face:cheek_right": {
+      "valid": true,
+      "volume": 9622.658551139648,
+      "area": 12690.80677111411,
+      "com": [
+        319.1999999999999,
+        90.5175375788816,
+        23.687648691731
+      ],
+      "bbox": [
+        318.3999999999999,
+        2,
+        3.1999999999999997,
+        320,
+        158,
+        57.599999999999994
+      ],
+      "solids": 1,
+      "faces": 12,
+      "edges": 30,
+      "parts_volume": 9622.658551139648
+    },
+    "bottom_shell#face:cheek_left": {
+      "valid": true,
+      "volume": 9622.658551139602,
+      "area": 12690.80677111411,
+      "com": [
+        0.7999999999999975,
+        90.51753757888162,
+        23.687648691731003
+      ],
+      "bbox": [
+        -6.039613253960851e-15,
+        2,
+        3.1999999999999997,
+        1.6,
+        158,
+        57.599999999999994
+      ],
+      "solids": 1,
+      "faces": 12,
+      "edges": 30,
+      "parts_volume": 9622.658551139602
+    },
+    "top_panel#face:panel": {
+      "valid": true,
+      "volume": 76430.45735798006,
+      "area": 98242.94220199906,
+      "com": [
+        159.68205807997327,
+        80.78018217279008,
+        -0.8
+      ],
+      "bbox": [
+        0,
+        0,
+        -1.6,
+        316.2,
+        160.91099701980386,
+        0
+      ],
+      "solids": 1,
+      "faces": 46,
+      "edges": 132,
+      "parts_volume": 76430.45735798006
+    },
+    "top_panel#face:lip_right": {
+      "valid": true,
+      "volume": 3315.69501853922,
+      "area": 4689.481209534847,
+      "com": [
+        315.4,
+        80.45549850990194,
+        -10.540401425842854
+      ],
+      "bbox": [
+        314.59999999999997,
+        8,
+        -18,
+        316.2,
+        152.91099701980386,
+        -3.1999999999999993
+      ],
+      "solids": 1,
+      "faces": 8,
+      "edges": 18,
+      "parts_volume": 3315.69501853922
+    },
+    "top_panel#face:lip_left": {
+      "valid": true,
+      "volume": 3315.6950185392047,
+      "area": 4689.481209534847,
+      "com": [
+        0.7999999999999994,
+        80.45549850990193,
+        -10.540401425842857
+      ],
+      "bbox": [
+        -1.6431300764452318e-15,
+        8,
+        -18,
+        1.6,
+        152.91099701980386,
+        -3.1999999999999993
+      ],
+      "solids": 1,
+      "faces": 8,
+      "edges": 18,
+      "parts_volume": 3315.6950185392047
     }
   },
+  "envelope": [
+    -2.0000000000000044,
+    -2.2946437811699816e-15,
+    -4,
+    322,
+    160,
+    67.38050451415684
+  ],
   "pairs": [
     {
+      "label": "bottom_shell vs top_panel",
       "a": "bottom_shell",
       "b": "top_panel",
       "interference_volume": 0,
-      "min_distance": 0.3,
+      "min_distance": 0.2999999999998977,
       "closest": [
         [
-          1.6,
+          1.5999999999999974,
           2,
           26.4
         ],
         [
-          1.9,
-          2,
+          1.9000000000000001,
+          1.9999999999999991,
           26.4
+        ]
+      ]
+    },
+    {
+      "label": "screw heads on cheeks",
+      "a": "screw_1",
+      "b": "bottom_shell+top_panel",
+      "interference_volume": 0,
+      "min_distance": 5.684341886080802e-14,
+      "closest": [
+        [
+          320,
+          31.59430937076145,
+          23.749038553976305
+        ],
+        [
+          319.99999999999994,
+          31.59430937076145,
+          23.749038553976305
+        ]
+      ]
+    },
+    {
+      "label": "screw heads on cheeks",
+      "a": "screw_2",
+      "b": "bottom_shell+top_panel",
+      "interference_volume": 0,
+      "min_distance": 5.684341886080802e-14,
+      "closest": [
+        [
+          320,
+          130.54568301308515,
+          43.53931328244104
+        ],
+        [
+          319.99999999999994,
+          130.54568301308515,
+          43.53931328244104
+        ]
+      ]
+    },
+    {
+      "label": "screw heads on cheeks",
+      "a": "screw_3",
+      "b": "bottom_shell+top_panel",
+      "interference_volume": 0,
+      "min_distance": 3.603041993372369e-17,
+      "closest": [
+        [
+          -2.2814015736534528e-15,
+          31.59430937076145,
+          23.749038553976305
+        ],
+        [
+          -2.245371153719729e-15,
+          31.59430937076145,
+          23.749038553976305
+        ]
+      ]
+    },
+    {
+      "label": "screw heads on cheeks",
+      "a": "screw_4",
+      "b": "bottom_shell+top_panel",
+      "interference_volume": 0,
+      "min_distance": 2.14154397353739e-15,
+      "closest": [
+        [
+          -4.478563440373344e-15,
+          130.54568301308515,
+          43.53931328244104
+        ],
+        [
+          -2.245371153719729e-15,
+          130.54568301308515,
+          43.53931328244104
+        ]
+      ]
+    },
+    {
+      "label": "feet on base",
+      "a": "foot_1",
+      "b": "bottom_shell",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          18,
+          12.000000000000002,
+          0
+        ],
+        [
+          18,
+          12.000000000000002,
+          0
+        ]
+      ]
+    },
+    {
+      "label": "feet on base",
+      "a": "foot_2",
+      "b": "bottom_shell",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          18,
+          148,
+          0
+        ],
+        [
+          18,
+          148,
+          0
+        ]
+      ]
+    },
+    {
+      "label": "feet on base",
+      "a": "foot_3",
+      "b": "bottom_shell",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          314,
+          12.000000000000002,
+          0
+        ],
+        [
+          314,
+          12.000000000000002,
+          0
+        ]
+      ]
+    },
+    {
+      "label": "feet on base",
+      "a": "foot_4",
+      "b": "bottom_shell",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          314,
+          148,
+          0
+        ],
+        [
+          314,
+          148,
+          0
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/PCB",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 6.39999999999992,
+      "closest": [
+        [
+          310.1,
+          32.20735158762319,
+          18.980058801639682
+        ],
+        [
+          316.49999999999994,
+          32.20735158762318,
+          18.98005880163968
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/U1",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0.29289321881345265,
+      "closest": [
+        [
+          26.400000000000006,
+          104.74562777730411,
+          45.31743931111113
+        ],
+        [
+          26.192893218813445,
+          104.54254286986803,
+          45.27682232962391
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/D1",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0.0999999999999942,
+      "closest": [
+        [
+          75.4,
+          125.82811230465889,
+          49.53393621658209
+        ],
+        [
+          75.5,
+          125.82811230465889,
+          49.533936216582084
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/D2",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0.09999999999998581,
+      "closest": [
+        [
+          75.4,
+          117.98346689913153,
+          47.96500713547661
+        ],
+        [
+          75.5,
+          117.98346689913153,
+          47.96500713547661
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/D3",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0.09999999999998065,
+      "closest": [
+        [
+          75.4,
+          110.13882149360415,
+          46.39607805437114
+        ],
+        [
+          75.5,
+          110.13882149360417,
+          46.39607805437114
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/D4",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0.09999999999998775,
+      "closest": [
+        [
+          75.4,
+          102.2941760880768,
+          44.827148973265665
+        ],
+        [
+          75.5,
+          102.2941760880768,
+          44.827148973265665
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/RV1",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          107.15,
+          108.66795048006779,
+          46.10190385166386
+        ],
+        [
+          107.15,
+          108.66795048006779,
+          46.10190385166386
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/RV2",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          152.15,
+          108.66795048006779,
+          46.10190385166386
+        ],
+        [
+          152.15,
+          108.66795048006779,
+          46.10190385166386
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/RV3",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          197.15,
+          108.66795048006779,
+          46.10190385166386
+        ],
+        [
+          197.15,
+          108.66795048006779,
+          46.10190385166386
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/RV4",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          242.15,
+          108.66795048006779,
+          46.10190385166386
+        ],
+        [
+          242.15,
+          108.66795048006779,
+          46.10190385166386
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/RV5",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          287.15,
+          108.66795048006779,
+          46.10190385166386
+        ],
+        [
+          287.15,
+          108.66795048006779,
+          46.10190385166386
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/RV6",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          107.15,
+          65.5224007496673,
+          37.472793905583764
+        ],
+        [
+          107.15,
+          65.5224007496673,
+          37.472793905583764
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/RV7",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          152.15,
+          65.5224007496673,
+          37.472793905583764
+        ],
+        [
+          152.15,
+          65.5224007496673,
+          37.472793905583764
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/RV8",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          197.15,
+          65.5224007496673,
+          37.472793905583764
+        ],
+        [
+          197.15,
+          65.5224007496673,
+          37.472793905583764
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/RV9",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          242.15,
+          65.5224007496673,
+          37.472793905583764
+        ],
+        [
+          242.15,
+          65.5224007496673,
+          37.472793905583764
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/RV10",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          287.15,
+          65.5224007496673,
+          37.472793905583764
+        ],
+        [
+          287.15,
+          65.5224007496673,
+          37.472793905583764
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/SW1",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          25.400000000000006,
+          66.99327176320368,
+          37.766968108291046
+        ],
+        [
+          25.400000000000006,
+          66.99327176320368,
+          37.766968108291046
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/SW2",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          57.400000000000006,
+          66.99327176320368,
+          37.766968108291046
+        ],
+        [
+          57.400000000000006,
+          66.99327176320368,
+          37.766968108291046
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/SW3",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          35.900000000000006,
+          23.84772203280319,
+          29.137858162210943
+        ],
+        [
+          35.900000000000006,
+          23.84772203280319,
+          29.137858162210943
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/SW4",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          69.9,
+          23.84772203280319,
+          29.137858162210943
+        ],
+        [
+          69.9,
+          23.84772203280319,
+          29.137858162210943
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/SW5",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          103.9,
+          23.84772203280319,
+          29.137858162210943
+        ],
+        [
+          103.9,
+          23.84772203280319,
+          29.137858162210943
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/SW6",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          137.9,
+          23.84772203280319,
+          29.137858162210943
+        ],
+        [
+          137.9,
+          23.84772203280319,
+          29.137858162210943
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/SW7",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          171.9,
+          23.84772203280319,
+          29.137858162210943
+        ],
+        [
+          171.9,
+          23.84772203280319,
+          29.137858162210943
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/SW8",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          205.9,
+          23.84772203280319,
+          29.137858162210943
+        ],
+        [
+          205.9,
+          23.84772203280319,
+          29.137858162210943
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/SW9",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          239.9,
+          23.84772203280319,
+          29.137858162210943
+        ],
+        [
+          239.9,
+          23.84772203280319,
+          29.137858162210943
+        ]
+      ]
+    },
+    {
+      "label": "board parts against panel",
+      "a": "control_board/SW10",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          273.9,
+          23.84772203280319,
+          29.137858162210943
+        ],
+        [
+          273.9,
+          23.84772203280319,
+          29.137858162210943
+        ]
+      ]
+    },
+    {
+      "label": "control board vs bottom_shell",
+      "a": "control_board/PCB+control_board/U1+control_board/D1+control_board/D2+control_board/D3+control_board/D4+control_board/RV1+control_board/RV2+control_board/RV3+control_board/RV4+control_board/RV5+control_board/RV6+control_board/RV7+control_board/RV8+control_board/RV9+control_board/RV10+control_board/SW1+control_board/SW2+control_board/SW3+control_board/SW4+control_board/SW5+control_board/SW6+control_board/SW7+control_board/SW8+control_board/SW9+control_board/SW10",
+      "b": "bottom_shell",
+      "interference_volume": 0,
+      "min_distance": 5.869698237928162,
+      "closest": [
+        [
+          9.900000000000006,
+          152.53030176207182,
+          43.044648836529404
+        ],
+        [
+          9.900000000000006,
+          158.39999999999998,
+          43.044648836529404
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "a": "bottom_shell#face:front_lip",
+      "b": "bottom_shell#face:back_wall",
+      "interference_volume": 0,
+      "min_distance": 156.79999999999998,
+      "closest": [
+        [
+          5.2,
+          1.6,
+          3.1999999999999997
+        ],
+        [
+          5.2,
+          158.4,
+          3.1999999999999997
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "a": "bottom_shell#face:front_lip",
+      "b": "bottom_shell#face:cheek_right",
+      "interference_volume": 0,
+      "min_distance": 0.40000000000000036,
+      "closest": [
+        [
+          320,
+          1.5999999999999996,
+          6.4
+        ],
+        [
+          320,
+          2,
+          6.4
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "a": "bottom_shell#face:front_lip",
+      "b": "bottom_shell#face:cheek_left",
+      "interference_volume": 0,
+      "min_distance": 0.40000000000000036,
+      "closest": [
+        [
+          0,
+          1.5999999999999996,
+          6.4
+        ],
+        [
+          -3.552713678800501e-16,
+          2,
+          6.4
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "a": "bottom_shell#face:back_wall",
+      "b": "bottom_shell#face:cheek_right",
+      "interference_volume": 0,
+      "min_distance": 0.39999999999997726,
+      "closest": [
+        [
+          320,
+          158.4,
+          6.4
+        ],
+        [
+          320,
+          158,
+          6.4
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "a": "bottom_shell#face:back_wall",
+      "b": "bottom_shell#face:cheek_left",
+      "interference_volume": 0,
+      "min_distance": 0.39999999999997726,
+      "closest": [
+        [
+          0,
+          158.4,
+          6.4
+        ],
+        [
+          -3.552713678800501e-16,
+          158,
+          6.4
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "a": "bottom_shell#face:cheek_right",
+      "b": "bottom_shell#face:cheek_left",
+      "interference_volume": 0,
+      "min_distance": 316.7999999999999,
+      "closest": [
+        [
+          318.4,
+          5.2,
+          3.1999999999999997
+        ],
+        [
+          1.6,
+          5.2,
+          3.1999999999999997
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "a": "top_panel#face:lip_right",
+      "b": "top_panel#face:lip_left",
+      "interference_volume": 0,
+      "min_distance": 312.99999999999994,
+      "closest": [
+        [
+          314.59999999999997,
+          8,
+          -3.1999999999999997
+        ],
+        [
+          1.6,
+          8,
+          -3.1999999999999997
         ]
       ]
     }
   ],
-  "probes": [
-    {
-      "name": "screw_1_lip_right",
-      "hits": {
-        "bottom_shell": {
-          "common_volume": 0,
-          "min_distance": 0.2
-        },
-        "top_panel": {
-          "common_volume": 0,
-          "min_distance": 0.61
-        }
-      }
-    },
-    {
-      "name": "screw_2_lip_right",
-      "hits": {
-        "bottom_shell": {
-          "common_volume": 0,
-          "min_distance": 0.2
-        },
-        "top_panel": {
-          "common_volume": 0,
-          "min_distance": 0.61
-        }
-      }
-    },
-    {
-      "name": "screw_3_lip_left",
-      "hits": {
-        "bottom_shell": {
-          "common_volume": 0,
-          "min_distance": 0.2
-        },
-        "top_panel": {
-          "common_volume": 0,
-          "min_distance": 0.61
-        }
-      }
-    },
-    {
-      "name": "screw_4_lip_left",
-      "hits": {
-        "bottom_shell": {
-          "common_volume": 0,
-          "min_distance": 0.2
-        },
-        "top_panel": {
-          "common_volume": 0,
-          "min_distance": 0.61
-        }
-      }
-    },
-    {
-      "name": "pcb_keepout",
-      "hits": {
-        "bottom_shell": {
-          "common_volume": 0,
-          "min_distance": 4.300769157
-        },
-        "top_panel": {
-          "common_volume": 0,
-          "min_distance": 6.4
-        }
-      }
-    }
-  ],
   "flat_sizes": {
     "bottom_shell": [
-      429.53769855,
-      236.20601231
+      429.53769850895594,
+      236.20601226460633
     ],
     "top_panel": [
-      346.53769855,
-      160.910997
+      346.537698508956,
+      160.91099701980386
     ]
   },
   "slope_deg": 11.309932474020213
