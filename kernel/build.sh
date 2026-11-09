@@ -3,9 +3,10 @@
 #   OCCT_DIR=/path/to/occt/install kernel/build.sh
 set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
-OCCT_DIR=${OCCT_DIR:?set OCCT_DIR to an OpenCascade install prefix (see scripts/build_occt.sh)}
+OCCT_DIR=${OCCT_DIR:-$here/../.occt/install}  # scripts/bootstrap.sh puts it here
+[ -d "$OCCT_DIR/lib" ] || { echo "no OpenCascade at $OCCT_DIR; run scripts/bootstrap.sh" >&2; exit 1; }
 inc="$OCCT_DIR/include/opencascade"
-lib="$OCCT_DIR/lib"
+lib=$(cd "$OCCT_DIR/lib" && pwd)
 mkdir -p "$here/build"
 libs=(TKDESTL TKDESTEP TKDE TKXCAF TKVCAF TKV3d TKService TKCAF TKLCAF TKCDF TKXSBase
       TKHLR TKMesh TKOffset TKFillet TKFeat TKBool TKBO TKPrim TKShHealing TKTopAlgo

@@ -88,24 +88,38 @@ These are marked on every drawing:
 
 ## Setup
 
-You need Python 3.11+ with numpy and Pillow, plus `ezdxf`, `rsvg-convert`,
-`qpdf` and `pdftoppm`. You also need an OpenCascade 7.9 install to build the
-kernel.
+On a fresh checkout, one command gets everything and runs the tests. It takes
+about a minute and needs only git, so it works in sandboxes without PyPI:
 
 ```bash
-scripts/build_occt.sh .occt              # minimal OCCT from source (~40 min on 2 cores)
-OCCT_DIR=$PWD/.occt/install kernel/build.sh
+scripts/bootstrap.sh
 python -m qfold.pipeline out
-python -m pytest tests
 ```
 
-On a machine with a package index, `pip install ezdxf` is enough for ezdxf. In
-sandboxes without PyPI, everything comes from git:
+The bootstrap script does three things:
+
+- **Fetches OpenCascade.** It shallow-clones the
+  `prebuilt/occt-7.9.3-linux-x86_64` branch into `.occt/install`. That branch
+  holds compiled libraries and headers only, for Linux x86_64 on Ubuntu 24.04.
+- **Gets ezdxf.** If `ezdxf` isn't importable, it clones ezdxf into `.deps/`.
+  qfold finds it there on its own.
+- **Builds sheetkernel.** It compiles the kernel against those libraries, which
+  takes seconds.
+
+You also need Python 3.11+ with numpy, Pillow and pytest, plus `rsvg-convert`,
+`qpdf` and `pdftoppm`.
+
+On another platform, or to change OpenCascade's build options, build it from
+source once and point the kernel at it. This takes about 40 minutes on 2 cores:
 
 ```bash
-git clone --depth 1 https://github.com/mozman/ezdxf .deps/ezdxf
-export QFOLD_EZDXF_SRC=$PWD/.deps/ezdxf/src EZDXF_DISABLE_C_EXT=1
+scripts/build_occt.sh .occt
+kernel/build.sh                # uses .occt/install by default, or set OCCT_DIR
 ```
+
+To publish a new prebuilt branch, commit the stripped `lib/` and
+`include/opencascade/` together with the OCCT licence files on an orphan
+branch, and update `occt_branch` in `scripts/bootstrap.sh`.
 
 ## Next
 
