@@ -17,7 +17,7 @@ from pathlib import Path
 
 import numpy as np
 
-from .fold import Layout
+from .fold import SheetLayout
 
 # ezdxf from a git checkout (scripts/bootstrap.sh) when it isn't installed.
 _EZDXF = os.environ.get("QFOLD_EZDXF_SRC") or str(
@@ -50,8 +50,8 @@ class FlatPattern:
     area: float = 0.0
 
 
-def flat_pattern(lay: Layout, outline: dict) -> FlatPattern:
-    U, V, N = (np.array(x, float) for x in (lay.part.U, lay.part.V, lay.part.N))
+def flat_pattern(lay: SheetLayout, outline: dict) -> FlatPattern:
+    U, V, N = (np.array(x, float) for x in (lay.body.U, lay.body.V, lay.body.N))
     right_handed = np.dot(np.cross(U, V), N) > 0
 
     def tp(p):  # development plane -> outside view
@@ -61,7 +61,7 @@ def flat_pattern(lay: Layout, outline: dict) -> FlatPattern:
     def ta(a0, a1):  # CCW arc angles under that reflection
         return (180.0 - a1, 180.0 - a0) if right_handed else (-a1, -a0)
 
-    fp = FlatPattern(lay.part.name, area=outline["area"])
+    fp = FlatPattern(lay.body.name, area=outline["area"])
     for e in outline["edges"]:
         if e["type"] == "line":
             fp.lines.append((tp(e["a"]), tp(e["b"])))

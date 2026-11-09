@@ -1,5 +1,5 @@
 {
-  "summary": "26 pass, 0 warn, 0 fail",
+  "summary": "30 pass, 0 warn, 0 fail",
   "ok": true,
   "checks": [
     {
@@ -31,20 +31,6 @@
       "limit": 93.23547108593426
     },
     {
-      "name": "bottom_shell vs top_panel: no interference",
-      "status": "pass",
-      "detail": "overlap volume 0.000000 mm\u00b3",
-      "value": null,
-      "limit": null
-    },
-    {
-      "name": "bottom_shell vs top_panel: clearance",
-      "status": "pass",
-      "detail": "closest 0.300 mm, need \u2265 0.2",
-      "value": 0.3,
-      "limit": 0.2
-    },
-    {
       "name": "bottom_shell.step reads back",
       "status": "pass",
       "detail": "1 solid(s), volume 137741.354 mm\u00b3 (model 137741.354)",
@@ -61,23 +47,65 @@
     {
       "name": "assembly.step reads back",
       "status": "pass",
-      "detail": "2 solid(s), volume 222551.367 mm\u00b3 (model 222551.366)",
+      "detail": "36 solid(s), volume 335462.165 mm\u00b3 (model 335462.165)",
       "value": null,
       "limit": null
     },
     {
-      "name": "screws pass through cheek and lip holes",
+      "name": "bottom_shell vs top_panel: no interference",
       "status": "pass",
-      "detail": "4 M3 shanks clear both parts",
+      "detail": "overlap 0.000000 mm\u00b3",
       "value": null,
       "limit": null
     },
     {
-      "name": "PCB keep-out clears the case",
+      "name": "bottom_shell vs top_panel: clearance",
       "status": "pass",
-      "detail": "closest 4.30 mm to the case, need \u2265 2.0",
-      "value": 4.300769157,
+      "detail": "closest 0.300 mm, need \u2265 0.2",
+      "value": 0.3,
+      "limit": 0.2
+    },
+    {
+      "name": "screws vs shell and panel: no interference",
+      "status": "pass",
+      "detail": "overlap 0.000000 mm\u00b3, closest 0.000 mm",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "feet vs shell: no interference",
+      "status": "pass",
+      "detail": "overlap 0.000000 mm\u00b3, closest 0.000 mm",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "control board vs top_panel: no interference",
+      "status": "pass",
+      "detail": "overlap 0.000000 mm\u00b3, closest 0.000 mm",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "control board vs bottom_shell: clearance",
+      "status": "pass",
+      "detail": "overlap 0.000000 mm\u00b3, closest 5.87 mm, need \u2265 2.0",
+      "value": 5.869698238,
       "limit": 2.0
+    },
+    {
+      "name": "board parts on their panel holes",
+      "status": "pass",
+      "detail": "25 parts, worst 0.000 mm across, 0.000 mm along, 0.000\u00b0",
+      "value": null,
+      "limit": null
+    },
+    {
+      "name": "every panel hole has a part, every part a hole",
+      "status": "pass",
+      "detail": "25 panel holes, 25 board parts",
+      "value": null,
+      "limit": null
     },
     {
       "name": "bottom_shell: hole to bend",
@@ -185,8 +213,60 @@
       "limit": null
     }
   ],
+  "parts_list": [
+    {
+      "component": "bottom_shell",
+      "qty": 1,
+      "source": "sheet metal"
+    },
+    {
+      "component": "top_panel",
+      "qty": 1,
+      "source": "sheet metal"
+    },
+    {
+      "component": "screw_M3x6_pan",
+      "qty": 4,
+      "source": "stand-in"
+    },
+    {
+      "component": "rubber_foot_12x4",
+      "qty": 4,
+      "source": "stand-in"
+    },
+    {
+      "component": "control_board_pcb",
+      "qty": 1,
+      "source": "STEP: control_board.step"
+    },
+    {
+      "component": "oled_096",
+      "qty": 1,
+      "source": "STEP: control_board.step"
+    },
+    {
+      "component": "led_3mm",
+      "qty": 4,
+      "source": "STEP: control_board.step"
+    },
+    {
+      "component": "pot_9mm",
+      "qty": 10,
+      "source": "STEP: control_board.step"
+    },
+    {
+      "component": "toggle_m6",
+      "qty": 2,
+      "source": "STEP: control_board.step"
+    },
+    {
+      "component": "button_12mm",
+      "qty": 8,
+      "source": "STEP: control_board.step"
+    }
+  ],
   "bodies": {
-    "bottom_shell": {
+    "bottom_shell#bottom_shell": {
       "valid": true,
       "volume": 137741.354,
       "area": 175613.7792,
@@ -207,7 +287,7 @@
       "faces": 96,
       "edges": 266
     },
-    "top_panel": {
+    "top_panel#top_panel": {
       "valid": true,
       "volume": 84810.01248,
       "area": 108903.808,
@@ -228,7 +308,175 @@
       "faces": 70,
       "edges": 188
     },
-    "bottom_shell_flat": {
+    "screw_M3x6_pan#screw_M3x6_pan": {
+      "valid": true,
+      "volume": 89.92808971,
+      "area": 138.6227758,
+      "com": [
+        -3.259258364e-16,
+        -6.271999791e-17,
+        -0.8864628821
+      ],
+      "bbox": [
+        -2.75,
+        -2.75,
+        -6,
+        2.75,
+        2.75,
+        2
+      ],
+      "solids": 1,
+      "faces": 5,
+      "edges": 6
+    },
+    "rubber_foot_12x4#rubber_foot_12x4": {
+      "valid": true,
+      "volume": 452.3893421,
+      "area": 376.9911184,
+      "com": [
+        -1.539231401e-15,
+        2.196590125e-16,
+        2
+      ],
+      "bbox": [
+        -6,
+        -6,
+        0,
+        6,
+        6,
+        4
+      ],
+      "solids": 1,
+      "faces": 3,
+      "edges": 3
+    },
+    "control_board:control_board_pcb#control_board_pcb": {
+      "valid": true,
+      "volume": 69603.65009,
+      "area": 88428.9178,
+      "com": [
+        150.1,
+        72.45549851,
+        -0.8
+      ],
+      "bbox": [
+        0,
+        0,
+        -1.6,
+        300.2,
+        144.910997,
+        0
+      ],
+      "solids": 1,
+      "faces": 6,
+      "edges": 12
+    },
+    "control_board:oled_096#oled_096": {
+      "valid": true,
+      "volume": 6650,
+      "area": 2410,
+      "com": [
+        -3.86094665e-16,
+        2.078203941e-16,
+        -5
+      ],
+      "bbox": [
+        -17.5,
+        -9.5,
+        -10,
+        17.5,
+        9.5,
+        0
+      ],
+      "solids": 1,
+      "faces": 6,
+      "edges": 12
+    },
+    "control_board:led_3mm#led_3mm": {
+      "valid": true,
+      "volume": 84.82300165,
+      "area": 127.2345025,
+      "com": [
+        1.25651543e-16,
+        -4.769092802e-17,
+        -4
+      ],
+      "bbox": [
+        -1.5,
+        -1.5,
+        -10,
+        1.5,
+        1.5,
+        2
+      ],
+      "solids": 1,
+      "faces": 3,
+      "edges": 3
+    },
+    "control_board:pot_9mm#pot_9mm": {
+      "valid": true,
+      "volume": 1661.537558,
+      "area": 1011.699082,
+      "com": [
+        2.814737629e-14,
+        -5.422910792e-17,
+        0.3355289655
+      ],
+      "bbox": [
+        -4.75,
+        -5.5,
+        -10,
+        4.75,
+        5.5,
+        20
+      ],
+      "solids": 1,
+      "faces": 10,
+      "edges": 18
+    },
+    "control_board:toggle_m6#toggle_m6": {
+      "valid": true,
+      "volume": 1315.674755,
+      "area": 863.619449,
+      "com": [
+        1.348258703e-14,
+        -3.806396123e-17,
+        -2.687099208
+      ],
+      "bbox": [
+        -6.5,
+        -4,
+        -10,
+        6.5,
+        4,
+        18
+      ],
+      "solids": 1,
+      "faces": 10,
+      "edges": 18
+    },
+    "control_board:button_12mm#button_12mm": {
+      "valid": true,
+      "volume": 1862.732707,
+      "area": 913.7698991,
+      "com": [
+        3.648967876e-14,
+        -1.997457133e-18,
+        -3.411404417
+      ],
+      "bbox": [
+        -6,
+        -6,
+        -10,
+        6,
+        6,
+        4
+      ],
+      "solids": 1,
+      "faces": 8,
+      "edges": 15
+    },
+    "bottom_shell#flat": {
       "valid": true,
       "volume": 137440.7584,
       "area": 175235.461,
@@ -249,7 +497,7 @@
       "faces": 80,
       "edges": 234
     },
-    "top_panel_flat": {
+    "top_panel#flat": {
       "valid": true,
       "volume": 84716.77701,
       "area": 108785.9769,
@@ -271,8 +519,17 @@
       "edges": 180
     }
   },
+  "envelope": [
+    -2,
+    -2.294643781e-15,
+    -4,
+    322,
+    160,
+    67.38050451
+  ],
   "pairs": [
     {
+      "label": "bottom_shell vs top_panel",
       "a": "bottom_shell",
       "b": "top_panel",
       "interference_volume": 0,
@@ -289,73 +546,82 @@
           26.4
         ]
       ]
-    }
-  ],
-  "probes": [
-    {
-      "name": "screw_1_lip_right",
-      "hits": {
-        "bottom_shell": {
-          "common_volume": 0,
-          "min_distance": 0.2
-        },
-        "top_panel": {
-          "common_volume": 0,
-          "min_distance": 0.61
-        }
-      }
     },
     {
-      "name": "screw_2_lip_right",
-      "hits": {
-        "bottom_shell": {
-          "common_volume": 0,
-          "min_distance": 0.2
-        },
-        "top_panel": {
-          "common_volume": 0,
-          "min_distance": 0.61
-        }
-      }
+      "label": "screws vs shell and panel",
+      "a": "screw_1+screw_2+screw_3+screw_4",
+      "b": "bottom_shell+top_panel",
+      "interference_volume": 0,
+      "min_distance": 3.964927351e-17,
+      "closest": [
+        [
+          320,
+          31.59430937,
+          23.74903855
+        ],
+        [
+          320,
+          31.59430937,
+          23.74903855
+        ]
+      ]
     },
     {
-      "name": "screw_3_lip_left",
-      "hits": {
-        "bottom_shell": {
-          "common_volume": 0,
-          "min_distance": 0.2
-        },
-        "top_panel": {
-          "common_volume": 0,
-          "min_distance": 0.61
-        }
-      }
+      "label": "feet vs shell",
+      "a": "foot_1+foot_2+foot_3+foot_4",
+      "b": "bottom_shell",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          18,
+          12,
+          0
+        ],
+        [
+          18,
+          12,
+          0
+        ]
+      ]
     },
     {
-      "name": "screw_4_lip_left",
-      "hits": {
-        "bottom_shell": {
-          "common_volume": 0,
-          "min_distance": 0.2
-        },
-        "top_panel": {
-          "common_volume": 0,
-          "min_distance": 0.61
-        }
-      }
+      "label": "control board vs top_panel",
+      "a": "control_board/PCB+control_board/U1+control_board/D1+control_board/D2+control_board/D3+control_board/D4+control_board/RV1+control_board/RV2+control_board/RV3+control_board/RV4+control_board/RV5+control_board/RV6+control_board/RV7+control_board/RV8+control_board/RV9+control_board/RV10+control_board/SW1+control_board/SW2+control_board/SW3+control_board/SW4+control_board/SW5+control_board/SW6+control_board/SW7+control_board/SW8+control_board/SW9+control_board/SW10",
+      "b": "top_panel",
+      "interference_volume": 0,
+      "min_distance": 0,
+      "closest": [
+        [
+          107.15,
+          108.6679505,
+          46.10190385
+        ],
+        [
+          107.15,
+          108.6679505,
+          46.10190385
+        ]
+      ]
     },
     {
-      "name": "pcb_keepout",
-      "hits": {
-        "bottom_shell": {
-          "common_volume": 0,
-          "min_distance": 4.300769157
-        },
-        "top_panel": {
-          "common_volume": 0,
-          "min_distance": 6.4
-        }
-      }
+      "label": "control board vs bottom_shell",
+      "a": "control_board/PCB+control_board/U1+control_board/D1+control_board/D2+control_board/D3+control_board/D4+control_board/RV1+control_board/RV2+control_board/RV3+control_board/RV4+control_board/RV5+control_board/RV6+control_board/RV7+control_board/RV8+control_board/RV9+control_board/RV10+control_board/SW1+control_board/SW2+control_board/SW3+control_board/SW4+control_board/SW5+control_board/SW6+control_board/SW7+control_board/SW8+control_board/SW9+control_board/SW10",
+      "b": "bottom_shell",
+      "interference_volume": 0,
+      "min_distance": 5.869698238,
+      "closest": [
+        [
+          9.9,
+          152.5303018,
+          43.04464884
+        ],
+        [
+          9.9,
+          158.4,
+          43.04464884
+        ]
+      ]
     }
   ],
   "flat_sizes": {

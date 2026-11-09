@@ -1,9 +1,10 @@
-"""End-to-end build of the synth case: model, check, export, render, draw.
+"""End-to-end build of the synth case: model, assemble, check, export, render, draw.
 
     python -m qfold.pipeline [out_dir]
 
-Writes STEP (each part and the assembly), flat-pattern DXFs, an STL per part,
-a PNG render, a 4-sheet PDF drawing with PNG previews, and report.json.
+Writes STEP (each sheet metal part, plus the whole assembly with named
+components and occurrences), flat-pattern DXFs, STL meshes, PNG renders, a
+4-sheet PDF drawing with PNG previews, and report.json.
 """
 
 from __future__ import annotations
@@ -11,7 +12,6 @@ from __future__ import annotations
 import io
 import json
 import math
-import shutil
 import subprocess
 import sys
 from dataclasses import asdict
@@ -20,10 +20,11 @@ from pathlib import Path
 import numpy as np
 
 from . import design, dfm, kernel
+from .assembly import Design, mismatch
 from .flat import flat_pattern, write_dxf
 from .fold import expected_volume_difference
 from .render import read_stl, render
-from .sheets import (sheet_assembly, sheet_flat, sheet_panel, sheet_shell_views)
+from .sheets import sheet_assembly, sheet_flat, sheet_panel, sheet_shell_views
 
 
 def _unit(v):
@@ -32,105 +33,147 @@ def _unit(v):
 
 
 ISO = _unit((1.0, -1.25, 0.95))
-ISO_RIGHT = _unit(np.cross((0, 0, 1), ISO))
+MOUNT_TOL = {"radial": 0.05, "axial": 0.05, "angle_deg": 0.1}
 
 
-def build_job(case: design.Case, out: Path) -> dict:
-    shell, panel = case.shell, case.panel
-    bodies = [kernel.folded_body(shell), kernel.folded_body(panel),
-              kernel.flat_body(shell), kernel.flat_body(panel)]
+def design_ref(d: Design, spec: str) -> np.ndarray:
+    """World frame for "occurrence/path:ref" (or just a path, for its origin)."""
+    path, _, name = spec.partition(":")
+    return d.find(path).ref(name or "origin")
+
+
+def sheet_proto(case: design.Case, occurrence: str) -> str:
+    comp = case.design.find(occurrence).component
+    return Design.proto_name(comp, comp.bodies[0])
+
+
+def color_groups(d: Design) -> dict[tuple, list[str]]:
+    groups: dict[tuple, list[str]] = {}
+    for name, _, _, body in d.instances():
+        groups.setdefault(tuple(body.color), []).append(name)
+    return groups
+
+
+def build_job(case: design.Case, out: Path):
+    d = case.design
+    job = d.job()
+    job["bodies"] += [kernel.flat_body(case.shell), kernel.flat_body(case.panel)]
+    shell_p, panel_p = sheet_proto(case, "bottom_shell"), sheet_proto(case, "top_panel")
+    everything = [n for n, *_ in d.instances()]
+    board = d.group("control_board")
+
     views = []
 
-    def view(name, bodies_, toward, right, placed=False):
-        views.append({"name": name, "bodies": bodies_, "toward": list(map(float, toward)),
-                      "right": list(map(float, right)), "placed": placed})
+    def view(name, geom, toward, right):
+        views.append({"name": name, "geom": geom, "toward": list(map(float, toward)),
+                      "right": list(map(float, right))})
 
-    view("shell_top", ["bottom_shell"], (0, 0, 1), (1, 0, 0))
-    view("shell_front", ["bottom_shell"], (0, -1, 0), (1, 0, 0))
-    view("shell_right", ["bottom_shell"], (1, 0, 0), (0, 1, 0))
-    view("shell_back", ["bottom_shell"], (0, 1, 0), (-1, 0, 0))
-    view("panel_top", ["top_panel"], (0, 0, 1), (1, 0, 0))
-    view("panel_front", ["top_panel"], (0, -1, 0), (1, 0, 0))
-    view("panel_right", ["top_panel"], (1, 0, 0), (0, 1, 0))
+    view("shell_top", shell_p, (0, 0, 1), (1, 0, 0))
+    view("shell_front", shell_p, (0, -1, 0), (1, 0, 0))
+    view("shell_right", shell_p, (1, 0, 0), (0, 1, 0))
+    view("shell_back", shell_p, (0, 1, 0), (-1, 0, 0))
+    view("panel_top", panel_p, (0, 0, 1), (1, 0, 0))
+    view("panel_front", panel_p, (0, -1, 0), (1, 0, 0))
+    view("panel_right", panel_p, (1, 0, 0), (0, 1, 0))
 
-    probes = []
-    T, c = case.params.material.T, case.params.panel_clearance
-    for i, s in enumerate(case.screws):
-        start = s["centre"] - s["inward"] * (T + c + 2.0)  # outside the cheek
-        probes.append({"name": f"screw_{i + 1}_{s['side']}", "kind": "cyl", "p": start,
-                       "dir": s["inward"], "d": 3.0, "len": 2 * T + c + 6.0,
-                       "bodies": ["bottom_shell", "top_panel"]})
-    b = case.pcb_box
-    probes.append({"name": "pcb_keepout", "kind": "box", "o": b["o"], "xdir": b["xdir"],
-                   "zdir": b["zdir"], "dx": b["dx"], "dy": b["dy"], "dz": b["dz"],
-                   "bodies": ["bottom_shell", "top_panel"]})
+    stl_dir = out / "stl"
+    stl_dir.mkdir(parents=True, exist_ok=True)
+    groups = color_groups(d)
+    stl = [{"path": str(stl_dir / f"group_{i}.stl"), "geom": names, "deflection": 0.04}
+           for i, names in enumerate(groups.values())]
 
-    return {
-        "bodies": bodies,
-        "outputs": {
-            "step": [
-                {"path": str(out / "bottom_shell.step"), "bodies": ["bottom_shell"],
-                 "product": "bottom_shell"},
-                {"path": str(out / "top_panel.step"), "bodies": ["top_panel"],
-                 "product": "top_panel"},
-                {"path": str(out / "assembly.step"), "bodies": ["bottom_shell", "top_panel"],
-                 "placed": True, "product": "synth_case"},
-            ],
-            "stl": [{"path": str(out / "bottom_shell.stl"), "body": "bottom_shell",
-                     "placed": True, "deflection": 0.04},
-                    {"path": str(out / "top_panel.stl"), "body": "top_panel", "placed": True,
-                     "deflection": 0.04}],
-            "flat_outline": [{"body": "bottom_shell_flat", "z": 0.0},
-                             {"body": "top_panel_flat", "z": 0.0}],
-            "views": views,
-            "pairs": [{"a": "bottom_shell", "b": "top_panel"}],
-            "probes": probes,
-        },
+    # Interference and clearance questions, with what each one must satisfy.
+    pairs = [
+        ("bottom_shell vs top_panel", d.group("bottom_shell"), d.group("top_panel"), "clear"),
+        ("screws vs shell and panel", d.group(*case.screws),
+         d.group("bottom_shell", "top_panel"), "no_overlap"),
+        ("feet vs shell", d.group(*case.feet), d.group("bottom_shell"), "no_overlap"),
+        ("control board vs top_panel", board, d.group("top_panel"), "no_overlap"),
+        ("control board vs bottom_shell", board, d.group("bottom_shell"), "pcb_clear"),
+    ]
+    job["outputs"] = {
+        "measure": [{"name": "assembly", "geom": everything}],
+        "step": [
+            {"path": str(out / "bottom_shell.step"), "geom": shell_p, "product": "bottom_shell"},
+            {"path": str(out / "top_panel.step"), "geom": panel_p, "product": "top_panel"},
+            {"path": str(out / "assembly.step"), "tree": d.step_tree()},
+        ],
+        "stl": stl,
+        "flat_outline": [{"body": "bottom_shell#flat", "z": 0.0},
+                         {"body": "top_panel#flat", "z": 0.0}],
+        "views": views,
+        "pairs": [{"a": a, "b": b} for _, a, b, _ in pairs],
     }
+    return job, pairs, list(zip(groups.keys(), stl))
 
 
-def kernel_checks(case: design.Case, res: dict, rules: dfm.Rules, rep: dfm.Report) -> None:
-    r = rules.resolve(case.params.material.T, case.params.material.R)
-    for lay in (case.shell, case.panel):
-        name = lay.part.name
-        m, f = res["bodies"][name], res["bodies"][f"{name}_flat"]
-        rep.add(f"{name}: valid solid", m["valid"] and m["solids"] == 1,
+def kernel_checks(case: design.Case, res: dict, pairs, rules: dfm.Rules, rep: dfm.Report):
+    d = case.design
+    r = rules.resolve(case.params.rule.T, case.params.rule.R)
+    for lay, occ in ((case.shell, "bottom_shell"), (case.panel, "top_panel")):
+        m = res["bodies"][sheet_proto(case, occ)]
+        f = res["bodies"][f"{lay.body.name}#flat"]
+        rep.add(f"{occ}: valid solid", m["valid"] and m["solids"] == 1,
                 f"valid={m['valid']}, solids={m['solids']}, faces={m['faces']}")
         expect = expected_volume_difference(lay)
         got = m["volume"] - f["volume"]
-        tol = 1e-4 * m["volume"] + 1e-3
-        rep.add(f"{name}: flat pattern matches fold", abs(got - expect) <= tol,
+        rep.add(f"{occ}: flat pattern matches fold", abs(got - expect) <= 1e-4 * m["volume"] + 1e-3,
                 f"folded−flat volume {got:.4f} mm³, bend allowance predicts {expect:.4f}",
                 got, expect)
-    for pr in res["pairs"]:
-        rep.add(f"{pr['a']} vs {pr['b']}: no interference", pr["interference_volume"] < 1e-6,
-                f"overlap volume {pr['interference_volume']:.6f} mm³")
-        rep.add(f"{pr['a']} vs {pr['b']}: clearance", pr["min_distance"] >= r.min_clearance,
-                f"closest {pr['min_distance']:.3f} mm, need ≥ {r.min_clearance}",
-                pr["min_distance"], r.min_clearance)
-    vols = {k: v["volume"] for k, v in res["bodies"].items()}
-    expect_step = {"bottom_shell.step": vols["bottom_shell"], "top_panel.step": vols["top_panel"],
-                   "assembly.step": vols["bottom_shell"] + vols["top_panel"]}
+
+    vol = {k: v["volume"] for k, v in res["bodies"].items()}
+    total = sum(vol[p] for _, p, _, _ in d.instances())
+    want = {"bottom_shell.step": vol[sheet_proto(case, "bottom_shell")],
+            "top_panel.step": vol[sheet_proto(case, "top_panel")], "assembly.step": total}
+    n_inst = len(list(d.instances()))
     for s in res["step"]:
         name = Path(s["path"]).name
-        want = expect_step[name]
-        ok = abs(s["readback_volume"] - want) <= 1e-6 * want and s["readback_solids"] >= 1
+        ok = abs(s["readback_volume"] - want[name]) <= 1e-6 * want[name] and s["readback_solids"] >= 1
+        if name == "assembly.step":
+            ok = ok and s["readback_solids"] == n_inst
         rep.add(f"{name} reads back", ok,
                 f"{s['readback_solids']} solid(s), volume {s['readback_volume']:.3f} mm³ "
-                f"(model {want:.3f})")
-    screws = [p for p in res["probes"] if p["name"].startswith("screw_")]
-    worst = min(min(h["common_volume"] for h in p["hits"].values()) for p in screws)
-    blocked = [p["name"] for p in screws if any(h["common_volume"] > 1e-6
-                                                for h in p["hits"].values())]
-    rep.add("screws pass through cheek and lip holes", not blocked,
-            f"{len(screws)} M3 shanks clear both parts" if not blocked else
-            "blocked: " + ", ".join(blocked))
-    pcb = next(p for p in res["probes"] if p["name"] == "pcb_keepout")
-    dmin = min(h["min_distance"] for h in pcb["hits"].values())
-    hit = any(h["common_volume"] > 1e-6 for h in pcb["hits"].values())
-    rep.add("PCB keep-out clears the case", not hit and dmin >= r.pcb_clearance,
-            f"closest {dmin:.2f} mm to the case, need ≥ {r.pcb_clearance}", dmin,
-            r.pcb_clearance)
+                f"(model {want[name]:.3f})")
+
+    for (label, _, _, rule), pr in zip(pairs, res["pairs"]):
+        overlap, dist = pr["interference_volume"], pr["min_distance"]
+        if rule == "clear":
+            rep.add(f"{label}: no interference", overlap < 1e-6, f"overlap {overlap:.6f} mm³")
+            rep.add(f"{label}: clearance", dist >= r.min_clearance,
+                    f"closest {dist:.3f} mm, need ≥ {r.min_clearance}", dist, r.min_clearance)
+        elif rule == "pcb_clear":
+            rep.add(f"{label}: clearance", overlap < 1e-6 and dist >= r.pcb_clearance,
+                    f"overlap {overlap:.6f} mm³, closest {dist:.2f} mm, need ≥ {r.pcb_clearance}",
+                    dist, r.pcb_clearance)
+        else:
+            rep.add(f"{label}: no interference", overlap < 1e-6,
+                    f"overlap {overlap:.6f} mm³, closest {dist:.3f} mm")
+
+    # Every board part on its panel hole: position along and across the hole
+    # axis, and tilt. Only RV1 was aligned; the rest test the board layout.
+    worst, bad = {k: 0.0 for k in MOUNT_TOL}, []
+    for part, hole in case.mounts:
+        m = mismatch(design_ref(d, part), design_ref(d, hole))
+        for k, tol in MOUNT_TOL.items():
+            worst[k] = max(worst[k], abs(m[k]))
+        if any(abs(m[k]) > tol for k, tol in MOUNT_TOL.items()):
+            bad.append(f"{part.split('/')[-1]}→{hole.split(':')[-1].removesuffix('.inside')} "
+                       f"off {m['radial']:.2f} mm")
+    rep.add("board parts on their panel holes", not bad,
+            f"{len(case.mounts)} parts, worst {worst['radial']:.3f} mm across, "
+            f"{worst['axial']:.3f} mm along, {worst['angle_deg']:.3f}°" if not bad
+            else "misaligned: " + ", ".join(bad))
+
+    panel_tags = {t for t in d.find("top_panel").component.refs
+                  if not t.endswith(".inside") and t.startswith("P")}
+    mounted = {h.split(":")[-1].removesuffix(".inside") for _, h in case.mounts}
+    board_parts = {o.name for o in d.find("control_board").children()} - {"PCB"}
+    used = {p.split("/")[-1] for p, _ in case.mounts}
+    rep.add("every panel hole has a part, every part a hole",
+            panel_tags == mounted and board_parts == used,
+            f"{len(panel_tags)} panel holes, {len(board_parts)} board parts"
+            + ("" if panel_tags == mounted else f"; empty holes {sorted(panel_tags - mounted)}")
+            + ("" if board_parts == used else f"; parts without hole {sorted(board_parts - used)}"))
 
 
 def check_dxf(path: Path, fp) -> dfm.Check:
@@ -154,33 +197,45 @@ def check_dxf(path: Path, fp) -> dfm.Check:
 def main(out_dir: str = "out") -> int:
     out = Path(out_dir).resolve()
     out.mkdir(parents=True, exist_ok=True)
-    case = design.build()
+    case = design.build(workdir=out / "work")
     rules = dfm.Rules()
     rep = dfm.Report()
 
-    res = kernel.run(build_job(case, out), out / "work")
-    kernel_checks(case, res, rules, rep)
+    job, pairs, stl_groups = build_job(case, out)
+    res = kernel.run(job, out / "work")
+    kernel_checks(case, res, pairs, rules, rep)
     for lay in (case.shell, case.panel):
         dfm.check_layout(lay, rules, rep)
 
-    m = case.params.material
-    flats = {}
-    tags = {}
-    for lay, label in ((case.shell, "Bottom shell"), (case.panel, "Top panel")):
-        fp = flat_pattern(lay, res["flat_outline"][f"{lay.part.name}_flat"])
-        flats[lay.part.name] = fp
-        tags[lay.part.name] = {b.bend.name: f"B{i + 1}" for i, b in enumerate(lay.bends)}
-        dfm.check_flat_size(lay.part.name, fp.size, rules, rep)
-        dxf_path = out / f"{lay.part.name}_flat.dxf"
-        write_dxf(fp, dxf_path, m.name, m.T)
+    m = case.params.rule
+    flats, tags = {}, {}
+    for lay in (case.shell, case.panel):
+        name = lay.body.name
+        fp = flat_pattern(lay, res["flat_outline"][f"{name}#flat"])
+        flats[name] = fp
+        tags[name] = {b.bend.name: f"B{i + 1}" for i, b in enumerate(lay.bends)}
+        dfm.check_flat_size(name, fp.size, rules, rep)
+        dxf_path = out / f"{name}_flat.dxf"
+        write_dxf(fp, dxf_path, m.material, m.T)
         rep.checks.append(check_dxf(dxf_path, fp))
 
-    meshes = [(read_stl(out / "bottom_shell.stl"), (176, 180, 186)),
-              (read_stl(out / "top_panel.stl"), (58, 62, 70))]
+    meshes = [(read_stl(s["path"]), color) for color, s in stl_groups]
     img = render(meshes, toward=ISO, size=(1500, 1080))
     img.save(out / "render_iso.png")
     buf = io.BytesIO()
     img.save(buf, format="PNG")
+    # The inserted control board on its own, as placed in the case.
+    job_b = {"bodies": job["bodies"], "instances": job["instances"], "outputs": {"stl": []}}
+    board_groups: dict[tuple, list[str]] = {}
+    for name, _, _, body in case.design.instances("control_board"):
+        board_groups.setdefault(tuple(body.color), []).append(name)
+    for i, names in enumerate(board_groups.values()):
+        job_b["outputs"]["stl"].append({"path": str(out / "stl" / f"board_{i}.stl"),
+                                        "geom": names, "deflection": 0.04})
+    kernel.run(job_b, out / "work", tag="board")
+    board_meshes = [(read_stl(s["path"]), color)
+                    for color, s in zip(board_groups, job_b["outputs"]["stl"])]
+    render(board_meshes, toward=ISO, size=(1500, 1080)).save(out / "render_board.png")
 
     sheets = [
         sheet_assembly(case, res, rep, buf.getvalue()),
@@ -207,9 +262,10 @@ def main(out_dir: str = "out") -> int:
         "summary": rep.summary(),
         "ok": rep.ok,
         "checks": [asdict(c) for c in rep.checks],
+        "parts_list": case.design.parts_list(),
         "bodies": res["bodies"],
-        "pairs": res["pairs"],
-        "probes": res["probes"],
+        "envelope": res["measure"]["assembly"]["bbox"],
+        "pairs": [dict(label=p[0], **r) for p, r in zip(pairs, res["pairs"])],
         "flat_sizes": {k: v.size for k, v in flats.items()},
         "slope_deg": math.degrees(case.slope),
     }

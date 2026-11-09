@@ -4,17 +4,17 @@ import numpy as np
 import pytest
 
 from qfold import design, kernel
-from qfold.fold import Bend, Face, Material, Part, expected_volume_difference, layout
+from qfold.fold import Face, Flange, SheetMetalBody, SheetMetalRule, expected_volume_difference, layout
 
-MAT = Material("test", T=2.0, R=1.0, K=0.4)
+MAT = SheetMetalRule("test", thickness=2.0, bend_radius=1.0, k_factor=0.4)
 
 
 def box_corner(angle=90.0):
     a = MAT.R + MAT.T
     wall = Face("wall", [(0, 0), (0, 50), (10, 50), (10, 0)])
     base = Face("base", [(0, 0), (100 - a, 0), (100 - a, 50), (0, 50)],
-                bends=[Bend("b", (100 - a, 0), (0, 1), (1, 0), 0, 50, angle, wall)])
-    return layout(Part("p", MAT, base))
+                flanges=[Flange("b", (100 - a, 0), (0, 1), (1, 0), 0, 50, angle, wall)])
+    return layout(SheetMetalBody("p", MAT, base))
 
 
 def test_up_bend_puts_outer_face_at_set_back():
@@ -51,11 +51,12 @@ def test_expected_volume_difference():
 
 @pytest.mark.skipif(not kernel.KERNEL.exists(), reason="sheetkernel not built")
 def test_kernel_flat_matches_fold(tmp_path):
-    case = design.build()
-    job = {"bodies": [kernel.folded_body(case.shell), kernel.flat_body(case.shell)],
+    case = design.build(workdir=tmp_path)
+    comp = case.design.find("bottom_shell").component
+    job = {"bodies": [comp.bodies[0].job("shell"), kernel.flat_body(case.shell, "flat")],
            "outputs": {}}
     res = kernel.run(job, tmp_path)
-    fold, flat = res["bodies"]["bottom_shell"], res["bodies"]["bottom_shell_flat"]
+    fold, flat = res["bodies"]["shell"], res["bodies"]["flat"]
     assert fold["valid"] and fold["solids"] == 1
     assert fold["volume"] - flat["volume"] == pytest.approx(
         expected_volume_difference(case.shell), rel=1e-4)

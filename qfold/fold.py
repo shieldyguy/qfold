@@ -1,8 +1,9 @@
-"""Fold engine: a tree of flat faces joined by bends.
+"""Fold engine for sheet metal bodies: flat faces joined by flanges.
 
-A part is a root face plus bends hanging off its edges, each bend carrying a
-child face, recursively. From that one description the engine produces both
-states of the part:
+A sheet metal body is a root face plus flanges hanging off its edges. Each
+flange is a bend plus the wall face it carries, recursively. (Fusion's sheet
+metal Flange: a bend and a wall.) From that one description the engine
+produces both states of the body:
 
 * folded: planar plates (face outline + holes, extruded by thickness) and bend
   sectors (annular sectors swept about each bend axis), in 3D;
@@ -13,17 +14,18 @@ Conventions
 -----------
 Every face has a frame (O, U, V, N). Face-local 2D coordinates (u, v) map to
 O + u*U + v*V on the *reference surface*; material occupies s in [0, T] along N.
-A bend is attached to a straight edge of its parent face, given in parent
+A flange is attached to a straight edge of its parent face, given in parent
 coordinates by a start point p0, a unit direction d along the edge and a unit
-in-plane direction o pointing out of the parent. Its child face uses u along o
+in-plane direction o pointing out of the parent. Its wall face uses u along o
 (away from the bend) and v along d, with its origin at the image of p0, so
-child coordinates (0, v) sit exactly where the bend ends.
+wall coordinates (0, v) sit exactly where the bend ends.
 
 A positive bend angle folds toward the material side (+N). Then the reference
 surface is the outside of the bend and outer dimensions are reference
 dimensions, which is how the synth case is specified. Negative angles fold the
 other way. Bend allowance is the arc length of the neutral surface,
-theta * (R + K*T), with R the inside radius.
+theta * (R + K*T), with R the inside radius. Thickness, radius and K come from
+the body's SheetMetalRule (Fusion: Sheet Metal Rule).
 """
 
 from __future__ import annotations
@@ -35,11 +37,24 @@ import numpy as np
 
 
 @dataclass(frozen=True)
-class Material:
-    name: str
-    T: float  # thickness, mm
-    R: float  # default inside bend radius, mm
-    K: float  # K-factor (neutral axis position from the inside surface, 0..1)
+class SheetMetalRule:
+    """Fusion's Sheet Metal Rule: material, thickness, bend radius, K-factor."""
+    material: str
+    thickness: float  # mm
+    bend_radius: float  # default inside bend radius, mm
+    k_factor: float  # neutral axis position from the inside surface, 0..1
+
+    @property
+    def T(self) -> float:
+        return self.thickness
+
+    @property
+    def R(self) -> float:
+        return self.bend_radius
+
+    @property
+    def K(self) -> float:
+        return self.k_factor
 
 
 @dataclass
@@ -97,11 +112,12 @@ class Face:
     name: str
     outline: list[tuple[float, float]]
     holes: list[Hole] = field(default_factory=list)
-    bends: list["Bend"] = field(default_factory=list)
+    flanges: list["Flange"] = field(default_factory=list)
 
 
 @dataclass
-class Bend:
+class Flange:
+    """A bend along a parent edge plus the wall it carries (Fusion: Flange)."""
     name: str
     p0: tuple[float, float]
     d: tuple[float, float]
@@ -109,22 +125,20 @@ class Bend:
     v0: float
     v1: float
     angle: float  # degrees; + folds toward the material side
-    child: Face
+    wall: Face
     radius: float | None = None  # inside radius override
 
 
 @dataclass
-class Part:
+class SheetMetalBody:
     name: str
-    material: Material
+    rule: SheetMetalRule
     root: Face
-    # Root frame in part coordinates.
+    # Root face frame, in the owning component's coordinates.
     origin: tuple = (0.0, 0.0, 0.0)
     U: tuple = (1.0, 0.0, 0.0)
     V: tuple = (0.0, 1.0, 0.0)
     N: tuple = (0.0, 0.0, 1.0)
-    # 3x4 matrix placing part coordinates into the assembly.
-    placement: np.ndarray = field(default_factory=lambda: np.eye(4)[:3])
 
 
 def rotation(axis: np.ndarray, angle: float) -> np.ndarray:
@@ -153,7 +167,7 @@ class FaceState:
 
 @dataclass
 class BendState:
-    bend: Bend
+    bend: Flange
     parent: str
     R: float
     allowance: float
@@ -163,20 +177,14 @@ class BendState:
 
 
 @dataclass
-class Layout:
-    part: Part
+class SheetLayout:
+    """Both states of a sheet metal body, plus every face's frame."""
+    body: SheetMetalBody
     faces: dict[str, FaceState]
     bends: list[BendState]
     plates3d: list[dict]
     sectors: list[dict]
     plates_flat: list[dict]
-
-    def placed(self, p: np.ndarray) -> np.ndarray:
-        m = self.part.placement
-        return m[:, :3] @ p + m[:, 3]
-
-    def placed_dir(self, d: np.ndarray) -> np.ndarray:
-        return self.part.placement[:, :3] @ d
 
 
 def _frame(O, U, V, N) -> dict:
@@ -184,19 +192,19 @@ def _frame(O, U, V, N) -> dict:
             "n": list(map(float, N))}
 
 
-def layout(part: Part) -> Layout:
-    mat = part.material
+def layout(body: SheetMetalBody) -> SheetLayout:
+    mat = body.rule
     T = mat.T
     faces: dict[str, FaceState] = {}
     bends: list[BendState] = []
     plates3d, sectors, plates_flat = [], [], []
 
-    O = np.array(part.origin, float)
-    U, V, N = (np.array(x, float) for x in (part.U, part.V, part.N))
+    O = np.array(body.origin, float)
+    U, V, N = (np.array(x, float) for x in (body.U, body.V, body.N))
     # The flat pattern must be a rigid (orientation-preserving) development of
     # the reference surface, so match the root frame's handedness.
     hand = 1.0 if np.dot(np.cross(U, V), N) > 0 else -1.0
-    root = FaceState(part.root, O, U, V, N, np.zeros(2), np.array([1.0, 0.0]),
+    root = FaceState(body.root, O, U, V, N, np.zeros(2), np.array([1.0, 0.0]),
                      np.array([0.0, hand]))
 
     def visit(st: FaceState) -> None:
@@ -210,7 +218,7 @@ def layout(part: Part) -> Layout:
         plates_flat.append({
             "frame": _frame([*st.O2, 0], [*st.U2, 0], [*st.V2, 0], [0, 0, 1]), "T": T,
             "outline": [list(p) for p in f.outline], "holes": holes})
-        for b in f.bends:
+        for b in f.flanges:
             R = b.radius if b.radius is not None else mat.R
             th = math.radians(abs(b.angle))
             if th <= 0 or th >= math.pi:
@@ -249,18 +257,18 @@ def layout(part: Part) -> Layout:
                                 "holes": []})
             mid = P2 + o2 * BA / 2
             bends.append(BendState(b, f.name, R, BA, (mid + d2 * b.v0, mid + d2 * b.v1), A, w))
-            visit(FaceState(b.child, Oc, Uc, Vc, Nc, P2 + o2 * BA, o2, d2))
+            visit(FaceState(b.wall, Oc, Uc, Vc, Nc, P2 + o2 * BA, o2, d2))
 
     visit(root)
-    return Layout(part, faces, bends, plates3d, sectors, plates_flat)
+    return SheetLayout(body, faces, bends, plates3d, sectors, plates_flat)
 
 
-def expected_volume_difference(lay: Layout) -> float:
+def expected_volume_difference(lay: SheetLayout) -> float:
     """Folded minus flat volume implied by the bend allowance.
 
     A bend sector holds theta*L*T*(R + T/2) of material; its flat strip holds
     theta*L*T*(R + K*T). The difference is theta*L*T^2*(0.5 - K) per bend.
     """
-    T, K = lay.part.material.T, lay.part.material.K
+    T, K = lay.body.rule.T, lay.body.rule.K
     return sum(math.radians(abs(b.bend.angle)) * (b.bend.v1 - b.bend.v0) * T * T * (0.5 - K)
                for b in lay.bends)

@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from .fold import Layout
+from .fold import SheetLayout
 
 
 @dataclass
@@ -84,10 +84,10 @@ def _extent_u(outline, v: float) -> float:
     return best
 
 
-def check_layout(lay: Layout, rules: Rules, rep: Report) -> None:
-    T, R = lay.part.material.T, lay.part.material.R
+def check_layout(lay: SheetLayout, rules: Rules, rep: Report) -> None:
+    T, R = lay.body.rule.T, lay.body.rule.R
     r = rules.resolve(T, R)
-    part = lay.part.name
+    part = lay.body.name
 
     # Bend lines per face, in that face's coordinates.
     bend_lines: dict[str, list[tuple[str, np.ndarray, np.ndarray]]] = {n: [] for n in lay.faces}
@@ -95,7 +95,7 @@ def check_layout(lay: Layout, rules: Rules, rep: Report) -> None:
         b = bs.bend
         p0, d = np.array(b.p0), np.array(b.d)
         bend_lines[bs.parent].append((b.name, p0 + d * b.v0, p0 + d * b.v1))
-        bend_lines[b.child.name].append((b.name, np.array([0.0, b.v0]), np.array([0.0, b.v1])))
+        bend_lines[b.wall.name].append((b.name, np.array([0.0, b.v0]), np.array([0.0, b.v1])))
 
     worst = {"bend": math.inf, "edge": math.inf, "web": math.inf}
     where = {"bend": "", "edge": "", "web": ""}
@@ -153,7 +153,7 @@ def check_layout(lay: Layout, rules: Rules, rep: Report) -> None:
         b = bs.bend
         span = b.v1 - b.v0
         for v in np.linspace(b.v0 + 0.05 * span, b.v1 - 0.05 * span, 25):
-            e = _extent_u(b.child.outline, float(v))
+            e = _extent_u(b.wall.outline, float(v))
             if e < shortest:
                 shortest, which = e, b.name
     rep.add(f"{part}: flange length", shortest >= r.min_flange,
