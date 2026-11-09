@@ -11,12 +11,12 @@ cd "$(dirname "$0")/.."
 root=$(pwd)
 die() { echo "bootstrap: $*" >&2; exit 1; }
 
-# Pins. A new prebuilt branch means updating occt_* here and
+# Pins. A new prebuilt build means updating occt_* here and
 # scripts/occt-prebuilt.sha256 together (see README).
-occt_branch=prebuilt/occt-7.9.3-linux-x86_64
+occt_repo=https://github.com/shieldyguy/qfold-prebuilt
+occt_branch=occt-7.9.3-linux-x86_64
 occt_sha=751a6aaf04624f9572a05a021e3c9cf163f209a5
 ezdxf_tag=v1.4.5
-remote=$(git remote get-url origin 2>/dev/null || echo https://github.com/shieldyguy/qfold)
 
 # 0. Platform and tools ---------------------------------------------------
 [ "$(uname -sm)" = "Linux x86_64" ] ||
@@ -32,10 +32,10 @@ done
 
 # 1. Prebuilt OpenCascade -------------------------------------------------
 if [ ! -d .occt/install/lib ] || [ "$(git -C .occt/install rev-parse HEAD 2>/dev/null)" != "$occt_sha" ]; then
-  echo "== fetching prebuilt OpenCascade ($occt_branch @ ${occt_sha:0:12})"
+  echo "== fetching prebuilt OpenCascade (qfold-prebuilt $occt_branch @ ${occt_sha:0:12})"
   rm -rf .occt/install .occt/install.tmp  # also clears a half-finished earlier clone
   mkdir -p .occt
-  GIT_LFS_SKIP_SMUDGE=1 git clone -q --depth 1 --branch "$occt_branch" "$remote" .occt/install.tmp
+  GIT_LFS_SKIP_SMUDGE=1 git clone -q --depth 1 --branch "$occt_branch" "$occt_repo" .occt/install.tmp
   got=$(git -C .occt/install.tmp rev-parse HEAD)
   [ "$got" = "$occt_sha" ] || die "$occt_branch is at $got, expected $occt_sha. If that change was intended, verify it, then update occt_sha and scripts/occt-prebuilt.sha256."
   mv .occt/install.tmp .occt/install
