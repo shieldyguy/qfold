@@ -88,24 +88,57 @@ These are marked on every drawing:
 
 ## Setup
 
-You need Python 3.11+ with numpy and Pillow, plus `ezdxf`, `rsvg-convert`,
-`qpdf` and `pdftoppm`. You also need an OpenCascade 7.9 install to build the
-kernel.
+On a fresh checkout, one command gets everything and runs the tests. It takes
+under 30 seconds and needs only git, so it works in sandboxes without PyPI:
 
 ```bash
-scripts/build_occt.sh .occt              # minimal OCCT from source (~40 min on 2 cores)
-OCCT_DIR=$PWD/.occt/install kernel/build.sh
+scripts/bootstrap.sh
 python -m qfold.pipeline out
-python -m pytest tests
 ```
 
-On a machine with a package index, `pip install ezdxf` is enough for ezdxf. In
-sandboxes without PyPI, everything comes from git:
+The bootstrap script:
+
+- **Checks the platform and tools.** It stops early, with a clear message, if
+  the machine isn't Linux x86_64 or is missing git, g++, `rsvg-convert`,
+  `qpdf`, `pdftoppm`, numpy, Pillow or pytest.
+- **Fetches OpenCascade.** It shallow-clones the `occt-7.9.3-linux-x86_64`
+  branch of [qfold-prebuilt](https://github.com/shieldyguy/qfold-prebuilt) into
+  `.occt/install`. That repo holds compiled libraries and headers only, for
+  Linux x86_64 on Ubuntu 24.04 (glibc 2.38+), so cloning qfold itself stays
+  small. The clone must match the commit pinned in the script, and the
+  libraries must match `scripts/occt-prebuilt.sha256`. A moved branch or an
+  altered library stops the bootstrap instead of being linked silently. An
+  interrupted clone is cleared and retried.
+- **Gets ezdxf.** If `ezdxf` isn't importable, it sparse-clones the pinned
+  release (`src/` only) into `.deps/`. An installed ezdxf takes precedence.
+- **Builds sheetkernel and smoke-tests it.** Compiling takes seconds. It then
+  checks that every shared library resolves and that a tiny job returns the
+  right volume, so glibc or library problems show up here in one line.
+
+On another platform, or to change OpenCascade's build options, build it from
+source once and point the kernel at it. This takes about 40 minutes on 2 cores:
 
 ```bash
-git clone --depth 1 https://github.com/mozman/ezdxf .deps/ezdxf
-export QFOLD_EZDXF_SRC=$PWD/.deps/ezdxf/src EZDXF_DISABLE_C_EXT=1
+scripts/build_occt.sh .occt
+kernel/build.sh                # uses .occt/install by default, or set OCCT_DIR
 ```
+
+`build_occt.sh` and `bootstrap.sh` share `.occt/install`. Bootstrap refuses to
+touch an `.occt/install` that isn't its own prebuilt checkout, so it never
+deletes a source build. After a source build, run `kernel/build.sh` and the
+tests directly.
+
+To publish a new prebuilt build:
+
+1. In qfold-prebuilt, commit the stripped `lib/` and `include/opencascade/`,
+   with the OCCT licence files, on a new orphan branch named for the version
+   and platform.
+2. Regenerate the manifest: `(cd <install> && sha256sum lib/*.so.*.*.*) >
+   scripts/occt-prebuilt.sha256`.
+3. Update `occt_branch` and `occt_sha` in `scripts/bootstrap.sh`.
+
+Don't move an existing prebuilt branch; publish a new one. The SHA pin and
+the manifest stop a moved branch from being used anyway.
 
 ## Next
 
