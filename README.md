@@ -8,6 +8,8 @@ renders and draws the result. The geometry kernel is
 FreeCAD and build123d, driven by a small C++ tool. Names follow Autodesk
 Fusion: Design, Component, Occurrence, Body, Flange, Sheet Metal Rule.
 
+Where this is going and what we decided not to build: [DIRECTION.md](DIRECTION.md).
+
 The worked example is a desktop synth case. It has a folded bottom shell (base,
 front lip, tall rear wall, wedge cheeks) and a sloped top panel with folded lips
 that carry PEM nuts. A control board inserted from a STEP file sits under the
