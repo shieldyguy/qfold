@@ -237,3 +237,21 @@ def test_inside_dimensions(tmp_path):
     lip = lay.faces["lip"]
     assert lip.to3d(5, 5, T)[2] == pytest.approx(T + 30)  # the lip's underside: 30 clear inside
     assert m["bbox"][3:] == pytest.approx([100, 60, 30 + 2 * T], abs=1e-6)
+
+
+def test_wall_extends_past_its_edge_with_a_sloped_edge(tmp_path):
+    s = Sheet("top", RULE, up=False, bend_relief="shear")
+    panel = s.base(100, 40, name="panel")
+    panel.flange("left", 60, name="cheek", extend=(80, 0), extend_drop=(11, None))
+    lay, m = solid(s, tmp_path)
+    assert m["bbox"] == pytest.approx([0, -80, -60, 100, 40, 0], abs=1e-6)
+    cheek = lay.faces["cheek"]
+    pts = np.array([cheek.to3d(*q[:2]) for q in cheek.face.outline])
+    tip = pts[np.isclose(pts[:, 1], -80)]
+    assert sorted(tip[:, 2]) == pytest.approx([-60, -11])  # 11 below the panel's top at its tip
+    bad = Sheet("top", RULE, up=False)
+    b = bad.base(100, 40)
+    b.flange("front", 20)
+    b.flange("left", 60, extend=(10, 0))
+    with pytest.raises(ValueError, match="can't extend past an end that meets another flange"):
+        bad.layout()

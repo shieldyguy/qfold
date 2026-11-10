@@ -658,7 +658,12 @@ static TopoDS_Shape makePrim(const J& p) {
   const std::string& k = p["kind"].str();
   if (k == "cyl") {
     gp_Ax2 ax(P3(p["p"]), gp_Dir(V3(p["dir"])));
-    return BRepPrimAPI_MakeCylinder(ax, p["d"].num() / 2.0, p["len"].num()).Shape();
+    TopoDS_Shape c = BRepPrimAPI_MakeCylinder(ax, p["d"].num() / 2.0, p["len"].num()).Shape();
+    const double bore = p["bore"].kind == J::NUM ? p["bore"].num() : 0.0;  // a tube
+    if (bore <= 0.0) return c;
+    BRepAlgoAPI_Cut cut(c, BRepPrimAPI_MakeCylinder(ax, bore / 2.0, p["len"].num()).Shape());
+    if (!cut.IsDone()) throw std::runtime_error("bore cut failed");
+    return cut.Shape();
   }
   if (k == "box") {
     gp_Ax2 ax(P3(p["o"]), gp_Dir(V3(p["zdir"])), gp_Dir(V3(p["xdir"])));

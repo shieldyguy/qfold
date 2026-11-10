@@ -97,6 +97,8 @@ class Panel:
     order: int = 0
     inside: bool | None = None
     relief: str | None = None
+    extend: tuple = (0.0, 0.0)
+    extend_drop: tuple = (None, None)
     children: list["Panel"] = field(default_factory=list)
 
     @property
@@ -106,7 +108,8 @@ class Panel:
     def flange(self, edge: str, height, name: str | None = None, angle: float = 90.0,
                over: bool | None = None, start: float | None = None, end: float | None = None,
                radius: float | None = None, inside: bool | None = None,
-               relief: str | None = None) -> "Panel":
+               relief: str | None = None, extend: tuple = (0.0, 0.0),
+               extend_drop: tuple = (None, None)) -> "Panel":
         """Fold a wall up from one edge.
 
         height: from the outside of this face to the wall's far edge (or,
@@ -115,6 +118,12 @@ class Panel:
         inside: measure this wall's height on the inside; default: the
             sheet's dims.
         relief: this flange's bend relief style, if not the sheet's.
+        extend: (at the start, at the end) how far the wall runs on past the
+            end of the edge it hangs from, where no other flange meets it:
+            a cheek that carries on beyond the panel it folds from.
+        extend_drop: for each extension, how far below the parent's outside
+            surface its edge is at its tip; the edge slopes there from the
+            end of the bend. Default: level with the bend.
         over: at a corner with another wall, True runs this wall the full
             outside length and False tucks it behind the other. Default: the
             wall made first goes over.
@@ -132,7 +141,8 @@ class Panel:
         if relief is not None:
             _style(relief, BEND_RELIEFS, "bend relief")
         child = Panel(s, name or f"{self.name}_{edge}", None, names[edge], height, angle, radius,
-                      over, start, end, len(s.panels), inside, relief)
+                      over, start, end, len(s.panels), inside, relief, tuple(extend),
+                      tuple(extend_drop))
         if child.name in s.panels:
             raise ValueError(f"{s.name}: two faces are named {child.name!r}")
         s.panels[child.name] = child
@@ -234,7 +244,7 @@ class Sheet:
         rd, rw = self._relief_depth(c), self.relief_width
         return style, rw, max(rd, rw / 2) if style == "round" else rd
 
-    def _face(self, p: Panel, box, bottom_cuts=(), top=None, fillets=()) -> Face:
+    def _face(self, p: Panel, box, bottom_cuts=(), top=None, fillets=(), moves=()) -> Face:
         """box: the face's outside limits (U0, U1, V0, V1) in its own (u, v).
         bottom_cuts: notches beside its own bend. top: sloped top edge."""
         U0, U1, V0, V1 = box
@@ -300,6 +310,11 @@ class Sheet:
                         w[i] = at if c_over else at + sign * (T + gap)
                 elif not p.is_base and adj == "S":  # beside this wall's own bend
                     b[i] = w[i] = at + sign * max(rd, self._relief_depth(c))
+                elif c.extend[i] > 0:  # the wall carries on past the end of the edge
+                    w[i] = at - sign * c.extend[i]
+                if c.extend[i] > 0 and w[i] != at - sign * c.extend[i]:
+                    raise ValueError(f"{c.name}: can't extend past an end that meets another "
+                                     "flange or stops partway")
             b = [max(b[0], w[0]), min(b[1], w[1])]  # a bend never runs past its wall
             if b[1] - b[0] <= 0:
                 raise ValueError(f"{c.name}: no room for its bend on a {L:g} mm edge")
@@ -311,14 +326,21 @@ class Sheet:
             if min(h0, h1) - s <= rd:
                 raise ValueError(f"{c.name}: height {min(h0, h1):g} is too short for its bend "
                                  f"(set-back {s:.2f}) and relief ({rd:.2f})")
-            notches, wall_fillets = [], []
-            for lo, hi, corner_v in ((w[0], b[0], b[0]), (b[1], w[1], b[1])):
+            notches, wall_fillets, wall_moves = [], [], []
+            for i, (lo, hi, corner_v, tip_v) in enumerate(((w[0], b[0], b[0], w[0]),
+                                                           (b[1], w[1], b[1], w[1]))):
                 if hi - lo > 1e-9:  # the wall runs past its bend here
                     notches.append((lo, hi, rd))
-                    if style == "round":
+                    drop = c.extend_drop[i] if c.extend[i] > 0 else None
+                    if drop is not None:  # slope the extension's edge down to its tip
+                        if not rd < drop - s < min(h0, h1) - s:
+                            raise ValueError(f"{c.name}: extend_drop {drop:g} must be between "
+                                             f"{s + rd:.2f} and the wall's height")
+                        wall_moves.append(((rd, tip_v), (drop - s, tip_v)))
+                    elif style == "round":
                         wall_fillets.append(((rd, corner_v), min(rd, hi - lo)))
             wall = self._face(c, (0.0, max(h0, h1) - s, w[0], w[1]), notches,
-                              (h0 - s, h1 - s) if sloped else None, wall_fillets)
+                              (h0 - s, h1 - s) if sloped else None, wall_fillets, wall_moves)
             if side in ("N", "S"):
                 p0 = (U1 - s if side == "N" else U0 + s, V0)
                 d, o = (0.0, 1.0), ((1.0, 0.0) if side == "N" else (-1.0, 0.0))
@@ -339,7 +361,7 @@ class Sheet:
                         fillets.append(((U0 + du if a == "S" else U1 - du,
                                          V0 + dv if b_ == "W" else V1 - dv), cr))
 
-        outline = _outline((U0, U1, V0, V1), cuts, p.name, fillets)
+        outline = _outline((U0, U1, V0, V1), cuts, p.name, fillets, moves)
         if top is not None:  # slope the far edge
             def far_u(v):
                 return top[0] + (top[1] - top[0]) * (v - V0) / (V1 - V0)
@@ -371,9 +393,10 @@ class Sheet:
         return sheet_component(self.name, self.layout(), color)
 
 
-def _outline(box, cuts, name: str, fillets=()) -> list[tuple]:
+def _outline(box, cuts, name: str, fillets=(), moves=()) -> list[tuple]:
     """The outline of a rectangle with rectangles cut out of it, then with
-    the corners listed in fillets ((point, radius)) rounded."""
+    the corners in moves ((from, to)) shifted and those in fillets
+    ((point, radius)) rounded."""
     U0, U1, V0, V1 = box
     us = sorted({round(x, 9) for x in (U0, U1)} | {round(min(max(c[i], U0), U1), 9)
                                                    for c in cuts for i in (0, 1)})
@@ -411,6 +434,11 @@ def _outline(box, cuts, name: str, fillets=()) -> list[tuple]:
         a, b = loop[k - 1], loop[(k + 1) % len(loop)]
         if abs((p[0] - a[0]) * (b[1] - p[1]) - (p[1] - a[1]) * (b[0] - p[0])) > 1e-12:
             out.append([float(p[0]), float(p[1]), 0.0])
+    for (fu, fv), to in moves:
+        q = next((q for q in out if abs(q[0] - fu) < 1e-7 and abs(q[1] - fv) < 1e-7), None)
+        if q is None:
+            raise ValueError(f"{name}: no corner at ({fu:g}, {fv:g}) to move")
+        q[0], q[1] = float(to[0]), float(to[1])
     for (fu, fv), r in fillets:
         k = next((k for k, q in enumerate(out) if abs(q[0] - fu) < 1e-7 and abs(q[1] - fv) < 1e-7),
                  None)

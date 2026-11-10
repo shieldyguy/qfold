@@ -79,7 +79,10 @@ side.flange("top", 14, name="right_lip")         # a lip folding inward off the 
   front-left corner is the origin. Walls fold up; `Sheet(..., up=False)` folds
   them down from a top surface at z = 0 (a lid or panel).
 - **More:** `height=(20, 45)` slopes a wall's top edge; `start=`/`end=` put a
-  flange on part of an edge (a tab); `angle=` and `radius=` set the bend.
+  flange on part of an edge (a tab); `angle=` and `radius=` set the bend;
+  `extend=(80, 0)` runs a wall on past the end of the edge it hangs from, and
+  `extend_drop=(11, None)` slopes that extension's edge down to its tip (a
+  cheek that carries on beyond its panel, as in `designs/keybed_case`).
 
 How corners are built is three separate choices, named as in Fusion's sheet
 metal rules. All 27 combinations are tested as sound solids:
@@ -151,12 +154,15 @@ p.seated(["screw_1", "screw_2"], onto="lid", name="screw heads on the lid")  # t
 p.seated("led", onto="lid", touch=False)        # in its hole with clearance: no overlap only
 p.clear("pcb", "tray", min=2.0)                 # at least this far apart
 p.on_hole("screw_1", "lid:C1")                  # on the hole's axis, at its depth, square to it
+p.ghost("key_travel")                           # a keep-out or swept space, not a part: checked
+                                                # against, but left out of renders, STEP and parts list
 p.check(fn)                                     # anything else: fn(build) adds rows to build.rep
 sys.exit(p.main())
 ```
 
 Occurrences are named by path (`"lid"`, `"control_board/RV1"`), holes by
-`"path:tag"`. `p.check_fit(workdir)` runs only the fit checks, in about two
+`"path:tag"`. `p.views["render_back"] = (-1, 1.3, 0.8)` adds a render from another
+direction. `p.check_fit(workdir)` runs only the fit checks, in about two
 seconds, for a quick answer while moving parts around.
 
 **7. Look at the result.** Checks prove the model is consistent, not that it

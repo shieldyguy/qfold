@@ -108,6 +108,8 @@ class Project:
         self.extra_parts: list[dict] = []  # parts list rows with no geometry (PEM nuts)
         self.part_sheets = None  # fn(build) -> [Sheet], replaces the default part sheets
         self.renders: dict[str, str] = {}  # extra render name -> occurrence path
+        self.views: dict[str, tuple] = {}  # extra render name -> direction to look from
+        self.ghosts: set[str] = set()
         self._fits: list[tuple] = []
         self._holes: list[tuple] = []
         self._checks: list = []
@@ -143,6 +145,12 @@ class Project:
         self._holes.append((name, part, hole,
                             tuple(MOUNT_TOL) if axial else ("radial", "angle_deg")))
 
+    def ghost(self, path: str) -> None:
+        """A top-level occurrence that isn't a part: a keep-out or swept space
+        that exists only so fits can be checked against it. It stays out of
+        the renders, the STEP files, the parts list and the overall size."""
+        self.ghosts.add(self.design.find(path).name)
+
     def check(self, fn) -> None:
         """A custom check: fn(build) adds rows to build.rep."""
         self._checks.append(fn)
@@ -167,7 +175,14 @@ class Project:
         return out
 
     def parts_list(self) -> list[dict]:
-        return self.design.parts_list() + self.extra_parts
+        unreal = {self.design.find(g).component.name for g in self.ghosts}
+        return [r for r in self.design.parts_list() if r["component"] not in unreal] \
+            + self.extra_parts
+
+    def _real(self) -> list[tuple]:
+        """The design's instances, without the ghosts."""
+        ghost = {n for g in self.ghosts for n in self.design.group(g)}
+        return [i for i in self.design.instances() if i[0] not in ghost]
 
     def param_rows(self) -> list[tuple[str, str]]:
         """The parameter table, flattened to (name, value) rows."""
@@ -330,16 +345,19 @@ class Project:
         job = d.job()
         job["bodies"] += [kernel.flat_body(p.lay) for p in parts.values()]
         groups: dict[tuple, list[str]] = {}
-        for name, _, _, body in d.instances():
+        real = self._real()
+        for name, _, _, body in real:
             groups.setdefault(tuple(body.color), []).append(name)
+        tree = d.step_tree()
+        tree["children"] = [c for c in tree["children"] if c["name"] not in self.ghosts]
         stl = [{"path": str(out / "stl" / f"group_{i}.stl"), "geom": names, "deflection": 0.04}
                for i, names in enumerate(groups.values())]
         pairs = self._pairs(job)
         job["outputs"] = {
-            "measure": [{"name": "assembly", "geom": [n for n, *_ in d.instances()]}],
+            "measure": [{"name": "assembly", "geom": [n for n, *_ in real]}],
             "step": [{"path": str(out / f"{p.name}.step"), "geom": p.proto, "product": p.name}
                      for p in parts.values()]
-                    + [{"path": str(out / "assembly.step"), "tree": d.step_tree()}],
+                    + [{"path": str(out / "assembly.step"), "tree": tree}],
             "stl": stl,
             "flat_outline": [{"body": f"{p.name}#flat", "z": 0.0} for p in parts.values()],
             "views": [{"name": f"{p.name}_{v}", "geom": p.proto, "toward": list(t),
@@ -370,14 +388,14 @@ class Project:
 
         vol = {k: v["volume"] for k, v in res["bodies"].items()}
         want = {f"{p.name}.step": vol[p.proto] for p in parts.values()}
-        want["assembly.step"] = sum(vol[proto] for _, proto, _, _ in d.instances())
-        n_inst = len(list(d.instances()))
+        want["assembly.step"] = sum(vol[proto] for _, proto, _, _ in real)
+        n_solids = sum(res["bodies"][proto]["solids"] for _, proto, _, _ in real)
         for s in res["step"]:
             name = Path(s["path"]).name
             ok = (abs(s["readback_volume"] - want[name]) <= 1e-6 * want[name]
                   and s["readback_solids"] >= 1)
             if name == "assembly.step":
-                ok = ok and s["readback_solids"] == n_inst
+                ok = ok and s["readback_solids"] == n_solids
             rep.add(f"{name} reads back", ok,
                     f"{s['readback_solids']} solid(s), volume {s['readback_volume']:.3f} mm³ "
                     f"(model {want[name]:.3f})")
@@ -396,9 +414,11 @@ class Project:
             write_dxf(fp, path, p.lay.body.rule.material, p.lay.body.rule.T)
             rep.checks.append(check_dxf(path, fp))
 
-        img = render([(read_stl(s["path"]), color) for color, s in zip(groups, stl)],
-                     toward=ISO, size=(1500, 1080))
+        meshes = [(read_stl(s["path"]), color) for color, s in zip(groups, stl)]
+        img = render(meshes, toward=ISO, size=(1500, 1080))
         img.save(out / "render_iso.png")
+        for vname, toward in self.views.items():
+            render(meshes, toward=_unit(toward), size=(1500, 1080)).save(out / f"{vname}.png")
         buf = io.BytesIO()
         img.save(buf, format="PNG")
         b.render_png = buf.getvalue()

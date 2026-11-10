@@ -333,9 +333,11 @@ def box(o, dx, dy, dz, x=(1, 0, 0), z=(0, 0, 1)) -> dict:
             "zdir": list(map(float, z)), "dx": dx, "dy": dy, "dz": dz}
 
 
-def cyl(p, d, length, direction=(0, 0, 1)) -> dict:
+def cyl(p, d, length, direction=(0, 0, 1), bore: float = 0.0) -> dict:
+    """A cylinder from point p, diameter d, along direction. bore > 0 makes it
+    a tube with that inside diameter (a nut, a standoff, a bushing)."""
     return {"kind": "cyl", "p": list(map(float, p)), "dir": list(map(float, direction)), "d": d,
-            "len": length}
+            "len": length, "bore": float(bore)}
 
 
 def insert_step(parent, path: str | Path, tree: list[dict] | None = None,
