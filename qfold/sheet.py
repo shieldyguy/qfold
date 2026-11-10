@@ -136,7 +136,8 @@ class Panel:
             parent's surface: the wall's flat face then stands above where
             the bend starts, parted from the bend's end by a relief slot in
             this flange's bend relief style (a real part needs a slot with
-            some width there: relief="round").
+            some width there: relief="round", which also rounds the
+            slot's mouth on the extension to the slot's radius).
         extend_fillet: for each extension, a radius drawn in the flat
             pattern across the inside corner where the parent's edge meets
             the extension's. The fillet crosses the bend, so the bend ends
@@ -432,6 +433,9 @@ class Sheet:
                     edge = c.extend_level[i] - s
                     if edge > u_lo:
                         wall_cuts.append((u_lo, edge, min(tip_v, slit), max(tip_v, slit)))
+                    if style == "round" and rw > 0 and abs(tip_v - slit) > rw:
+                        # The slot's mouth on the extension gets the slot's own radius.
+                        wall_fillets.append(((edge, slit), rw / 2))
                 if c.extend[i] > 0 and c.extend_round[i] > 0:
                     if drop is not None:
                         raise ValueError(f"{c.name}: extend_round needs a level extension "

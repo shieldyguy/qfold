@@ -301,8 +301,8 @@ def test_extension_edge_can_rise_to_the_parents_surface(tmp_path, kw, top_z):
     pts = np.array([cheek.to3d(*q[:2]) for q in cheek.face.outline])
     ext = pts[pts[:, 1] < -0.5]  # ahead of the panel's front edge
     assert ext[:, 2].max() == pytest.approx(top_z)
-    if "relief" in kw:  # a slot one relief wide with a round end, beside the bend's end
-        assert len([q for q in cheek.face.outline if len(q) > 2]) == 2
+    if "relief" in kw:  # a slot one relief wide beside the bend's end: round end, round mouth
+        assert len([q for q in cheek.face.outline if len(q) > 2]) == 3
 
 
 @pytest.mark.parametrize("r", [1.0, 6.0])  # narrower and wider than the bend's flat strip
