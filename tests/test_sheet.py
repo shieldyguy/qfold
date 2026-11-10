@@ -271,3 +271,20 @@ def test_rounded_far_corners(tmp_path):
     too_big.base(100, 60).flange("back", 30, round=(40.0, 0))
     with pytest.raises(ValueError, match="doesn't fit"):
         too_big.layout()
+
+
+def test_level_extension_with_a_rounded_tip(tmp_path):
+    s = Sheet("top", RULE, up=False, bend_relief="shear")
+    s.base(100, 40, name="panel").flange("left", 60, name="cheek", extend=(80, 0),
+                                         extend_round=(6.0, 0))
+    lay, m = solid(s, tmp_path)
+    cheek = lay.faces["cheek"]
+    pts = np.array([cheek.to3d(*q[:2]) for q in cheek.face.outline])
+    level = -(A + 0.2)  # the extension's edge: one set-back and a kerf below the panel's top
+    assert sorted(pts[np.isclose(pts[:, 2], level)][:, 1]) == pytest.approx([-74.0, 0.0])
+    assert len([q for q in cheek.face.outline if len(q) > 2]) == 1
+    sloped = Sheet("top", RULE, up=False)
+    sloped.base(100, 40).flange("left", 60, extend=(80, 0), extend_drop=(11, None),
+                                extend_round=(6.0, 0))
+    with pytest.raises(ValueError, match="needs a level extension"):
+        sloped.layout()

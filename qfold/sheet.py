@@ -100,6 +100,7 @@ class Panel:
     extend: tuple = (0.0, 0.0)
     extend_drop: tuple = (None, None)
     round: tuple = (0.0, 0.0)
+    extend_round: tuple = (0.0, 0.0)
     children: list["Panel"] = field(default_factory=list)
 
     @property
@@ -110,7 +111,8 @@ class Panel:
                over: bool | None = None, start: float | None = None, end: float | None = None,
                radius: float | None = None, inside: bool | None = None,
                relief: str | None = None, extend: tuple = (0.0, 0.0),
-               extend_drop: tuple = (None, None), round: tuple = (0.0, 0.0)) -> "Panel":
+               extend_drop: tuple = (None, None), round: tuple = (0.0, 0.0),
+               extend_round: tuple = (0.0, 0.0)) -> "Panel":
         """Fold a wall up from one edge.
 
         height: from the outside of this face to the wall's far edge (or,
@@ -125,6 +127,8 @@ class Panel:
         extend_drop: for each extension, how far below the parent's outside
             surface its edge is at its tip; the edge slopes there from the
             end of the bend. Default: level with the bend.
+        extend_round: for each extension, a radius on the corner of its tip
+            nearest the bend (a level extension only).
         round: (at the start, at the end) radius on the wall's two far
             corners, the ones away from its bend. Use it to nest a wall
             inside another part's bend (radius = that bend's inside radius
@@ -147,7 +151,7 @@ class Panel:
             _style(relief, BEND_RELIEFS, "bend relief")
         child = Panel(s, name or f"{self.name}_{edge}", None, names[edge], height, angle, radius,
                       over, start, end, len(s.panels), inside, relief, tuple(extend),
-                      tuple(extend_drop), tuple(round))
+                      tuple(extend_drop), tuple(round), tuple(extend_round))
         if child.name in s.panels:
             raise ValueError(f"{s.name}: two faces are named {child.name!r}")
         s.panels[child.name] = child
@@ -344,6 +348,11 @@ class Sheet:
                         wall_moves.append(((rd, tip_v), (drop - s, tip_v)))
                     elif style == "round":
                         wall_fillets.append(((rd, corner_v), min(rd, hi - lo)))
+                    if c.extend[i] > 0 and c.extend_round[i] > 0:
+                        if drop is not None:
+                            raise ValueError(f"{c.name}: extend_round needs a level extension "
+                                             "(no extend_drop)")
+                        wall_fillets.append(((rd, tip_v), c.extend_round[i]))
             for i in (0, 1):
                 if c.round[i] > 0:
                     if sloped:

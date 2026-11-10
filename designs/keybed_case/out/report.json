@@ -9,11 +9,11 @@
     "key_side": "1.5",
     "key_front": "1.5",
     "key_travel": "10",
-    "travel_clear": "2",
+    "shelf_drop": "15",
+    "shelf_depth": "25",
     "rear_zone": "85",
     "key_clear": "2",
-    "panel_overhang": "10",
-    "cheek_front_rise": "1",
+    "panel_gap": "3",
     "recess": "2.5",
     "tab": "18",
     "fit": "0.3",
@@ -58,23 +58,23 @@
     {
       "name": "bottom: valid solid",
       "status": "pass",
-      "detail": "valid=True, solids=1, faces=95",
+      "detail": "valid=True, solids=1, faces=97",
       "value": null,
       "limit": null
     },
     {
       "name": "bottom: no self-intersection",
       "status": "pass",
-      "detail": "folded fuse loses 0.00e+00 mm\u00b3, flat fuse loses 0.00e+00 mm\u00b3 (limit 3.4e-04)",
+      "detail": "folded fuse loses -5.82e-11 mm\u00b3, flat fuse loses -1.16e-10 mm\u00b3 (limit 3.6e-04)",
       "value": null,
       "limit": null
     },
     {
       "name": "bottom: flat pattern matches fold",
       "status": "pass",
-      "detail": "folded\u2212flat volume 666.306669 mm\u00b3, bend allowance predicts 666.306669",
-      "value": 666.3066690852284,
-      "limit": 666.3066690851665
+      "detail": "folded\u2212flat volume 940.712221 mm\u00b3, bend allowance predicts 940.712221",
+      "value": 940.7122210056987,
+      "limit": 940.7122210056207
     },
     {
       "name": "bottom: hole to bend",
@@ -128,30 +128,30 @@
     {
       "name": "bottom: flange length",
       "status": "pass",
-      "detail": "shortest flat flange 14.30 mm (bend left_tab_front), need \u2265 6.30",
-      "value": 14.3,
+      "detail": "shortest flat flange 14.10 mm (bend front_wall), need \u2265 6.30",
+      "value": 14.1,
       "limit": 6.3
     },
     {
       "name": "top: valid solid",
       "status": "pass",
-      "detail": "valid=True, solids=1, faces=37",
+      "detail": "valid=True, solids=1, faces=39",
       "value": null,
       "limit": null
     },
     {
       "name": "top: no self-intersection",
       "status": "pass",
-      "detail": "folded fuse loses -5.82e-11 mm\u00b3, flat fuse loses 0.00e+00 mm\u00b3 (limit 1.6e-04)",
+      "detail": "folded fuse loses 2.91e-10 mm\u00b3, flat fuse loses 8.73e-11 mm\u00b3 (limit 1.7e-04)",
       "value": null,
       "limit": null
     },
     {
       "name": "top: flat pattern matches fold",
       "status": "pass",
-      "detail": "folded\u2212flat volume 107.775478 mm\u00b3, bend allowance predicts 107.775478",
-      "value": 107.77547757406137,
-      "limit": 107.77547757405144
+      "detail": "folded\u2212flat volume 119.418220 mm\u00b3, bend allowance predicts 119.418220",
+      "value": 119.41821994827478,
+      "limit": 119.41821994825523
     },
     {
       "name": "top: hole to bend",
@@ -164,7 +164,7 @@
       "name": "top: hole to edge",
       "status": "pass",
       "detail": "closest 11.80 mm (left_cheek M3 clearance), need \u2265 3.00",
-      "value": 11.800000000112973,
+      "value": 11.799999999999997,
       "limit": 3.0
     },
     {
@@ -198,28 +198,28 @@
     {
       "name": "top: flange length",
       "status": "pass",
-      "detail": "shortest flat flange 56.12 mm (bend left_cheek), need \u2265 6.30",
-      "value": 56.117832242460956,
+      "detail": "shortest flat flange 53.27 mm (bend left_cheek), need \u2265 6.30",
+      "value": 53.26803125463734,
       "limit": 6.3
     },
     {
       "name": "bottom.step reads back",
       "status": "pass",
-      "detail": "1 solid(s), volume 339859.325 mm\u00b3 (model 339859.325)",
+      "detail": "1 solid(s), volume 356212.466 mm\u00b3 (model 356212.466)",
       "value": null,
       "limit": null
     },
     {
       "name": "top.step reads back",
       "status": "pass",
-      "detail": "1 solid(s), volume 161012.037 mm\u00b3 (model 161012.037)",
+      "detail": "1 solid(s), volume 169935.775 mm\u00b3 (model 169935.775)",
       "value": null,
       "limit": null
     },
     {
       "name": "assembly.step reads back",
       "status": "pass",
-      "detail": "74 solid(s), volume 2429129.960 mm\u00b3 (model 2429129.960)",
+      "detail": "74 solid(s), volume 2454406.839 mm\u00b3 (model 2454406.839)",
       "value": null,
       "limit": null
     },
@@ -234,21 +234,21 @@
       "name": "keys and frame clear the top and the nuts",
       "status": "pass",
       "detail": "overlap 0.000000 mm\u00b3, closest 1.500 mm, need \u2265 1",
-      "value": 1.5,
+      "value": 1.5000000000000033,
       "limit": 1.0
     },
     {
       "name": "pressed keys clear the case",
       "status": "pass",
       "detail": "overlap 0.000000 mm\u00b3, closest 1.500 mm, need \u2265 1",
-      "value": 1.5,
+      "value": 1.5000000000000033,
       "limit": 1.0
     },
     {
       "name": "top slides over the bottom",
       "status": "pass",
       "detail": "overlap 0.000000 mm\u00b3, closest 0.300 mm, need \u2265 0.2",
-      "value": 0.29999999988702086,
+      "value": 0.29999999999999716,
       "limit": 0.2
     },
     {
@@ -262,7 +262,7 @@
       "name": "screw heads on the cheeks",
       "status": "pass",
       "detail": "6 touching, widest gap 0.0000 mm (\u2264 0.01), no overlap",
-      "value": 1.8239710067743416e-15,
+      "value": 1.1368683772161603e-13,
       "limit": 0.01
     },
     {
@@ -289,8 +289,8 @@
     {
       "name": "faces of one part keep their gaps",
       "status": "pass",
-      "detail": "16 unjoined face pairs, tightest 6.000 mm (bottom: back_wall vs left_tab_rear), need \u2265 0.2",
-      "value": 5.999999999999972,
+      "detail": "22 unjoined face pairs, tightest 1.500 mm (bottom: key_shelf vs left_tab_front), need \u2265 0.2",
+      "value": 1.5,
       "limit": 0.2
     },
     {
@@ -310,28 +310,28 @@
     {
       "name": "bottom: fits sheet",
       "status": "pass",
-      "detail": "flat 542.9 \u00d7 324.7 mm, sheet limit 800 \u00d7 800",
+      "detail": "flat 542.9 \u00d7 340.3 mm, sheet limit 800 \u00d7 800",
       "value": null,
       "limit": null
     },
     {
       "name": "bottom_flat.dxf reads back",
       "status": "pass",
-      "detail": "21 circles, 40 lines, 8 arcs, 6 bends, cut 2170.4 mm, extent 542.948 \u00d7 324.677",
+      "detail": "21 circles, 40 lines, 6 arcs, 7 bends, cut 2202.9 mm, extent 542.948 \u00d7 340.322",
       "value": null,
       "limit": null
     },
     {
       "name": "top: fits sheet",
       "status": "pass",
-      "detail": "flat 631.4 \u00d7 256.9 mm, sheet limit 800 \u00d7 800",
+      "detail": "flat 625.5 \u00d7 256.9 mm, sheet limit 800 \u00d7 800",
       "value": null,
       "limit": null
     },
     {
       "name": "top_flat.dxf reads back",
       "status": "pass",
-      "detail": "15 circles, 8 lines, 4 arcs, 2 bends, cut 2329.0 mm, extent 631.406 \u00d7 256.900",
+      "detail": "15 circles, 8 lines, 6 arcs, 2 bends, cut 2294.2 mm, extent 625.548 \u00d7 256.900",
       "value": null,
       "limit": null
     }
@@ -477,7 +477,7 @@
       "face": "back_wall",
       "x": 458.4,
       "y": 254.4,
-      "z": 31.42887,
+      "z": 28.5,
       "facing": "+Y back"
     },
     {
@@ -488,7 +488,7 @@
       "face": "back_wall",
       "x": 428.4,
       "y": 254.4,
-      "z": 31.42887,
+      "z": 28.5,
       "facing": "+Y back"
     },
     {
@@ -499,7 +499,7 @@
       "face": "back_wall",
       "x": 388.4,
       "y": 254.4,
-      "z": 31.42887,
+      "z": 28.5,
       "facing": "+Y back"
     },
     {
@@ -510,7 +510,7 @@
       "face": "back_wall",
       "x": 358.4,
       "y": 254.4,
-      "z": 31.42887,
+      "z": 28.5,
       "facing": "+Y back"
     },
     {
@@ -586,8 +586,8 @@
       "size": "\u00d87.2",
       "face": "panel",
       "x": 77.2,
-      "y": 211.495,
-      "z": 57.42887,
+      "y": 206.59,
+      "z": 54.5,
       "facing": "+Z up"
     },
     {
@@ -597,8 +597,8 @@
       "size": "\u00d87.2",
       "face": "panel",
       "x": 129.2,
-      "y": 211.495,
-      "z": 57.42887,
+      "y": 206.59,
+      "z": 54.5,
       "facing": "+Z up"
     },
     {
@@ -608,8 +608,8 @@
       "size": "\u00d87.2",
       "face": "panel",
       "x": 181.2,
-      "y": 211.495,
-      "z": 57.42887,
+      "y": 206.59,
+      "z": 54.5,
       "facing": "+Z up"
     },
     {
@@ -619,8 +619,8 @@
       "size": "\u00d87.2",
       "face": "panel",
       "x": 233.2,
-      "y": 211.495,
-      "z": 57.42887,
+      "y": 206.59,
+      "z": 54.5,
       "facing": "+Z up"
     },
     {
@@ -630,8 +630,8 @@
       "size": "\u00d87.2",
       "face": "panel",
       "x": 285.2,
-      "y": 211.495,
-      "z": 57.42887,
+      "y": 206.59,
+      "z": 54.5,
       "facing": "+Z up"
     },
     {
@@ -641,8 +641,8 @@
       "size": "\u00d87.2",
       "face": "panel",
       "x": 337.2,
-      "y": 211.495,
-      "z": 57.42887,
+      "y": 206.59,
+      "z": 54.5,
       "facing": "+Z up"
     },
     {
@@ -652,8 +652,8 @@
       "size": "\u00d87.2",
       "face": "panel",
       "x": 389.2,
-      "y": 211.495,
-      "z": 57.42887,
+      "y": 206.59,
+      "z": 54.5,
       "facing": "+Z up"
     },
     {
@@ -663,8 +663,8 @@
       "size": "\u00d87.2",
       "face": "panel",
       "x": 441.2,
-      "y": 211.495,
-      "z": 57.42887,
+      "y": 206.59,
+      "z": 54.5,
       "facing": "+Z up"
     },
     {
@@ -674,8 +674,8 @@
       "size": "\u00d83.2",
       "face": "panel",
       "x": 478.4,
-      "y": 211.495,
-      "z": 57.42887,
+      "y": 206.59,
+      "z": 54.5,
       "facing": "+Z up"
     },
     {
@@ -790,47 +790,47 @@
   "bodies": {
     "bottom#bottom": {
       "valid": true,
-      "volume": 339859.32472308306,
-      "area": 344206.47377094073,
+      "volume": 356212.46591301425,
+      "area": 360625.6676205992,
       "com": [
-        256.6919052767304,
-        137.74556139682744,
-        6.4066283837797835
+        256.7014585706651,
+        130.1876881570868,
+        6.753596330309925
       ],
       "bbox": [
         -2.0317081350640365e-15,
-        -2.753353101070389e-15,
+        -2.220446049250313e-15,
         0,
         513.8000000000001,
         251.9,
-        55.12887029300001
+        52.20000000000001
       ],
       "solids": 1,
-      "faces": 95,
-      "edges": 279,
-      "parts_volume": 339859.32472308306
+      "faces": 97,
+      "edges": 285,
+      "parts_volume": 356212.4659130142
     },
     "top#top": {
       "valid": true,
-      "volume": 161012.0373578878,
-      "area": 165672.24095550456,
+      "volume": 169935.77474137573,
+      "area": 174526.36583569125,
       "com": [
-        259.17810212168354,
-        23.215209556470636,
-        -11.99710868074412
+        259.179252032087,
+        32.682474593063525,
+        -10.41851051662021
       ],
       "bbox": [
-        -6.68674785464507e-15,
-        -156,
-        -59.928870293,
-        518.4,
-        100.9,
+        -6.361577931102148e-15,
+        -145.1,
+        -57.000000000000014,
+        518.4000000000001,
+        111.8,
         0
       ],
       "solids": 1,
-      "faces": 37,
-      "edges": 105,
-      "parts_volume": 161012.03735788775
+      "faces": 39,
+      "edges": 111,
+      "parts_volume": 169935.77474137602
     },
     "keybed:Huaxin 37-key keybed (simplified)#Huaxin 37-key keybed (simplified)": {
       "valid": true,
@@ -987,47 +987,47 @@
     },
     "bottom#flat": {
       "valid": true,
-      "volume": 339193.01805399783,
-      "area": 343533.7582528418,
+      "volume": 355271.7536920086,
+      "area": 359677.47840907756,
       "com": [
-        256.69149649796833,
-        141.19177628050303,
-        1.0000000000000002
-      ],
-      "bbox": [
-        -14.57411470679109,
-        -21.074114706791104,
-        0,
-        528.374114706791,
-        303.6029849997911,
-        2
-      ],
-      "solids": 1,
-      "faces": 71,
-      "edges": 207,
-      "parts_volume": 339193.01805399783
-    },
-    "top#flat": {
-      "valid": true,
-      "volume": 160904.2618803137,
-      "area": 165562.32919492596,
-      "com": [
-        259.17808745423946,
-        -23.19696738865985,
+        256.7009328594406,
+        130.61473481562064,
         1
       ],
       "bbox": [
-        -56.502984999791096,
-        -100.9,
+        -14.57411470679109,
+        -39.64822941358218,
         0,
-        574.902984999791,
-        156,
+        528.374114706791,
+        300.6741147067911,
         2
       ],
       "solids": 1,
-      "faces": 29,
-      "edges": 81,
-      "parts_volume": 160904.2618803137
+      "faces": 69,
+      "edges": 201,
+      "parts_volume": 355271.7536920085
+    },
+    "top#flat": {
+      "valid": true,
+      "volume": 169816.35652142766,
+      "area": 174404.8113327385,
+      "com": [
+        259.17923744170616,
+        -32.66614757008109,
+        0.9999999999999998
+      ],
+      "bbox": [
+        -53.5741147067911,
+        -111.80000000000001,
+        0,
+        571.9741147067909,
+        145.1,
+        2
+      ],
+      "solids": 1,
+      "faces": 31,
+      "edges": 87,
+      "parts_volume": 169816.35652142775
     },
     "bottom#face:base": {
       "valid": true,
@@ -1053,47 +1053,69 @@
     },
     "bottom#face:front_wall": {
       "valid": true,
-      "volume": 21372.397521601037,
-      "area": 23508.393981031084,
+      "volume": 14489.16,
+      "area": 16600.759999999995,
       "com": [
         256.9,
         0.9999999999999987,
-        14.09920590851322
-      ],
-      "bbox": [
-        -2.220446049250313e-16,
-        -2.753353101070389e-15,
-        3.6999999999999993,
-        513.8,
-        1.9999999999999996,
-        24.50000000000001
-      ],
-      "solids": 1,
-      "faces": 8,
-      "edges": 18,
-      "parts_volume": 21372.397521601037
-    },
-    "bottom#face:back_wall": {
-      "valid": true,
-      "volume": 52390.43059830128,
-      "area": 54867.151372241606,
-      "com": [
-        255.53780963679847,
-        250.9,
-        29.396078528034835
+        10.75
       ],
       "bbox": [
         0,
-        249.89999999999998,
+        -2.0095036745715335e-15,
+        3.6999999999999993,
+        513.8,
+        1.9999999999999996,
+        17.8
+      ],
+      "solids": 1,
+      "faces": 6,
+      "edges": 12,
+      "parts_volume": 14489.16
+    },
+    "bottom#face:key_shelf": {
+      "valid": true,
+      "volume": 21887.880000000005,
+      "area": 24028.28,
+      "com": [
+        256.8999999999999,
+        14.349999999999998,
+        20.5
+      ],
+      "bbox": [
+        0,
+        3.6999999999999957,
+        19.5,
+        513.8,
+        25.000000000000004,
+        21.500000000000004
+      ],
+      "solids": 1,
+      "faces": 6,
+      "edges": 12,
+      "parts_volume": 21887.880000000005
+    },
+    "bottom#face:back_wall": {
+      "valid": true,
+      "volume": 49380.72348521449,
+      "area": 51845.7287779828,
+      "com": [
+        255.45478545780415,
+        250.89999999999995,
+        27.94410335320726
+      ],
+      "bbox": [
+        0,
+        249.9,
         3.6999999999999997,
         513.8,
         251.9,
-        55.12887029300001
+        52.20000000000001
       ],
       "solids": 1,
       "faces": 19,
       "edges": 51,
-      "parts_volume": 52390.43059830128
+      "parts_volume": 49380.72348521449
     },
     "bottom#face:left_tab_front": {
       "valid": true,
@@ -1185,11 +1207,11 @@
     },
     "top#face:panel": {
       "valid": true,
-      "volume": 102452.2743929653,
-      "area": 105281.89205964182,
+      "volume": 113592.07439296533,
+      "area": 116465.29205964181,
       "com": [
-        259.1655857127391,
-        50.41712941018203,
+        259.168960668952,
+        55.86715027731228,
         -1
       ],
       "bbox": [
@@ -1197,66 +1219,66 @@
         0,
         -2,
         514.7,
-        100.9,
+        111.8,
         0
       ],
       "solids": 1,
       "faces": 15,
       "edges": 39,
-      "parts_volume": 102452.2743929653
+      "parts_volume": 113592.07439296533
     },
     "top#face:left_cheek": {
       "valid": true,
-      "volume": 28424.01739584377,
-      "area": 29725.945760984516,
+      "volume": 27223.52901579273,
+      "area": 28512.451129282737,
       "com": [
-        0.9999999999999964,
-        -26.628503165443142,
-        -32.12019600116408
+        0.9999999999999968,
+        -16.496137495167428,
+        -30.364857528856597
       ],
       "bbox": [
-        -6.68674785464507e-15,
-        -156,
-        -59.928870293,
+        -6.361577931102148e-15,
+        -145.1,
+        -57.000000000000014,
         1.9999999999999996,
-        100.9,
+        111.8,
         -3.6999999999999997
       ],
       "solids": 1,
-      "faces": 13,
-      "edges": 33,
-      "parts_volume": 28424.01739584377
+      "faces": 14,
+      "edges": 36,
+      "parts_volume": 27223.52901579273
     },
     "top#face:right_cheek": {
       "valid": true,
-      "volume": 28424.01739584377,
-      "area": 29725.945760984516,
+      "volume": 27223.52901579273,
+      "area": 28512.451129282737,
       "com": [
-        517.4,
-        -26.62850316544315,
-        -32.12019600116408
+        517.4000000000002,
+        -16.496137495167428,
+        -30.364857528856597
       ],
       "bbox": [
         516.4,
-        -156,
-        -59.928870293,
-        518.4,
-        100.9,
+        -145.1,
+        -57.000000000000014,
+        518.4000000000001,
+        111.8,
         -3.6999999999999997
       ],
       "solids": 1,
-      "faces": 13,
-      "edges": 33,
-      "parts_volume": 28424.01739584377
+      "faces": 14,
+      "edges": 36,
+      "parts_volume": 27223.52901579273
     }
   },
   "envelope": [
-    -2.0000000000000058,
-    -4.440892098500626e-15,
+    -2.0000000000000053,
+    0,
     -4,
     520.4,
-    256.90000000000003,
-    75.42887029288703
+    256.9,
+    72.5
   ],
   "pairs": [
     {
@@ -1285,7 +1307,7 @@
       "a": "keybed",
       "b": "top+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6",
       "interference_volume": 0,
-      "min_distance": 1.5,
+      "min_distance": 1.5000000000000033,
       "closest": [
         [
           3.5,
@@ -1293,7 +1315,7 @@
           50.5
         ],
         [
-          1.9999999999999964,
+          1.9999999999999967,
           6,
           50.5
         ]
@@ -1305,7 +1327,7 @@
       "a": "key_travel",
       "b": "top+bottom+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6",
       "interference_volume": 0,
-      "min_distance": 1.5,
+      "min_distance": 1.5000000000000033,
       "closest": [
         [
           3.5,
@@ -1313,7 +1335,7 @@
           36.5
         ],
         [
-          1.9999999999999964,
+          1.9999999999999967,
           6,
           36.5
         ]
@@ -1325,17 +1347,17 @@
       "a": "top",
       "b": "bottom",
       "interference_volume": 0,
-      "min_distance": 0.29999999988702086,
+      "min_distance": 0.29999999999999716,
       "closest": [
         [
           514.7,
           254.4,
-          55.42887029288703
+          52.5
         ],
         [
           514.6999999999999,
           254.4,
-          55.128870293000006
+          52.2
         ]
       ]
     },
@@ -1465,15 +1487,15 @@
       "a": "screw_1",
       "b": "top",
       "interference_volume": 0,
-      "min_distance": 1.8239710067743416e-15,
+      "min_distance": 1.609823385706477e-15,
       "closest": [
         [
-          -5.493258103160484e-15,
+          -5.168088179630103e-15,
           29,
           8.25
         ],
         [
-          -3.579975713905172e-15,
+          -3.393991063044389e-15,
           29,
           8.25
         ]
@@ -1485,15 +1507,15 @@
       "a": "screw_2",
       "b": "top",
       "interference_volume": 0,
-      "min_distance": 1.8239710067743416e-15,
+      "min_distance": 1.609823385706477e-15,
       "closest": [
         [
-          -5.493258103160484e-15,
+          -5.168088179630103e-15,
           188.4,
           8.25
         ],
         [
-          -3.579975713905172e-15,
+          -3.393991063044389e-15,
           188.4,
           8.25
         ]
@@ -1505,15 +1527,15 @@
       "a": "screw_3",
       "b": "top",
       "interference_volume": 0,
-      "min_distance": 1.8239710067743416e-15,
+      "min_distance": 1.609823385706477e-15,
       "closest": [
         [
-          -5.493258103160484e-15,
+          -5.168088179630103e-15,
           231.4,
           8.25
         ],
         [
-          -3.579975713905172e-15,
+          -3.393991063044389e-15,
           231.4,
           8.25
         ]
@@ -1525,7 +1547,7 @@
       "a": "screw_4",
       "b": "top",
       "interference_volume": 0,
-      "min_distance": 0,
+      "min_distance": 1.1368683772161603e-13,
       "closest": [
         [
           518.4,
@@ -1533,7 +1555,7 @@
           8.25
         ],
         [
-          518.4,
+          518.4000000000001,
           29,
           8.25
         ]
@@ -1545,7 +1567,7 @@
       "a": "screw_5",
       "b": "top",
       "interference_volume": 0,
-      "min_distance": 0,
+      "min_distance": 1.1368683772161603e-13,
       "closest": [
         [
           518.4,
@@ -1553,7 +1575,7 @@
           8.25
         ],
         [
-          518.4,
+          518.4000000000001,
           188.4,
           8.25
         ]
@@ -1565,7 +1587,7 @@
       "a": "screw_6",
       "b": "top",
       "interference_volume": 0,
-      "min_distance": 0,
+      "min_distance": 1.1368683772161603e-13,
       "closest": [
         [
           518.4,
@@ -1573,7 +1595,7 @@
           8.25
         ],
         [
-          518.4,
+          518.4000000000001,
           231.4,
           8.25
         ]
@@ -1669,13 +1691,13 @@
       "closest": [
         [
           72.44999999999999,
-          205.995,
-          55.42887029288703
+          201.08999999999997,
+          52.5
         ],
         [
           72.44999999999999,
-          205.995,
-          55.42887029288703
+          201.08999999999997,
+          52.5
         ]
       ]
     },
@@ -1689,13 +1711,13 @@
       "closest": [
         [
           124.44999999999999,
-          205.995,
-          55.42887029288703
+          201.08999999999997,
+          52.5
         ],
         [
           124.44999999999999,
-          205.995,
-          55.42887029288703
+          201.08999999999997,
+          52.5
         ]
       ]
     },
@@ -1709,13 +1731,13 @@
       "closest": [
         [
           176.45,
-          205.995,
-          55.42887029288703
+          201.08999999999997,
+          52.5
         ],
         [
           176.45,
-          205.995,
-          55.42887029288703
+          201.08999999999997,
+          52.5
         ]
       ]
     },
@@ -1729,13 +1751,13 @@
       "closest": [
         [
           228.45,
-          205.995,
-          55.42887029288703
+          201.08999999999997,
+          52.5
         ],
         [
           228.45,
-          205.995,
-          55.42887029288703
+          201.08999999999997,
+          52.5
         ]
       ]
     },
@@ -1749,13 +1771,13 @@
       "closest": [
         [
           280.45,
-          205.995,
-          55.42887029288703
+          201.08999999999997,
+          52.5
         ],
         [
           280.45,
-          205.995,
-          55.42887029288703
+          201.08999999999997,
+          52.5
         ]
       ]
     },
@@ -1769,13 +1791,13 @@
       "closest": [
         [
           332.45,
-          205.995,
-          55.42887029288703
+          201.08999999999997,
+          52.5
         ],
         [
           332.45,
-          205.995,
-          55.42887029288703
+          201.08999999999997,
+          52.5
         ]
       ]
     },
@@ -1789,13 +1811,13 @@
       "closest": [
         [
           384.45,
-          205.995,
-          55.42887029288703
+          201.08999999999997,
+          52.5
         ],
         [
           384.45,
-          205.995,
-          55.42887029288703
+          201.08999999999997,
+          52.5
         ]
       ]
     },
@@ -1809,13 +1831,13 @@
       "closest": [
         [
           436.45,
-          205.995,
-          55.42887029288703
+          201.08999999999997,
+          52.5
         ],
         [
           436.45,
-          205.995,
-          55.42887029288703
+          201.08999999999997,
+          52.5
         ]
       ]
     },
@@ -1829,13 +1851,33 @@
       "closest": [
         [
           479.9,
-          211.495,
-          57.42887029288703
+          206.58999999999997,
+          54.5
         ],
         [
           480,
-          211.495,
-          57.42887029288703
+          206.58999999999997,
+          54.5
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "item": "bottom: base vs key_shelf",
+      "a": "bottom#face:base",
+      "b": "bottom#face:key_shelf",
+      "interference_volume": 0,
+      "min_distance": 17.5,
+      "closest": [
+        [
+          0,
+          3.7,
+          2
+        ],
+        [
+          0,
+          3.699999999999998,
+          19.5
         ]
       ]
     },
@@ -1845,7 +1887,7 @@
       "a": "bottom#face:front_wall",
       "b": "bottom#face:back_wall",
       "interference_volume": 0,
-      "min_distance": 247.89999999999998,
+      "min_distance": 247.9,
       "closest": [
         [
           0,
@@ -1941,11 +1983,111 @@
     },
     {
       "label": "faces of one part keep their gaps",
+      "item": "bottom: key_shelf vs back_wall",
+      "a": "bottom#face:key_shelf",
+      "b": "bottom#face:back_wall",
+      "interference_volume": 0,
+      "min_distance": 224.9,
+      "closest": [
+        [
+          0,
+          25,
+          21.500000000000004
+        ],
+        [
+          0,
+          249.9,
+          21.500000000000004
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "item": "bottom: key_shelf vs left_tab_front",
+      "a": "bottom#face:key_shelf",
+      "b": "bottom#face:left_tab_front",
+      "interference_volume": 0,
+      "min_distance": 1.5,
+      "closest": [
+        [
+          0,
+          25,
+          19.500000000000004
+        ],
+        [
+          -2.0317081350640365e-15,
+          25,
+          18
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "item": "bottom: key_shelf vs left_tab_rear",
+      "a": "bottom#face:key_shelf",
+      "b": "bottom#face:left_tab_rear",
+      "interference_volume": 0,
+      "min_distance": 145.90771055705042,
+      "closest": [
+        [
+          0,
+          25,
+          19.500000000000004
+        ],
+        [
+          -2.0317081350640365e-15,
+          170.9,
+          18
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "item": "bottom: key_shelf vs right_tab_front",
+      "a": "bottom#face:key_shelf",
+      "b": "bottom#face:right_tab_front",
+      "interference_volume": 0,
+      "min_distance": 1.5,
+      "closest": [
+        [
+          513.8,
+          25,
+          19.500000000000004
+        ],
+        [
+          513.8,
+          25,
+          18
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
+      "item": "bottom: key_shelf vs right_tab_rear",
+      "a": "bottom#face:key_shelf",
+      "b": "bottom#face:right_tab_rear",
+      "interference_volume": 0,
+      "min_distance": 145.90771055705042,
+      "closest": [
+        [
+          513.8,
+          25,
+          19.500000000000004
+        ],
+        [
+          513.8,
+          170.9,
+          18
+        ]
+      ]
+    },
+    {
+      "label": "faces of one part keep their gaps",
       "item": "bottom: back_wall vs left_tab_front",
       "a": "bottom#face:back_wall",
       "b": "bottom#face:left_tab_front",
       "interference_volume": 0,
-      "min_distance": 204.89999999999998,
+      "min_distance": 204.9,
       "closest": [
         [
           0,
@@ -1965,7 +2107,7 @@
       "a": "bottom#face:back_wall",
       "b": "bottom#face:left_tab_rear",
       "interference_volume": 0,
-      "min_distance": 5.999999999999972,
+      "min_distance": 6,
       "closest": [
         [
           0,
@@ -1985,7 +2127,7 @@
       "a": "bottom#face:back_wall",
       "b": "bottom#face:right_tab_front",
       "interference_volume": 0,
-      "min_distance": 204.89999999999998,
+      "min_distance": 204.9,
       "closest": [
         [
           513.8,
@@ -2005,7 +2147,7 @@
       "a": "bottom#face:back_wall",
       "b": "bottom#face:right_tab_rear",
       "interference_volume": 0,
-      "min_distance": 5.999999999999972,
+      "min_distance": 6,
       "closest": [
         [
           513.8,
@@ -2395,10 +2537,10 @@
   "flat_sizes": {
     "bottom": [
       542.9482294135821,
-      324.67709970658217
+      340.32234412037326
     ],
     "top": [
-      631.4059699995821,
+      625.548229413582,
       256.9
     ]
   },
@@ -2406,8 +2548,7 @@
     "Between the cheeks": "514.4 (keybed 511.4 + 1.5 each side)",
     "White key tops": "z = 50.5",
     "Pressed key underside": "z = 26.5",
-    "Front wall top": "z = 24.5",
-    "Panel top": "z = 57.43",
-    "Highest key under the panel": "z = 53.43"
+    "Shelf under the keys": "z = 21.5",
+    "Panel top": "z = 54.5"
   }
 }

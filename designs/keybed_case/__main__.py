@@ -4,17 +4,18 @@
 
 Top, folding down: the control panel behind the keys, with a cheek at each
 end folded down to the table. The cheeks run forward past the panel,
-alongside the keys, sloping down toward the front. Bottom, folding up: the
-floor with a low front wall and a tall back wall, sitting between the
-cheeks. The keybed stands on its eight bosses on the floor.
+alongside the keys, level with the white keys. Bottom, folding up: the
+floor with a tall back wall and a low front wall whose top folds back
+inward as a shelf under the keys, sitting between the cheeks. The keybed
+stands on its eight bosses on the floor.
 
 The bottom is recessed inside the top: the cheeks and panel reach `recess`
 past it at the back, the front and underneath. Corners nest concentrically
 with a `fit` gap: the back wall's top corners inside the top's bends, and
 the cheeks' lower corners around the bottom's bends.
 
-The front wall's top stays below the lowest point a pressed key reaches.
-The screws that join the halves go through the cheeks into tabs on the
+The shelf under the keys stays below the lowest point a pressed key
+reaches. The panel's front edge sits just behind the black keys. The screws that join the halves go through the cheeks into tabs on the
 floor, placed under the key overhang and behind the keybed, never beside
 the keybed frame.
 
@@ -42,7 +43,8 @@ KB_KEYS = 160.0  # depth to the back ends of the keys
 KB_FRAME_FRONT = 47.5  # the keys overhang the frame's front by this much
 KB_SKIRT = 14.0  # a white key's front skirt, below its top
 KB_FLOOR = 48.5  # boss bottoms below the white key tops
-KB_BLACK_REAR = ((136.1, 7.0), (160.0, 0.0))  # black keys slope down to their back ends
+KB_BLACK_BACK = 136.1  # back face of the black keys' raised part (measured by probing
+# the model: nothing behind it rises above the white key tops)
 KB_BOSS_X = (20.4, 156.0, 332.8, 495.9)
 KB_BOSS_Y = (70.7, 146.2)
 
@@ -55,11 +57,11 @@ class Params:
     key_side: float = 1.5  # end keys to the cheeks' inside faces
     key_front: float = 1.5  # key fronts to the front wall's inside face
     key_travel: float = 10.0  # how far a key goes down when pressed
-    travel_clear: float = 2.0  # front wall top below a fully pressed key
+    shelf_drop: float = 15.0  # shelf under the keys, below the underside of the key fronts
+    shelf_depth: float = 25.0  # how far the shelf folds back in from the front wall
     rear_zone: float = 85.0  # room behind the keybed for electronics
-    key_clear: float = 2.0  # panel underside above the highest key beneath it
-    panel_overhang: float = 10.0  # panel front edge, forward of the keys' back ends
-    cheek_front_rise: float = 1.0  # cheek tops above the white key tops, at the front
+    key_clear: float = 2.0  # panel underside above the white key tops beneath it
+    panel_gap: float = 3.0  # panel front edge, behind the back of the black keys
     recess: float = 2.5  # cheeks and panel reach this far past the bottom
     tab: float = 18.0  # height of the floor's side tabs, outside
     fit: float = 0.3  # between the cheeks' inside faces and the bottom
@@ -82,25 +84,24 @@ def build(p: Params | None = None) -> Project:
     Db = T + p.key_front + KB_D + p.rear_zone + T  # the bottom, front wall to back wall
     D = Db + 2 * rc  # the top, cheek tips to the panel's back edge
     kx, ky, kz = T + p.key_side, rc + T + p.key_front, T + KB_FLOOR  # the keybed's origin
-    # The panel sits key_clear above the highest key under its front edge:
-    # there, the black keys are partway down their rear slope.
-    (ya, za), (yb, zb) = KB_BLACK_REAR
-    key_high = max(0.0, za + (zb - za) * (KB_KEYS - p.panel_overhang - ya) / (yb - ya))
-    panel_rise = key_high + p.key_clear + T
+    # The panel's front edge sits just behind the black keys, key_clear above
+    # the white key tops and key tails that run on under it.
+    panel_rise = p.key_clear + T
     z_top = kz + panel_rise  # panel's top surface
-    y_panel = ky + KB_KEYS - p.panel_overhang  # panel's front edge
+    y_panel = ky + KB_BLACK_BACK + p.panel_gap  # panel's front edge
     y_kb_back = ky + KB_D  # back of the keybed frame
 
     # ---- top: the panel, with a cheek folded down at each end
     top = Sheet("top", shop, dims="inside", up=False, **style)
     panel = top.base(w_in, D - y_panel, name="panel")
     for side in ("left", "right"):
-        # Down past the floor, forward past the front wall, sloping toward the
-        # front. The lower corners are rounded about the same centres as the
-        # bottom's bends (outside radius R + T), `recess` further out.
+        # Down past the floor and forward past the front wall, its top edge level
+        # beside the keys. The lower corners are rounded about the same centres
+        # as the bottom's bends (outside radius R + T), `recess` further out, and
+        # the front top corner gets the same radius.
+        r_out = R + T + rc
         panel.flange(side, z_top + rc, name=f"{side}_cheek", inside=False, extend=(y_panel, 0),
-                     extend_drop=(panel_rise - p.cheek_front_rise, None),
-                     round=(R + T + rc, R + T + rc))
+                     round=(r_out, r_out), extend_round=(r_out, 0))
 
     def on_top(x, y, z):  # case coordinates -> the top's own (origin: panel's front-left corner)
         return (x, y - y_panel, z - z_top)
@@ -111,7 +112,10 @@ def build(p: Params | None = None) -> Project:
     key_low = kz - KB_SKIRT - p.key_travel  # underside of a fully pressed white key's front
     bottom = Sheet("bottom", shop, **style)
     base = bottom.base(wb, Db)
-    base.flange("front", key_low - p.travel_clear, name="front_wall", round=(R - g, R - g))
+    # The front wall's top folds back in as a shelf under the keys.
+    z_shelf = kz - KB_SKIRT - p.shelf_drop  # its top surface
+    front = base.flange("front", z_shelf, name="front_wall")
+    front.flange("top", p.shelf_depth, name="key_shelf")
     # Up to `fit` under the panel. Its top corners are rounded to nest inside
     # the top's bends: the same centres, `fit` smaller than their inside radius.
     base.flange("back", z_top - T - g, name="back_wall", round=(R - g, R - g))
@@ -205,9 +209,8 @@ def build(p: Params | None = None) -> Project:
     proj.facts += [("Between the cheeks", f"{w_in:g} (keybed {KB_W:g} + {p.key_side:g} each side)"),
                    ("White key tops", f"z = {kz:g}"),
                    ("Pressed key underside", f"z = {key_low:g}"),
-                   ("Front wall top", f"z = {key_low - p.travel_clear:g}"),
-                   ("Panel top", f"z = {z_top:.2f}"),
-                   ("Highest key under the panel", f"z = {kz + key_high:.2f}")]
+                   ("Shelf under the keys", f"z = {z_shelf:g}"),
+                   ("Panel top", f"z = {z_top:g}")]
     proj.views = {"render_back": (-0.9, 1.3, 0.75), "render_side": (1.0, 0.0, 0.02),
                   "render_front": (0.25, -1.3, 0.35)}
     return proj

@@ -81,7 +81,8 @@ side.flange("top", 14, name="right_lip")         # a lip folding inward off the 
 - **More:** `height=(20, 45)` slopes a wall's top edge; `start=`/`end=` put a
   flange on part of an edge (a tab); `angle=` and `radius=` set the bend;
   `extend=(80, 0)` runs a wall on past the end of the edge it hangs from, and
-  `extend_drop=(11, None)` slopes that extension's edge down to its tip (a
+  `extend_drop=(11, None)` slopes that extension's edge down to its tip, or
+  `extend_round=(6, 0)` rounds the tip's corner on a level one (a
   cheek that carries on beyond its panel, as in `designs/keybed_case`);
   `round=(1.4, 1.4)` rounds a wall's two far corners, to nest it inside
   another part's bend (that bend's inside radius less the gap) or around
