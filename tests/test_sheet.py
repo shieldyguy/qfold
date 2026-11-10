@@ -158,3 +158,82 @@ def test_mistakes_are_named():
         short.layout()
     with pytest.raises(TypeError, match="bend_radius"):
         Sheet("o", shops.spec("oshcut", "5052-H32 Aluminum", 1.6))
+
+
+@pytest.mark.parametrize("corner", ["overlap", "butt", "open"])
+@pytest.mark.parametrize("corner_relief", ["square", "round", "tear"])
+@pytest.mark.parametrize("bend_relief", ["straight", "round", "tear"])
+def test_every_seam_and_relief_style_makes_a_sound_box(tmp_path, corner, corner_relief,
+                                                       bend_relief):
+    s = box(corner=corner, corner_relief=corner_relief, bend_relief=bend_relief)
+    lay = s.layout()
+    job = {"bodies": [{"name": "m", "plates": lay.plates3d, "sectors": lay.sectors},
+                      kernel.flat_body(lay, "f")], "outputs": {}}
+    res = kernel.run(job, tmp_path)["bodies"]
+    m, f = res["m"], res["f"]
+    tol = 1e-9 * m["volume"]
+    assert m["valid"] and m["solids"] == 1
+    assert m["bbox"] == pytest.approx([0, 0, 0, 120, 80, 30], abs=1e-6)
+    assert abs(m["parts_volume"] - m["volume"]) <= tol and abs(f["parts_volume"] - f["volume"]) <= tol
+    assert abs(m["parts_volume"] - f["parts_volume"] - expected_volume_difference(lay)) <= tol
+    rep = dfm.Report()
+    dfm.check_layout(lay, dfm.Rules(), rep)
+    assert rep.ok
+    relief = next(c for c in rep.checks if c.name == "box: bend corner relief")
+    assert relief.status == ("warn" if corner_relief == "tear" else "pass")
+
+
+def _span(st, axis):
+    vals = [st.to3d(u, v)[axis] for u, v, *_ in st.face.outline]
+    return min(vals), max(vals)
+
+
+def test_seams():
+    gap = 0.5
+    butt = box(corner="butt", corner_gap=gap).layout()
+    for name, axis, full in (("front", 0, 120), ("right", 1, 80)):
+        lo, hi = _span(butt.faces[name], axis)  # both stop at the inside corner
+        assert (lo, full - hi) == pytest.approx((T + gap / math.sqrt(2),) * 2)
+    opened = box(corner="open").layout()
+    lo, hi = _span(opened.faces["front"], 0)
+    assert (lo, 120 - hi) == pytest.approx((A + T,) * 2)  # as wide as its bend: set-back + relief
+
+
+def test_relief_styles_shape_the_outline():
+    arcs = lambda lay, face: [q for q in lay.faces[face].face.outline if len(q) > 2]
+    rnd = box(corner_relief="round", bend_relief="round").layout()
+    assert len(arcs(rnd, "base")) == 4 and len(arcs(rnd, "front")) == 2
+    assert all(abs(q[2]) == pytest.approx(math.tan(math.pi / 8)) for q in arcs(rnd, "base"))
+    assert not arcs(box().layout(), "base")
+    tear = box(corner_relief="tear", bend_relief="tear", kerf=0.15).layout()
+    assert len(tear.faces["base"].face.outline) == 4  # nothing cut from the corners
+    assert sorted({u for u, *_ in tear.faces["front"].face.outline})[1] == pytest.approx(0.15)
+    # A tab with shear reliefs: kerf-wide slits that stop just past the bend.
+    s = Sheet("tab", RULE, bend_relief="shear", kerf=0.15)
+    s.base(100, 60).flange("back", 20, name="tab", start=30, end=70)
+    base = s.layout().faces["base"].face.outline
+    assert sorted({round(u, 6) for u, _ in base}) == pytest.approx([0, 29.85, 30, 70, 70.15, 100])
+    assert min(v for _, v in base if v > 1) == pytest.approx(60 - A - 0.15)
+    # One flange can differ from the rest.
+    s = Sheet("tab", RULE)
+    s.base(100, 60).flange("back", 20, name="tab", start=30, end=70, relief="round")
+    assert len(arcs(s.layout(), "base")) == 4  # two rounded slot ends
+    with pytest.raises(ValueError, match="choose from straight, round, tear, shear"):
+        Sheet("x", RULE, bend_relief="oval")
+
+
+def test_inside_dimensions(tmp_path):
+    s = Sheet("in", RULE, dims="inside")
+    base = s.base(100, 60)
+    for e in ("front", "back", "right"):  # no left wall: nothing to add there
+        base.flange(e, 30, name=e)
+    lay, m = solid(s, tmp_path)
+    assert m["bbox"] == pytest.approx([0, 0, 0, 100 + T, 60 + 2 * T, 30 + T], abs=1e-6)
+    # Mixed: an outside-sized base, one wall's height given inside, to under its lip.
+    s = Sheet("mix", RULE)
+    wall = s.base(100, 60).flange("right", 30, name="wall", inside=True)
+    wall.flange("top", 12, name="lip")
+    lay, m = solid(s, tmp_path)
+    lip = lay.faces["lip"]
+    assert lip.to3d(5, 5, T)[2] == pytest.approx(T + 30)  # the lip's underside: 30 clear inside
+    assert m["bbox"][3:] == pytest.approx([100, 60, 30 + 2 * T], abs=1e-6)

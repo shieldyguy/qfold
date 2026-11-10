@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from .fold import SheetLayout
+from .fold import SheetLayout, outline_points
 
 
 @dataclass
@@ -75,13 +75,13 @@ def _seg_dist(pts: np.ndarray, a: np.ndarray, b: np.ndarray) -> float:
 
 
 def _poly_segments(poly):
-    p = np.array(poly, float)
+    p = outline_points(poly)
     return [(p[i], p[(i + 1) % len(p)]) for i in range(len(p))]
 
 
 def _inside(pts: np.ndarray, poly) -> np.ndarray:
     """Even-odd point-in-polygon test for each point."""
-    p = np.array(poly, float)
+    p = outline_points(poly)
     x, y = pts[:, 0], pts[:, 1]
     inside = np.zeros(len(pts), bool)
     for (x0, y0), (x1, y1) in zip(p, np.roll(p, -1, axis=0)):
@@ -192,7 +192,9 @@ def check_layout(lay: SheetLayout, rules: Rules, rep: Report) -> None:
     if math.isfinite(closest):
         rep.add(f"{part}: bend corner relief", not tight,
                 f"bends end ≥ {closest:.2f} mm apart, need ≥ {r.bend_end_gap:.2f}" if not tight
-                else "bends meet without relief: " + ", ".join(tight), closest, r.bend_end_gap)
+                else ("tear corners chosen: " if lay.body.tear_corners else "")
+                + "bends meet without relief: " + ", ".join(tight), closest, r.bend_end_gap,
+                warn_only=lay.body.tear_corners)
 
     # Flange length across the bend, ignoring end chamfers and reliefs (outer 5%).
     shortest, which, missed = math.inf, "", []

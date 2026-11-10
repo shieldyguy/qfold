@@ -9,7 +9,10 @@
     "W": "140",
     "D": "100",
     "H": "40",
+    "corner": "overlap",
     "corner_gap": "0.4",
+    "corner_relief": "round",
+    "bend_relief": "round",
     "lid_clearance": "0.3",
     "lip": "14",
     "pot_body": "10"
@@ -50,14 +53,14 @@
     {
       "name": "tray: valid solid",
       "status": "pass",
-      "detail": "valid=True, solids=1, faces=73",
+      "detail": "valid=True, solids=1, faces=85",
       "value": null,
       "limit": null
     },
     {
       "name": "tray: no self-intersection",
       "status": "pass",
-      "detail": "folded fuse loses -1.16e-10 mm\u00b3, flat fuse loses 2.18e-11 mm\u00b3 (limit 5.0e-05)",
+      "detail": "folded fuse loses 3.64e-11 mm\u00b3, flat fuse loses 1.46e-11 mm\u00b3 (limit 5.0e-05)",
       "value": null,
       "limit": null
     },
@@ -176,7 +179,7 @@
     {
       "name": "tray.step reads back",
       "status": "pass",
-      "detail": "1 solid(s), volume 49924.811 mm\u00b3 (model 49924.811)",
+      "detail": "1 solid(s), volume 49935.862 mm\u00b3 (model 49935.862)",
       "value": null,
       "limit": null
     },
@@ -190,7 +193,7 @@
     {
       "name": "assembly.step reads back",
       "status": "pass",
-      "detail": "15 solid(s), volume 87168.926 mm\u00b3 (model 87168.926)",
+      "detail": "15 solid(s), volume 87179.976 mm\u00b3 (model 87179.976)",
       "value": null,
       "limit": null
     },
@@ -246,8 +249,8 @@
     {
       "name": "faces of one part keep their gaps",
       "status": "pass",
-      "detail": "15 unjoined face pairs, tightest 0.400 mm (tray: back_wall vs right_lip), need \u2265 0.2",
-      "value": 0.3999999999999915,
+      "detail": "15 unjoined face pairs, tightest 0.400 mm (tray: front_wall vs right_wall), need \u2265 0.2",
+      "value": 0.4000000000000006,
       "limit": 0.2
     },
     {
@@ -274,7 +277,7 @@
     {
       "name": "tray_flat.dxf reads back",
       "status": "pass",
-      "detail": "11 circles, 32 lines, 4 arcs, 6 bends, cut 1077.0 mm, extent 234.765 \u00d7 174.883",
+      "detail": "11 circles, 32 lines, 16 arcs, 6 bends, cut 1068.3 mm, extent 234.765 \u00d7 174.883",
       "value": null,
       "limit": null
     },
@@ -555,25 +558,25 @@
   "bodies": {
     "tray#tray": {
       "valid": true,
-      "volume": 49924.811332471865,
-      "area": 68185.4540188528,
+      "volume": 49935.86175892496,
+      "area": 68187.16068657821,
       "com": [
-        69.98840995400953,
-        50.08202370958554,
-        13.643356480380827
+        69.98841251879854,
+        50.082005558362354,
+        13.6410554589999
       ],
       "bbox": [
         -4.107825191113079e-15,
         -4.579669976578771e-15,
         0,
         140,
-        100,
+        100.00000000000003,
         40
       ],
       "solids": 1,
-      "faces": 73,
-      "edges": 213,
-      "parts_volume": 49924.81133247175
+      "faces": 85,
+      "edges": 217,
+      "parts_volume": 49935.861758925
     },
     "lid#lid": {
       "valid": true,
@@ -709,12 +712,12 @@
     },
     "tray#flat": {
       "valid": true,
-      "volume": 49733.02652574803,
-      "area": 67926.13596565119,
+      "volume": 49744.076952201285,
+      "area": 67927.84263337657,
       "com": [
-        69.98836525946977,
-        50.1178090515241,
-        0.7500000000000003
+        69.9883678440759,
+        50.11778288076492,
+        0.7499999999999999
       ],
       "bbox": [
         -47.382632243846885,
@@ -725,9 +728,9 @@
         1.5
       ],
       "solids": 1,
-      "faces": 49,
-      "edges": 141,
-      "parts_volume": 49733.02652574805
+      "faces": 61,
+      "edges": 177,
+      "parts_volume": 49744.0769522013
     },
     "lid#flat": {
       "valid": true,
@@ -753,12 +756,12 @@
     },
     "tray#face:base": {
       "valid": true,
-      "volume": 18997.399783386758,
+      "volume": 19000.29690818089,
       "area": 26080.954867982233,
       "com": [
-        70,
-        49.99999999999998,
-        0.7499999999999996
+        69.99999999999997,
+        49.99999999999999,
+        0.7499999999999997
       ],
       "bbox": [
         2.75,
@@ -769,18 +772,18 @@
         1.5
       ],
       "solids": 1,
-      "faces": 18,
-      "edges": 48,
-      "parts_volume": 18997.399783386758
+      "faces": 14,
+      "edges": 36,
+      "parts_volume": 19000.29690818089
     },
     "tray#face:front_wall": {
       "valid": true,
-      "volume": 7587.16683753789,
-      "area": 10737.50784067783,
+      "volume": 7589.205162952667,
+      "area": 10737.934507609185,
       "com": [
-        70,
+        69.99999999999999,
         0.7499999999999972,
-        21.466568237908078
+        21.46191245297374
       ],
       "bbox": [
         0,
@@ -793,38 +796,38 @@
       "solids": 1,
       "faces": 12,
       "edges": 30,
-      "parts_volume": 7587.16683753789
+      "parts_volume": 7589.205162952667
     },
     "tray#face:back_wall": {
       "valid": true,
-      "volume": 7670.314415727698,
-      "area": 10832.957122013315,
+      "volume": 7672.352741142474,
+      "area": 10833.38378894467,
       "com": [
-        69.9245623023975,
-        99.24999999999997,
-        21.483448508350616
+        69.92458234404332,
+        99.25,
+        21.47883869494151
       ],
       "bbox": [
         0,
         98.5,
         2.7499999999999996,
         140,
-        100,
+        100.00000000000003,
         40
       ],
       "solids": 1,
       "faces": 19,
       "edges": 51,
-      "parts_volume": 7670.314415727698
+      "parts_volume": 7672.352741142474
     },
     "tray#face:right_wall": {
       "valid": true,
-      "volume": 4749.35563933005,
-      "area": 6720.074185773399,
+      "volume": 4751.393964744825,
+      "area": 6720.500852704756,
       "com": [
         139.25,
         49.99999999999999,
-        19.291231192693502
+        19.284727909129646
       ],
       "bbox": [
         138.5,
@@ -837,7 +840,7 @@
       "solids": 1,
       "faces": 10,
       "edges": 24,
-      "parts_volume": 4749.35563933005
+      "parts_volume": 4751.393964744825
     },
     "tray#face:right_lip": {
       "valid": true,
@@ -863,12 +866,12 @@
     },
     "tray#face:left_wall": {
       "valid": true,
-      "volume": 4749.35563933005,
-      "area": 6720.074185773399,
+      "volume": 4751.393964744825,
+      "area": 6720.500852704756,
       "com": [
         0.7499999999999976,
-        49.99999999999999,
-        19.291231192693502
+        50,
+        19.284727909129643
       ],
       "bbox": [
         -4.107825191113079e-15,
@@ -881,7 +884,7 @@
       "solids": 1,
       "faces": 10,
       "edges": 24,
-      "parts_volume": 4749.35563933005
+      "parts_volume": 4751.393964744825
     },
     "tray#face:left_lip": {
       "valid": true,
@@ -933,7 +936,7 @@
     -4.579669976578771e-15,
     -4,
     140,
-    100,
+    100.00000000000003,
     58.5
   ],
   "pairs": [
@@ -1287,7 +1290,7 @@
       "closest": [
         [
           137.25,
-          4.25,
+          4.249999999999998,
           1.5
         ],
         [
@@ -1443,11 +1446,11 @@
       "a": "tray#face:back_wall",
       "b": "tray#face:right_lip",
       "interference_volume": 0,
-      "min_distance": 0.3999999999999915,
+      "min_distance": 0.4000000000000199,
       "closest": [
         [
           137.25,
-          98.5,
+          98.50000000000003,
           38.5
         ],
         [
@@ -1483,11 +1486,11 @@
       "a": "tray#face:back_wall",
       "b": "tray#face:left_lip",
       "interference_volume": 0,
-      "min_distance": 0.3999999999999915,
+      "min_distance": 0.4000000000000199,
       "closest": [
         [
           2.7499999999999956,
-          98.5,
+          98.50000000000003,
           38.5
         ],
         [

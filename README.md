@@ -65,25 +65,37 @@ side = base.flange("right", 38.5, name="right_wall")
 side.flange("top", 14, name="right_lip")         # a lip folding inward off the wall's top
 ```
 
-- **Every number is an outside dimension**, the one you would measure with
-  a ruler on the finished part. A wall's height runs from the outside of the
-  face it rises from to its far edge, or to the outside of a flange on that
-  edge. Inside dimensions are the outside ones less the thickness of each
-  wall in the way. Bend set-backs, radii and allowances never appear.
+- **Dimensions are outside dimensions** unless you say otherwise: the ones
+  you would measure with a ruler on the finished part. A wall's height runs
+  from the outside of the face it rises from to its far edge, or to the
+  outside of a flange on that edge. `Sheet(..., dims="inside")` makes every
+  dimension an inside one (the base between the inside faces of its walls, a
+  height from the inside of the floor); `inside=True` or `False` on one
+  `base()` or `flange()` overrides it. Bend set-backs, radii and allowances
+  never appear.
 - **Edges:** the base has `front` (y = 0), `back`, `left` (x = 0), `right`.
   A wall has `top`, `start` and `end`.
-- **Coordinates:** the base's outside surface is z = 0 and its front-left
-  corner is the origin. Walls fold up; `Sheet(..., up=False)` folds them down
-  from a top surface at z = 0 (a lid or panel).
-- **Corners:** where two walls meet, one runs the full outside length and the
-  other tucks in behind it, `corner_gap` short. The wall made first goes
-  over; `over=True/False` chooses.
-- **Reliefs are cut for you**, sized from the shop's rule: a small square
-  where two bends meet at a corner, a notch where a wall runs past its bend,
-  and a slot each side of a flange that covers only part of an edge.
-  `Sheet(..., relief_width=, relief_depth=)` changes their size.
+- **Coordinates:** the base's outside surface is z = 0 and its outside
+  front-left corner is the origin. Walls fold up; `Sheet(..., up=False)` folds
+  them down from a top surface at z = 0 (a lid or panel).
 - **More:** `height=(20, 45)` slopes a wall's top edge; `start=`/`end=` put a
   flange on part of an edge (a tab); `angle=` and `radius=` set the bend.
+
+How corners are built is three separate choices, named as in Fusion's sheet
+metal rules. All 27 combinations are tested as sound solids:
+
+| Option | Choices |
+| --- | --- |
+| `corner=` how two walls meet | `"overlap"`: one runs the full outside length, the other tucks in behind it (the wall made first goes over; `over=True/False` on a flange chooses). `"butt"`: both stop at the inside corner, leaving the outside corner open by one thickness. `"open"`: each wall is only as wide as its bend. `corner_gap=` sets the gap. |
+| `corner_relief=` where two bends meet | `"square"`: a small square cut from the corner. `"round"`: the same with a round inside. `"tear"`: nothing cut; the bends run to the corner and the material tears there. The tightest corner, reported as a warning. |
+| `bend_relief=` beside a bend that ends next to more material | `"straight"`: a slot. `"round"`: a slot with rounded ends. `"tear"` or `"shear"`: a slit one laser kerf wide (`kerf=`, default 0.2 mm) that stops at the bend, for parts that sit as close as they can be cut. `relief=` on one flange overrides it. |
+
+Sizes come from the shop's rule and can be set: `relief_width=` (default the
+shop's, else T), `relief_depth=` (default R + T + 0.5 mm from the bend's
+centre line). qfold doesn't forbid a combination the shop might refuse, such
+as a slit narrower than its minimum feature: check with the shop for those.
+
+![Corner styles](examples/corner_styles.png)
 
 For shapes `Sheet` can't describe, the layer beneath it is in `fold.py`:
 `Face` outlines with `Flange`s, in bend-line coordinates. The synth case is
@@ -341,5 +353,5 @@ the manifest stop a moved branch from being used anyway.
 
 ## Next
 
-See [DIRECTION.md](DIRECTION.md). In short: round and obround relief shapes,
-then the first real design.
+See [DIRECTION.md](DIRECTION.md). In short: the first real design, and the
+corner options it turns out to need.

@@ -28,7 +28,10 @@ class Params:
     W: float = 140.0  # outside width (x)
     D: float = 100.0  # outside depth (y)
     H: float = 40.0  # outside height (z); the lid's top is flush with the walls
+    corner: str = "overlap"  # how walls meet: overlap, butt, open
     corner_gap: float = 0.4  # side wall ends to the front and back walls
+    corner_relief: str = "round"  # where two bends meet: square, round, tear
+    bend_relief: str = "round"  # beside a bend end: straight, round, tear
     lid_clearance: float = 0.3  # lid edge to the walls, each side
     lip: float = 14.0  # lip width, from the side wall's outside face
     pot_body: float = 10.0  # pot body depth under the lid
@@ -36,7 +39,8 @@ class Params:
 
 def build_tray(p: Params, shop) -> Sheet:
     T = shop.rule.T
-    tray = Sheet("tray", shop, corner_gap=p.corner_gap)
+    tray = Sheet("tray", shop, corner=p.corner, corner_gap=p.corner_gap,
+                 corner_relief=p.corner_relief, bend_relief=p.bend_relief)
     base = tray.base(p.W, p.D)
     # Heights are outside dimensions. The front and back walls are made
     # first, so they run the full width and the side walls tuck in behind.

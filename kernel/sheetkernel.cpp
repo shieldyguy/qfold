@@ -330,12 +330,41 @@ static Frame frameFrom(const J& f) {
   return fr;
 }
 
+// Closed outline from points [u, v] or [u, v, bulge]. A bulge makes the edge
+// that starts at that point a circular arc: its middle sits bulge * chord / 2
+// to the right of the chord (in u, v), so |bulge| = tan(angle / 4) as in DXF.
 static TopoDS_Wire polygonWire(const Frame& f, const J& pts, double s) {
-  BRepBuilderAPI_MakePolygon mp;
-  for (size_t k = 0; k < pts.size(); ++k) mp.Add(f.at(pts[k][0].num(), pts[k][1].num(), s));
-  mp.Close();
-  if (!mp.IsDone()) throw std::runtime_error("polygon wire failed");
-  return mp.Wire();
+  bool arcs = false;
+  for (size_t k = 0; k < pts.size(); ++k)
+    if (pts[k].size() > 2 && std::abs(pts[k][2].num()) > 1e-12) arcs = true;
+  if (!arcs) {
+    BRepBuilderAPI_MakePolygon mp;
+    for (size_t k = 0; k < pts.size(); ++k) mp.Add(f.at(pts[k][0].num(), pts[k][1].num(), s));
+    mp.Close();
+    if (!mp.IsDone()) throw std::runtime_error("polygon wire failed");
+    return mp.Wire();
+  }
+  BRepBuilderAPI_MakeWire mw;
+  const size_t n = pts.size();
+  for (size_t k = 0; k < n; ++k) {
+    const J& a = pts[k];
+    const J& b = pts[(k + 1) % n];
+    const double au = a[0].num(), av = a[1].num(), bu = b[0].num(), bv = b[1].num();
+    const double bulge = a.size() > 2 ? a[2].num() : 0.0;
+    const double du = bu - au, dv = bv - av, c = std::sqrt(du * du + dv * dv);
+    if (c < 1e-12) continue;
+    if (std::abs(bulge) <= 1e-12) {
+      mw.Add(BRepBuilderAPI_MakeEdge(f.at(au, av, s), f.at(bu, bv, s)).Edge());
+    } else {
+      const double h = bulge * c / 2.0;
+      const double mu = (au + bu) / 2.0 + h * dv / c, mv = (av + bv) / 2.0 - h * du / c;
+      Handle(Geom_TrimmedCurve) arc =
+          GC_MakeArcOfCircle(f.at(au, av, s), f.at(mu, mv, s), f.at(bu, bv, s)).Value();
+      mw.Add(BRepBuilderAPI_MakeEdge(arc).Edge());
+    }
+  }
+  if (!mw.IsDone()) throw std::runtime_error("outline wire failed");
+  return mw.Wire();
 }
 
 static TopoDS_Wire circleWire(const Frame& f, double cu, double cv, double d, double s) {

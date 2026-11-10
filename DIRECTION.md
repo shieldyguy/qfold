@@ -51,14 +51,20 @@ keybed touch the PEM nuts. Two failures qfold must prevent:
   partial flanges), sized from the shop's rule. Holes are placed by their
   position on the finished part. The pedal box and chassis use it.
 
+- **Corner and relief options** on `Sheet`, named as in Fusion: seam
+  (overlap, butt, open), corner relief (square, round, tear) and bend relief
+  (straight, round, tear/shear), with sizes from the shop's rule or set by
+  hand. Inside or outside dimensions, per sheet or per feature. Outlines
+  can carry arcs. Principle: no limits beyond what a shop will make.
+
 ## Next, in order
 
-1. **Relief shapes.** Reliefs are rectangular. Round and obround ones need
-   arcs in face outlines, which the kernel's plates don't take yet.
+1. **Keybed case v2**, with the keybed and boards as STEP. Add what it
+   needs as it needs it: likely candidates are overlap ratio, mitered lips
+   where two lips meet at a corner, hems, countersinks.
 2. **Synth case onto `Sheet`**, or leave it as the example of the layer
-   beneath. Decide when the keybed case shows what wedge-shaped parts need.
-3. **Keybed case v2**, with the keybed and boards as STEP.
-4. **Fresh-agent test.** A new agent, given the README and a spec, builds a
+   beneath.
+3. **Fresh-agent test.** A new agent, given the README and a spec, builds a
    correct box without reading qfold's internals.
 
 ## Known limits

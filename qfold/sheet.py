@@ -1,39 +1,51 @@
-"""Describe a sheet metal part by its outside dimensions.
+"""Describe a sheet metal part by its dimensions; the bend math is done here.
 
     tray = Sheet("tray", shop)                    # a shops.ShopSpec or a SheetMetalRule
-    base = tray.base(140, 100)                    # outside width × depth
-    base.flange("front", 40, name="front_wall")   # outside height
+    base = tray.base(140, 100)                    # width × depth
+    base.flange("front", 40, name="front_wall")   # height
     side = base.flange("right", 38.5, name="right_wall")
     side.flange("top", 14, name="right_lip")      # folds inward
     tray.hole("front_wall", (40, 0, 20), Hole("circle", d=9.5, tag="J1"))
     lay = tray.layout()
 
-Every number is an outside dimension, measured on the surface you would put
-a ruler on: a wall's height runs from the outside of the face it rises from
-to its far edge, or to the outside of a flange on that edge. Sheet works out
-the bend set-backs, where each bend starts and stops, how walls meet at
-corners, and the reliefs, and produces the Face/Flange tree of fold.py.
+Dimensions are outside dimensions unless you say otherwise: a wall's height
+runs from the outside of the face it rises from to its far edge, or to the
+outside of a flange on that edge. `Sheet(..., dims="inside")`, or
+`inside=True` on one base() or flange(), gives inside dimensions instead: the
+base between the inside faces of its walls, a wall's height from the inside
+of the face it rises from. Sheet works out the bend set-backs, where each
+bend starts and stops, how walls meet at corners, and the reliefs, and
+produces the Face/Flange tree of fold.py.
 
 Coordinates of the finished part: the base's outside surface is z = 0 with
-its front-left corner at the origin, x right, y back. Walls fold up (+z), or
-down with up=False (a lid or panel whose top surface is z = 0).
+its outside front-left corner at the origin, x right, y back. Walls fold up
+(+z), or down with up=False (a lid or panel whose top surface is z = 0).
 
 Edges. On the base: "front" (y = 0), "back", "left" (x = 0), "right". On a
-wall: "top" (far from its bend), "start" and "end" (its two ends, in the
-direction the parent edge runs: +x for front/back, +y for left/right, away
-from the bend for a wall's own start/end edges).
+wall: "top" (far from its bend), "start" and "end" (its two ends).
 
-Corners. Where two 90° walls meet, one runs the full outside length ("over")
-and the other tucks in behind it, `corner_gap` short of its inside face. The
-wall made first goes over unless you pass over=True/False.
+Corner seams, where two 90° walls meet (corner=, corner_gap=):
+* "overlap": one wall runs the full outside length and the other tucks in
+  behind it, corner_gap short of its inside face. The wall made first goes
+  over unless you pass over=True/False.
+* "butt": both walls stop at the inside corner, corner_gap apart, leaving
+  the outside corner open by one thickness (a weld prep).
+* "open": each wall is only as wide as its bend.
 
-Reliefs are cut for you:
-* where two bends meet at a corner of a face, a `relief_width` square is cut
-  from the corner and both bends stop short of it;
-* where a wall runs past the end of its bend (an "over" wall at a corner), it
-  is notched `relief_depth` high beside the bend;
-* where a flange covers part of an edge (start=/end=), a `relief_width` slot
-  is cut into the parent at each such end.
+Corner relief, where two bends meet at a corner of a face (corner_relief=):
+* "square": a relief_width square cut from the corner; both bends stop short.
+* "round": the same with a round inside, radius relief_width.
+* "tear": nothing is cut and the bends run to the corner, where the
+  material tears. The tightest corner; the DFM check reports it as a warning.
+
+Bend relief, beside a bend that ends next to more material (bend_relief=, or
+relief= on one flange): under a wall that runs past its bend at a corner, and
+each side of a flange on part of an edge (start=/end=).
+* "straight": a relief_width slot, relief_depth past the bend.
+* "round": the same with rounded ends.
+* "tear" (also "shear"): a slit one laser kerf wide (kerf=, default 0.2 mm)
+  that stops at the bend, so the parts sit as close as they can be cut.
+
 relief_width defaults to the shop's rule, else the thickness. relief_depth
 defaults to R + T + 0.5 mm from the bend's centre line.
 """
@@ -49,6 +61,17 @@ from .fold import Face, Flange, Hole, SheetLayout, SheetMetalBody, SheetMetalRul
 BASE_EDGES = {"left": "S", "right": "N", "front": "W", "back": "E"}
 WALL_EDGES = {"top": "N", "start": "W", "end": "E"}
 ENDS = {"N": ("W", "E"), "S": ("W", "E"), "W": ("S", "N"), "E": ("S", "N")}  # low end, high end
+
+
+CORNERS = ("overlap", "butt", "open")
+CORNER_RELIEFS = ("square", "round", "tear")
+BEND_RELIEFS = {"straight": "straight", "round": "round", "tear": "tear", "shear": "tear"}
+
+
+def _style(value: str, allowed, what: str) -> str:
+    if value not in allowed:
+        raise ValueError(f"unknown {what} {value!r}; choose from {', '.join(allowed)}")
+    return allowed[value] if isinstance(allowed, dict) else value
 
 
 def setback(rule_T: float, R: float, angle: float) -> float:
@@ -72,6 +95,8 @@ class Panel:
     start: float | None = None
     end: float | None = None
     order: int = 0
+    inside: bool | None = None
+    relief: str | None = None
     children: list["Panel"] = field(default_factory=list)
 
     @property
@@ -80,11 +105,16 @@ class Panel:
 
     def flange(self, edge: str, height, name: str | None = None, angle: float = 90.0,
                over: bool | None = None, start: float | None = None, end: float | None = None,
-               radius: float | None = None) -> "Panel":
+               radius: float | None = None, inside: bool | None = None,
+               relief: str | None = None) -> "Panel":
         """Fold a wall up from one edge.
 
-        height: outside height, from the outside of this face to the wall's
-            far edge. A pair (h_start, h_end) makes a wall with a sloped top.
+        height: from the outside of this face to the wall's far edge (or,
+            with inside=True, from its inside). A pair (h_start, h_end)
+            makes a wall with a sloped top.
+        inside: measure this wall's height on the inside; default: the
+            sheet's dims.
+        relief: this flange's bend relief style, if not the sheet's.
         over: at a corner with another wall, True runs this wall the full
             outside length and False tucks it behind the other. Default: the
             wall made first goes over.
@@ -99,8 +129,10 @@ class Panel:
         if not self.is_base and isinstance(self.height, tuple):
             raise ValueError(f"{self.name}: a wall with a sloped top can't carry flanges")
         s = self.sheet
+        if relief is not None:
+            _style(relief, BEND_RELIEFS, "bend relief")
         child = Panel(s, name or f"{self.name}_{edge}", None, names[edge], height, angle, radius,
-                      over, start, end, len(s.panels))
+                      over, start, end, len(s.panels), inside, relief)
         if child.name in s.panels:
             raise ValueError(f"{s.name}: two faces are named {child.name!r}")
         s.panels[child.name] = child
@@ -109,13 +141,15 @@ class Panel:
 
 
 class Sheet:
-    def __init__(self, name: str, shop_or_rule, *, up: bool = True,
+    def __init__(self, name: str, shop_or_rule, *, up: bool = True, dims: str = "outside",
+                 corner: str = "overlap", corner_gap: float | None = None,
+                 corner_relief: str = "square", bend_relief: str = "straight",
                  relief_width: float | None = None, relief_depth: float | None = None,
-                 corner_gap: float | None = None):
+                 kerf: float = 0.2):
         """shop_or_rule: a shops.ShopSpec (its rule and relief width are
         used) or a SheetMetalRule. up=False folds the walls down from a top
-        surface at z = 0. corner_gap: between a tucked wall's end and the
-        inside of the wall that covers it (default 0.25 T, at least 0.3)."""
+        surface at z = 0. The rest is described in the module docstring.
+        corner_gap defaults to 0.25 T, at least 0.3 mm."""
         rule = getattr(shop_or_rule, "rule", shop_or_rule)
         if not isinstance(rule, SheetMetalRule):
             raise TypeError("Sheet needs a SheetMetalRule, or a ShopSpec that has one "
@@ -124,20 +158,30 @@ class Sheet:
         rules = getattr(shop_or_rule, "rules", None)
         self.name, self.rule, self.up = name, rule, up
         T = rule.T
+        if dims not in ("outside", "inside"):
+            raise ValueError(f"dims is 'outside' or 'inside', not {dims!r}")
+        self.inside = dims == "inside"
+        self.corner = _style(corner, CORNERS, "corner")
+        self.corner_relief = _style(corner_relief, CORNER_RELIEFS, "corner relief")
+        self.bend_relief = _style(bend_relief, BEND_RELIEFS, "bend relief")
         self.relief_width = (relief_width if relief_width is not None
                              else getattr(rules, "relief_width", None) or T)
         self.relief_depth = relief_depth
+        self.kerf = kerf
         self.corner_gap = corner_gap if corner_gap is not None else max(0.3, 0.25 * T)
         self.panels: dict[str, Panel] = {}
         self.root: Panel | None = None
         self._holes: list[tuple[str, tuple, Hole]] = []
 
     # -------------------------------------------------------------- describing
-    def base(self, width: float, depth: float, name: str = "base") -> Panel:
-        """The face everything folds from: outside width (x) × depth (y)."""
+    def base(self, width: float, depth: float, name: str = "base",
+             inside: bool | None = None) -> Panel:
+        """The face everything folds from: width (x) × depth (y). Outside
+        size, or with inside=True the size between the inside faces of the
+        walls on its edges."""
         if self.root is not None:
             raise ValueError(f"{self.name} already has a base")
-        self.root = Panel(self, name, (float(width), float(depth)))
+        self.root = Panel(self, name, (float(width), float(depth)), inside=inside)
         self.panels[name] = self.root
         return self.root
 
@@ -161,16 +205,42 @@ class Sheet:
         return max(0.5, R + self.rule.T + 0.5 - ba / 2)
 
     def _corner(self) -> float:
+        """Size of the cut where two bends meet."""
+        if self.corner_relief == "tear":
+            return 0.0
         # Two bends that end at a corner cut must end at least T apart
-        # (dfm bend_end_gap), measured diagonally across the square.
+        # (dfm bend_end_gap), measured diagonally across it.
         return max(self.relief_width, 0.75 * self.rule.T)
 
-    def _face(self, p: Panel, box, bottom_cuts=(), top=None) -> Face:
+    def _is_inside(self, p: Panel) -> bool:
+        return self.inside if p.inside is None else p.inside
+
+    def _skin(self, p: Panel) -> float:
+        """What a bend adds between an inside and an outside dimension: T at 90°."""
+        return self.rule.T * math.tan(math.radians(abs(p.angle)) / 2)
+
+    def _outside_height(self, c: Panel):
+        """A wall's height as an outside dimension."""
+        add = 0.0
+        if self._is_inside(c):
+            add = self._skin(c) + sum(self._skin(g) for g in c.children if g.edge == "N")
+        return tuple(h + add for h in c.height) if isinstance(c.height, tuple) else c.height + add
+
+    def _relief(self, c: Panel):
+        """(style, slot width, depth past the bend) of a flange's bend relief."""
+        style = BEND_RELIEFS[c.relief] if c.relief else self.bend_relief
+        if style == "tear":
+            return style, self.kerf, self.kerf
+        rd, rw = self._relief_depth(c), self.relief_width
+        return style, rw, max(rd, rw / 2) if style == "round" else rd
+
+    def _face(self, p: Panel, box, bottom_cuts=(), top=None, fillets=()) -> Face:
         """box: the face's outside limits (U0, U1, V0, V1) in its own (u, v).
         bottom_cuts: notches beside its own bend. top: sloped top edge."""
         U0, U1, V0, V1 = box
-        T, cr, rw, gap = self.rule.T, self._corner(), self.relief_width, self.corner_gap
+        T, cr, gap = self.rule.T, self._corner(), self.corner_gap
         length = {"N": V1 - V0, "S": V1 - V0, "W": U1 - U0, "E": U1 - U0}
+        fillets = list(fillets)
 
         def reaches(side: str, corner_side: str) -> Panel | None:
             """The flange on `side` that runs to its corner with corner_side."""
@@ -189,49 +259,66 @@ class Sheet:
                 return (U0 + t0, U0 + t1, V0, V0 + depth)
             return (U0 + t0, U0 + t1, V1 - depth, V1)
 
+        def point(side, t, depth):
+            r = rect(side, t, t, depth)
+            return (r[0] if side == "N" else r[1] if side == "S" else r[0],
+                    r[2] if side in ("N", "S") else (r[3] if side == "W" else r[2]))
+
         cuts = [(0.0, d, a, b) for a, b, d in bottom_cuts]
         flanges = []
         for c in sorted(p.children, key=lambda c: c.order):
             side, L, s = c.edge, length[c.edge], self._setback(c)
-            rd = self._relief_depth(c)
+            style, rw, rd = self._relief(c)
             b, w = [0.0, L], [0.0, L]
             for i, (adj, pos) in enumerate(zip(ENDS[side], (c.start, c.end))):
                 sign = 1 if i == 0 else -1
                 at = 0.0 if i == 0 else L
-                if pos is not None:  # a flange end partway along the edge
+                if pos is not None:  # a flange end partway along the edge: a slot beside it
                     if not 0 < pos < L:
                         raise ValueError(f"{c.name}: start/end {pos:g} isn't inside the edge "
                                          f"(0..{L:g})")
                     b[i] = w[i] = pos
-                    cuts.append(rect(side, min(pos, pos - sign * rw), max(pos, pos - sign * rw),
-                                     s + rd))
+                    far = pos - sign * rw
+                    cuts.append(rect(side, min(pos, far), max(pos, far), s + rd))
+                    if style == "round":
+                        fillets += [(point(side, pos, s + rd), rw / 2),
+                                    (point(side, far, s + rd), rw / 2)]
                     continue
                 n = reaches(adj, side)
                 if n is not None:  # a corner shared with another flange
-                    sn = self._setback(n)
-                    b[i] = at + sign * (sn + cr)
-                    square = c.angle == 90 and n.angle == 90
-                    c_over = c.over if c.over is not None else (
-                        not n.over if n.over is not None else c.order < n.order)
+                    b[i] = at + sign * (self._setback(n) + cr)
                     if c.over and n.over:
                         raise ValueError(f"{c.name} and {n.name} can't both go over at their "
                                          "corner")
-                    w[i] = (at if c_over else at + sign * (T + gap)) if square else b[i]
+                    if c.angle != 90 or n.angle != 90 or self.corner == "open":
+                        w[i] = b[i]
+                    elif self.corner == "butt":
+                        w[i] = at + sign * (T + gap / math.sqrt(2))
+                    else:
+                        c_over = c.over if c.over is not None else (
+                            not n.over if n.over is not None else c.order < n.order)
+                        w[i] = at if c_over else at + sign * (T + gap)
                 elif not p.is_base and adj == "S":  # beside this wall's own bend
-                    b[i] = w[i] = at + sign * rd
+                    b[i] = w[i] = at + sign * max(rd, self._relief_depth(c))
             b = [max(b[0], w[0]), min(b[1], w[1])]  # a bend never runs past its wall
             if b[1] - b[0] <= 0:
                 raise ValueError(f"{c.name}: no room for its bend on a {L:g} mm edge")
             cuts.append(rect(side, 0.0 if c.start is None else c.start,
                              L if c.end is None else c.end, s))
-            sloped = isinstance(c.height, tuple)
-            h0, h1 = c.height if sloped else (c.height, c.height)
+            height = self._outside_height(c)
+            sloped = isinstance(height, tuple)
+            h0, h1 = height if sloped else (height, height)
             if min(h0, h1) - s <= rd:
                 raise ValueError(f"{c.name}: height {min(h0, h1):g} is too short for its bend "
                                  f"(set-back {s:.2f}) and relief ({rd:.2f})")
-            notches = [(lo, hi, rd) for lo, hi in ((w[0], b[0]), (b[1], w[1])) if hi - lo > 1e-9]
+            notches, wall_fillets = [], []
+            for lo, hi, corner_v in ((w[0], b[0], b[0]), (b[1], w[1], b[1])):
+                if hi - lo > 1e-9:  # the wall runs past its bend here
+                    notches.append((lo, hi, rd))
+                    if style == "round":
+                        wall_fillets.append(((rd, corner_v), min(rd, hi - lo)))
             wall = self._face(c, (0.0, max(h0, h1) - s, w[0], w[1]), notches,
-                              (h0 - s, h1 - s) if sloped else None)
+                              (h0 - s, h1 - s) if sloped else None, wall_fillets)
             if side in ("N", "S"):
                 p0 = (U1 - s if side == "N" else U0 + s, V0)
                 d, o = (0.0, 1.0), ((1.0, 0.0) if side == "N" else (-1.0, 0.0))
@@ -240,27 +327,37 @@ class Sheet:
                 d, o = (1.0, 0.0), ((0.0, 1.0) if side == "E" else (0.0, -1.0))
             flanges.append(Flange(c.name, p0, d, o, b[0], b[1], c.angle, wall, c.radius))
 
-        # A square out of every corner where two bends meet.
-        for a, b_ in (("S", "W"), ("S", "E"), ("N", "W"), ("N", "E")):
-            ca, cb = reaches(a, b_), reaches(b_, a)
-            if ca is not None and cb is not None:
-                du, dv = self._setback(ca) + cr, self._setback(cb) + cr
-                cuts.append((U0 if a == "S" else U1 - du, U0 + du if a == "S" else U1,
-                             V0 if b_ == "W" else V1 - dv, V0 + dv if b_ == "W" else V1))
+        # A cut out of every corner where two bends meet.
+        if cr > 0:
+            for a, b_ in (("S", "W"), ("S", "E"), ("N", "W"), ("N", "E")):
+                ca, cb = reaches(a, b_), reaches(b_, a)
+                if ca is not None and cb is not None:
+                    du, dv = self._setback(ca) + cr, self._setback(cb) + cr
+                    cuts.append((U0 if a == "S" else U1 - du, U0 + du if a == "S" else U1,
+                                 V0 if b_ == "W" else V1 - dv, V0 + dv if b_ == "W" else V1))
+                    if self.corner_relief == "round":
+                        fillets.append(((U0 + du if a == "S" else U1 - du,
+                                         V0 + dv if b_ == "W" else V1 - dv), cr))
 
-        outline = _outline((U0, U1, V0, V1), cuts, p.name)
+        outline = _outline((U0, U1, V0, V1), cuts, p.name, fillets)
         if top is not None:  # slope the far edge
-            def far(v):
+            def far_u(v):
                 return top[0] + (top[1] - top[0]) * (v - V0) / (V1 - V0)
-            outline = [(far(v), v) if abs(u - U1) < 1e-9 else (u, v) for u, v in outline]
+            outline = [(far_u(q[1]), *q[1:]) if abs(q[0] - U1) < 1e-9 else q for q in outline]
         return Face(p.name, outline, [], flanges)
 
     def body(self) -> SheetMetalBody:
         if self.root is None:
             raise ValueError(f"{self.name}: call base(width, depth) first")
         W, D = self.root.size
+        if self._is_inside(self.root):  # add the walls standing on each edge
+            for side in ("S", "N", "W", "E"):
+                skin = max((self._skin(c) for c in self.root.children if c.edge == side),
+                           default=0.0)
+                W, D = (W + skin, D) if side in ("S", "N") else (W, D + skin)
         body = SheetMetalBody(self.name, self.rule, self._face(self.root, (0.0, W, 0.0, D)),
                               N=(0.0, 0.0, 1.0 if self.up else -1.0))
+        body.tear_corners = self.corner_relief == "tear"
         for face, xyz, hole in self._holes:
             hole_at(body, face, xyz, Hole(**{**hole.__dict__}))
         return body
@@ -274,8 +371,9 @@ class Sheet:
         return sheet_component(self.name, self.layout(), color)
 
 
-def _outline(box, cuts, name: str) -> list[tuple[float, float]]:
-    """The outline of a rectangle with rectangles cut out of it."""
+def _outline(box, cuts, name: str, fillets=()) -> list[tuple]:
+    """The outline of a rectangle with rectangles cut out of it, then with
+    the corners listed in fillets ((point, radius)) rounded."""
     U0, U1, V0, V1 = box
     us = sorted({round(x, 9) for x in (U0, U1)} | {round(min(max(c[i], U0), U1), 9)
                                                    for c in cuts for i in (0, 1)})
@@ -312,5 +410,27 @@ def _outline(box, cuts, name: str) -> list[tuple[float, float]]:
     for k, p in enumerate(loop):  # drop points in the middle of straight runs
         a, b = loop[k - 1], loop[(k + 1) % len(loop)]
         if abs((p[0] - a[0]) * (b[1] - p[1]) - (p[1] - a[1]) * (b[0] - p[0])) > 1e-12:
-            out.append((float(p[0]), float(p[1])))
-    return out
+            out.append([float(p[0]), float(p[1]), 0.0])
+    for (fu, fv), r in fillets:
+        k = next((k for k, q in enumerate(out) if abs(q[0] - fu) < 1e-7 and abs(q[1] - fv) < 1e-7),
+                 None)
+        if k is None:
+            raise ValueError(f"{name}: no corner at ({fu:g}, {fv:g}) to round")
+        P, A, B = out[k], out[k - 1], out[(k + 1) % len(out)]
+        ends = []
+        for Q in (A, B):
+            d = math.hypot(Q[0] - P[0], Q[1] - P[1])
+            if d < r - 1e-7:
+                raise ValueError(f"{name}: a {r:g} mm round doesn't fit its {d:.2f} mm relief")
+            ends.append((P[0] + r * (Q[0] - P[0]) / d, P[1] + r * (Q[1] - P[1]) / d, d - r < 1e-7))
+        (su, sv, at_a), (eu, ev, at_b) = ends
+        cu, cv = su + eu - P[0], sv + ev - P[1]  # the arc's centre
+        m = math.hypot(P[0] - cu, P[1] - cv)
+        mu, mv = cu + r * (P[0] - cu) / m, cv + r * (P[1] - cv) / m  # its middle
+        du, dv = eu - su, ev - sv
+        bulge = -2 * (du * (mv - sv) - dv * (mu - su)) / (du * du + dv * dv)
+        new = ([] if at_a else [[su, sv, bulge]]) + ([] if at_b else [[eu, ev, 0.0]])
+        if at_a:
+            A[2] = bulge
+        out[k:k + 1] = new
+    return [tuple(q) if q[2] else (q[0], q[1]) for q in out]

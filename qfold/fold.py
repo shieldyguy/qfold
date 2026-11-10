@@ -107,10 +107,41 @@ class Hole:
         return "profile"
 
 
+def outline_points(outline, step_deg: float = 6.0) -> np.ndarray:
+    """An outline's vertices as plain (u, v) points, with arc edges sampled.
+
+    An outline vertex is (u, v) or (u, v, bulge). A bulge makes the edge that
+    starts there a circular arc whose middle sits bulge * chord / 2 to the
+    right of the chord, so |bulge| = tan(angle / 4), as in a DXF polyline.
+    """
+    pts = []
+    n = len(outline)
+    for k, p in enumerate(outline):
+        a = np.array(p[:2], float)
+        pts.append(a)
+        bulge = p[2] if len(p) > 2 else 0.0
+        if abs(bulge) < 1e-12:
+            continue
+        b = np.array(outline[(k + 1) % n][:2], float)
+        d = b - a
+        c = float(np.linalg.norm(d))
+        theta = 4 * math.atan(abs(bulge))  # the arc's angle
+        r = c / (2 * math.sin(theta / 2))
+        right = np.array([d[1], -d[0]]) / c
+        sgn = 1.0 if bulge > 0 else -1.0
+        centre = (a + b) / 2 - sgn * right * (r - abs(bulge) * c / 2)
+        a0 = math.atan2(*(a - centre)[::-1])
+        steps = max(2, int(math.ceil(math.degrees(theta) / step_deg)))
+        for i in range(1, steps):
+            t = a0 + sgn * theta * i / steps  # bulging right of the chord turns left (CCW)
+            pts.append(centre + r * np.array([math.cos(t), math.sin(t)]))
+    return np.array(pts)
+
+
 @dataclass
 class Face:
     name: str
-    outline: list[tuple[float, float]]
+    outline: list[tuple]  # (u, v) or (u, v, bulge): see outline_points
     holes: list[Hole] = field(default_factory=list)
     flanges: list["Flange"] = field(default_factory=list)
 
@@ -139,6 +170,7 @@ class SheetMetalBody:
     U: tuple = (1.0, 0.0, 0.0)
     V: tuple = (0.0, 1.0, 0.0)
     N: tuple = (0.0, 0.0, 1.0)
+    tear_corners: bool = False  # bends meant to meet at face corners with no relief cut
 
 
 def rotation(axis: np.ndarray, angle: float) -> np.ndarray:
