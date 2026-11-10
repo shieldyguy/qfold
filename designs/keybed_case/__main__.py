@@ -8,13 +8,18 @@ alongside the keys, sloping down toward the front. Bottom, folding up: the
 floor with a low front wall and a tall back wall, sitting between the
 cheeks. The keybed stands on its eight bosses on the floor.
 
+The bottom is recessed inside the top: the cheeks and panel reach `recess`
+past it at the back, the front and underneath. Corners nest concentrically
+with a `fit` gap: the back wall's top corners inside the top's bends, and
+the cheeks' lower corners around the bottom's bends.
+
 The front wall's top stays below the lowest point a pressed key reaches.
 The screws that join the halves go through the cheeks into tabs on the
 floor, placed under the key overhang and behind the keybed, never beside
 the keybed frame.
 
 Coordinates: x right, y back, z up; x = 0 is the left cheek's outside face,
-y = 0 the front wall's outside face, z = 0 the floor's underside. The
+y = 0 the cheeks' front tips, z = 0 the floor's underside. The
 keybed STEP's own origin is the front-left corner of the lowest white key,
 at white key top height.
 """
@@ -37,6 +42,7 @@ KB_KEYS = 160.0  # depth to the back ends of the keys
 KB_FRAME_FRONT = 47.5  # the keys overhang the frame's front by this much
 KB_SKIRT = 14.0  # a white key's front skirt, below its top
 KB_FLOOR = 48.5  # boss bottoms below the white key tops
+KB_BLACK_REAR = ((136.1, 7.0), (160.0, 0.0))  # black keys slope down to their back ends
 KB_BOSS_X = (20.4, 156.0, 332.8, 495.9)
 KB_BOSS_Y = (70.7, 146.2)
 
@@ -51,9 +57,10 @@ class Params:
     key_travel: float = 10.0  # how far a key goes down when pressed
     travel_clear: float = 2.0  # front wall top below a fully pressed key
     rear_zone: float = 85.0  # room behind the keybed for electronics
-    panel_rise: float = 14.0  # panel top above the white key tops
+    key_clear: float = 2.0  # panel underside above the highest key beneath it
     panel_overhang: float = 10.0  # panel front edge, forward of the keys' back ends
-    cheek_front_rise: float = 3.0  # cheek tops above the white key tops, at the front
+    cheek_front_rise: float = 1.0  # cheek tops above the white key tops, at the front
+    recess: float = 2.5  # cheeks and panel reach this far past the bottom
     tab: float = 18.0  # height of the floor's side tabs, outside
     fit: float = 0.3  # between the cheeks' inside faces and the bottom
     corner: str = "overlap"
@@ -69,11 +76,18 @@ def build(p: Params | None = None) -> Project:
     style = dict(corner=p.corner, corner_relief=p.corner_relief, bend_relief=p.bend_relief,
                  corner_gap=p.fit)
 
+    R, rc = shop.rule.R, p.recess
     w_in = KB_W + 2 * p.key_side  # between the cheeks' inside faces
     W = w_in + 2 * T  # overall width
-    D = T + p.key_front + KB_D + p.rear_zone + T  # front wall outside to back wall outside
-    kx, ky, kz = T + p.key_side, T + p.key_front, T + KB_FLOOR  # the keybed's origin
-    z_top = kz + p.panel_rise  # panel's top surface
+    Db = T + p.key_front + KB_D + p.rear_zone + T  # the bottom, front wall to back wall
+    D = Db + 2 * rc  # the top, cheek tips to the panel's back edge
+    kx, ky, kz = T + p.key_side, rc + T + p.key_front, T + KB_FLOOR  # the keybed's origin
+    # The panel sits key_clear above the highest key under its front edge:
+    # there, the black keys are partway down their rear slope.
+    (ya, za), (yb, zb) = KB_BLACK_REAR
+    key_high = max(0.0, za + (zb - za) * (KB_KEYS - p.panel_overhang - ya) / (yb - ya))
+    panel_rise = key_high + p.key_clear + T
+    z_top = kz + panel_rise  # panel's top surface
     y_panel = ky + KB_KEYS - p.panel_overhang  # panel's front edge
     y_kb_back = ky + KB_D  # back of the keybed frame
 
@@ -81,9 +95,12 @@ def build(p: Params | None = None) -> Project:
     top = Sheet("top", shop, dims="inside", up=False, **style)
     panel = top.base(w_in, D - y_panel, name="panel")
     for side in ("left", "right"):
-        # Down to the table, forward to the front wall, sloping toward the front.
-        panel.flange(side, z_top, name=f"{side}_cheek", inside=False, extend=(y_panel, 0),
-                     extend_drop=(p.panel_rise - p.cheek_front_rise, None))
+        # Down past the floor, forward past the front wall, sloping toward the
+        # front. The lower corners are rounded about the same centres as the
+        # bottom's bends (outside radius R + T), `recess` further out.
+        panel.flange(side, z_top + rc, name=f"{side}_cheek", inside=False, extend=(y_panel, 0),
+                     extend_drop=(panel_rise - p.cheek_front_rise, None),
+                     round=(R + T + rc, R + T + rc))
 
     def on_top(x, y, z):  # case coordinates -> the top's own (origin: panel's front-left corner)
         return (x, y - y_panel, z - z_top)
@@ -93,19 +110,20 @@ def build(p: Params | None = None) -> Project:
     x0 = T + g  # the bottom's own origin in case coordinates
     key_low = kz - KB_SKIRT - p.key_travel  # underside of a fully pressed white key's front
     bottom = Sheet("bottom", shop, **style)
-    base = bottom.base(wb, D)
-    base.flange("front", key_low - p.travel_clear, name="front_wall")
-    # Up to under the panel, less the cheek bends' inside radius: the wall's top
-    # corners must stay out of the rounded inside of those bends.
-    base.flange("back", z_top - T - shop.rule.R - g, name="back_wall")
+    base = bottom.base(wb, Db)
+    base.flange("front", key_low - p.travel_clear, name="front_wall", round=(R - g, R - g))
+    # Up to `fit` under the panel. Its top corners are rounded to nest inside
+    # the top's bends: the same centres, `fit` smaller than their inside radius.
+    base.flange("back", z_top - T - g, name="back_wall", round=(R - g, R - g))
     # Tabs for the cheek screws: under the key overhang, and behind the keybed.
-    tabs = {"front": (8.0, ky + KB_FRAME_FRONT - 6.0), "rear": (y_kb_back + 6.0, D - 8.0)}
+    tabs = {"front": (rc + 8.0, ky + KB_FRAME_FRONT - 6.0),
+            "rear": (y_kb_back + 6.0, rc + Db - 8.0)}  # in case coordinates
     for side in ("left", "right"):
         for name, (a, b) in tabs.items():
-            base.flange(side, p.tab, name=f"{side}_tab_{name}", start=a, end=b)
+            base.flange(side, p.tab, name=f"{side}_tab_{name}", start=a - rc, end=b - rc)
 
-    def on_bottom(x, y, z):
-        return (x - x0, y, z)
+    def on_bottom(x, y, z):  # case coordinates -> the bottom's own
+        return (x - x0, y - rc, z)
 
     z_screw = 11.0
     screw_at = [(x, y, side, name) for x, side in ((0.0, "left"), (W, "right"))
@@ -136,12 +154,12 @@ def build(p: Params | None = None) -> Project:
                          ("J3", 130, Hole("rrect", w=9.4, h=3.8, r=1.6, label="USB-C")),
                          ("J4", 160, Hole("circle", d=8.2, label="DC barrel jack"))):
         hole.tag = tag
-        bottom.hole("back_wall", on_bottom(W - x, D, z_top - 26.0), hole)
+        bottom.hole("back_wall", on_bottom(W - x, rc + Db, z_top - 26.0), hole)
 
     # ---- assembly
     d = Design("keybed_case")
     b = d.add(bottom.component(color=(72, 76, 84)), "bottom")
-    align(b, "origin", onto=frame((x0, 0, 0)))
+    align(b, "origin", onto=frame((x0, rc, 0)))
     t = d.add(top.component(color=(196, 198, 204)), "top")
     align(t, "origin", onto=frame((0, y_panel, z_top)))
     keybed = insert_step(d, KEYBED, name="keybed", color=(235, 235, 230))
@@ -188,7 +206,8 @@ def build(p: Params | None = None) -> Project:
                    ("White key tops", f"z = {kz:g}"),
                    ("Pressed key underside", f"z = {key_low:g}"),
                    ("Front wall top", f"z = {key_low - p.travel_clear:g}"),
-                   ("Panel top", f"z = {z_top:g}")]
+                   ("Panel top", f"z = {z_top:.2f}"),
+                   ("Highest key under the panel", f"z = {kz + key_high:.2f}")]
     proj.views = {"render_back": (-0.9, 1.3, 0.75), "render_side": (1.0, 0.0, 0.02),
                   "render_front": (0.25, -1.3, 0.35)}
     return proj

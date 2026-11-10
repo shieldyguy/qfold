@@ -82,7 +82,10 @@ side.flange("top", 14, name="right_lip")         # a lip folding inward off the 
   flange on part of an edge (a tab); `angle=` and `radius=` set the bend;
   `extend=(80, 0)` runs a wall on past the end of the edge it hangs from, and
   `extend_drop=(11, None)` slopes that extension's edge down to its tip (a
-  cheek that carries on beyond its panel, as in `designs/keybed_case`).
+  cheek that carries on beyond its panel, as in `designs/keybed_case`);
+  `round=(1.4, 1.4)` rounds a wall's two far corners, to nest it inside
+  another part's bend (that bend's inside radius less the gap) or around
+  one (its outside radius plus the gap).
 
 How corners are built is three separate choices, named as in Fusion's sheet
 metal rules. All 27 combinations are tested as sound solids:

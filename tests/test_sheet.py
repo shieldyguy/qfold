@@ -255,3 +255,19 @@ def test_wall_extends_past_its_edge_with_a_sloped_edge(tmp_path):
     b.flange("left", 60, extend=(10, 0))
     with pytest.raises(ValueError, match="can't extend past an end that meets another flange"):
         bad.layout()
+
+
+def test_rounded_far_corners(tmp_path):
+    s = Sheet("u", RULE)
+    s.base(100, 60).flange("back", 30, name="wall", round=(1.4, 6.0))
+    lay, m = solid(s, tmp_path)
+    arcs = [q for q in lay.faces["wall"].face.outline if len(q) > 2]
+    assert len(arcs) == 2 and all(abs(q[2]) == pytest.approx(math.tan(math.pi / 8)) for q in arcs)
+    # The corner itself is gone: the wall's outline now turns 1.4 and 6 mm short of it.
+    pts = np.array([lay.faces["wall"].to3d(*q[:2]) for q in lay.faces["wall"].face.outline])
+    top = sorted(pts[np.isclose(pts[:, 2], 30)][:, 0])
+    assert top == pytest.approx([1.4, 94.0])
+    too_big = Sheet("u", RULE)
+    too_big.base(100, 60).flange("back", 30, round=(40.0, 0))
+    with pytest.raises(ValueError, match="doesn't fit"):
+        too_big.layout()

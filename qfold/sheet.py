@@ -99,6 +99,7 @@ class Panel:
     relief: str | None = None
     extend: tuple = (0.0, 0.0)
     extend_drop: tuple = (None, None)
+    round: tuple = (0.0, 0.0)
     children: list["Panel"] = field(default_factory=list)
 
     @property
@@ -109,7 +110,7 @@ class Panel:
                over: bool | None = None, start: float | None = None, end: float | None = None,
                radius: float | None = None, inside: bool | None = None,
                relief: str | None = None, extend: tuple = (0.0, 0.0),
-               extend_drop: tuple = (None, None)) -> "Panel":
+               extend_drop: tuple = (None, None), round: tuple = (0.0, 0.0)) -> "Panel":
         """Fold a wall up from one edge.
 
         height: from the outside of this face to the wall's far edge (or,
@@ -124,6 +125,10 @@ class Panel:
         extend_drop: for each extension, how far below the parent's outside
             surface its edge is at its tip; the edge slopes there from the
             end of the bend. Default: level with the bend.
+        round: (at the start, at the end) radius on the wall's two far
+            corners, the ones away from its bend. Use it to nest a wall
+            inside another part's bend (radius = that bend's inside radius
+            less the gap) or around one (its outside radius plus the gap).
         over: at a corner with another wall, True runs this wall the full
             outside length and False tucks it behind the other. Default: the
             wall made first goes over.
@@ -142,7 +147,7 @@ class Panel:
             _style(relief, BEND_RELIEFS, "bend relief")
         child = Panel(s, name or f"{self.name}_{edge}", None, names[edge], height, angle, radius,
                       over, start, end, len(s.panels), inside, relief, tuple(extend),
-                      tuple(extend_drop))
+                      tuple(extend_drop), tuple(round))
         if child.name in s.panels:
             raise ValueError(f"{s.name}: two faces are named {child.name!r}")
         s.panels[child.name] = child
@@ -339,6 +344,12 @@ class Sheet:
                         wall_moves.append(((rd, tip_v), (drop - s, tip_v)))
                     elif style == "round":
                         wall_fillets.append(((rd, corner_v), min(rd, hi - lo)))
+            for i in (0, 1):
+                if c.round[i] > 0:
+                    if sloped:
+                        raise ValueError(f"{c.name}: a wall with a sloped top can't have "
+                                         "rounded far corners")
+                    wall_fillets.append(((h0 - s, w[i]), c.round[i]))
             wall = self._face(c, (0.0, max(h0, h1) - s, w[0], w[1]), notches,
                               (h0 - s, h1 - s) if sloped else None, wall_fillets, wall_moves)
             if side in ("N", "S"):
@@ -449,7 +460,7 @@ def _outline(box, cuts, name: str, fillets=(), moves=()) -> list[tuple]:
         for Q in (A, B):
             d = math.hypot(Q[0] - P[0], Q[1] - P[1])
             if d < r - 1e-7:
-                raise ValueError(f"{name}: a {r:g} mm round doesn't fit its {d:.2f} mm relief")
+                raise ValueError(f"{name}: a {r:g} mm round doesn't fit a {d:.2f} mm edge")
             ends.append((P[0] + r * (Q[0] - P[0]) / d, P[1] + r * (Q[1] - P[1]) / d, d - r < 1e-7))
         (su, sv, at_a), (eu, ev, at_b) = ends
         cu, cv = su + eu - P[0], sv + ev - P[1]  # the arc's centre

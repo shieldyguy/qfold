@@ -48,6 +48,14 @@ overridden. Before ordering a tight-corner part, confirm with the shop that
 it will cut the slit width (`kerf=`) and accepts tear corners at that
 thickness.
 
+Where two parts nest, match their radii: a wall corner that sits inside
+another part's bend gets that bend's inside radius less the fit gap, and a
+corner that wraps around a bend gets its outside radius plus the gap, about
+the same centre. No sharp corner should sit against a rounded one, and no
+gap should be bigger than the fit needs (0.3 mm). Recess one part inside
+the other by a couple of millimetres, not flush. Panels can come within
+2 mm of the keys.
+
 ## Done
 
 - **Generic runner** (`qfold/project.py`). One `Project` takes any design and

@@ -11,9 +11,10 @@
     "key_travel": "10",
     "travel_clear": "2",
     "rear_zone": "85",
-    "panel_rise": "14",
+    "key_clear": "2",
     "panel_overhang": "10",
-    "cheek_front_rise": "3",
+    "cheek_front_rise": "1",
+    "recess": "2.5",
     "tab": "18",
     "fit": "0.3",
     "corner": "overlap",
@@ -57,14 +58,14 @@
     {
       "name": "bottom: valid solid",
       "status": "pass",
-      "detail": "valid=True, solids=1, faces=91",
+      "detail": "valid=True, solids=1, faces=95",
       "value": null,
       "limit": null
     },
     {
       "name": "bottom: no self-intersection",
       "status": "pass",
-      "detail": "folded fuse loses -8.15e-10 mm\u00b3, flat fuse loses -1.16e-10 mm\u00b3 (limit 3.5e-04)",
+      "detail": "folded fuse loses 0.00e+00 mm\u00b3, flat fuse loses 0.00e+00 mm\u00b3 (limit 3.4e-04)",
       "value": null,
       "limit": null
     },
@@ -72,7 +73,7 @@
       "name": "bottom: flat pattern matches fold",
       "status": "pass",
       "detail": "folded\u2212flat volume 666.306669 mm\u00b3, bend allowance predicts 666.306669",
-      "value": 666.3066690851701,
+      "value": 666.3066690852284,
       "limit": 666.3066690851665
     },
     {
@@ -134,23 +135,23 @@
     {
       "name": "top: valid solid",
       "status": "pass",
-      "detail": "valid=True, solids=1, faces=33",
+      "detail": "valid=True, solids=1, faces=37",
       "value": null,
       "limit": null
     },
     {
       "name": "top: no self-intersection",
       "status": "pass",
-      "detail": "folded fuse loses 1.16e-10 mm\u00b3, flat fuse loses 2.91e-11 mm\u00b3 (limit 1.6e-04)",
+      "detail": "folded fuse loses -5.82e-11 mm\u00b3, flat fuse loses 0.00e+00 mm\u00b3 (limit 1.6e-04)",
       "value": null,
       "limit": null
     },
     {
       "name": "top: flat pattern matches fold",
       "status": "pass",
-      "detail": "folded\u2212flat volume 105.105124 mm\u00b3, bend allowance predicts 105.105124",
-      "value": 105.10512381850276,
-      "limit": 105.10512381850016
+      "detail": "folded\u2212flat volume 107.775478 mm\u00b3, bend allowance predicts 107.775478",
+      "value": 107.77547757406137,
+      "limit": 107.77547757405144
     },
     {
       "name": "top: hole to bend",
@@ -162,8 +163,8 @@
     {
       "name": "top: hole to edge",
       "status": "pass",
-      "detail": "closest 9.30 mm (left_cheek M3 clearance), need \u2265 3.00",
-      "value": 9.299999999999997,
+      "detail": "closest 11.80 mm (left_cheek M3 clearance), need \u2265 3.00",
+      "value": 11.800000000112973,
       "limit": 3.0
     },
     {
@@ -197,28 +198,28 @@
     {
       "name": "top: flange length",
       "status": "pass",
-      "detail": "shortest flat flange 60.80 mm (bend left_cheek), need \u2265 6.30",
-      "value": 60.8,
+      "detail": "shortest flat flange 56.12 mm (bend left_cheek), need \u2265 6.30",
+      "value": 56.117832242460956,
       "limit": 6.3
     },
     {
       "name": "bottom.step reads back",
       "status": "pass",
-      "detail": "1 solid(s), volume 345382.063 mm\u00b3 (model 345382.063)",
+      "detail": "1 solid(s), volume 339859.325 mm\u00b3 (model 339859.325)",
       "value": null,
       "limit": null
     },
     {
       "name": "top.step reads back",
       "status": "pass",
-      "detail": "1 solid(s), volume 160417.221 mm\u00b3 (model 160417.221)",
+      "detail": "1 solid(s), volume 161012.037 mm\u00b3 (model 161012.037)",
       "value": null,
       "limit": null
     },
     {
       "name": "assembly.step reads back",
       "status": "pass",
-      "detail": "74 solid(s), volume 2434057.881 mm\u00b3 (model 2434057.882)",
+      "detail": "74 solid(s), volume 2429129.960 mm\u00b3 (model 2429129.960)",
       "value": null,
       "limit": null
     },
@@ -233,21 +234,21 @@
       "name": "keys and frame clear the top and the nuts",
       "status": "pass",
       "detail": "overlap 0.000000 mm\u00b3, closest 1.500 mm, need \u2265 1",
-      "value": 1.4999999999998863,
+      "value": 1.5,
       "limit": 1.0
     },
     {
       "name": "pressed keys clear the case",
       "status": "pass",
       "detail": "overlap 0.000000 mm\u00b3, closest 1.500 mm, need \u2265 1",
-      "value": 1.4999999999998863,
+      "value": 1.5,
       "limit": 1.0
     },
     {
       "name": "top slides over the bottom",
       "status": "pass",
       "detail": "overlap 0.000000 mm\u00b3, closest 0.300 mm, need \u2265 0.2",
-      "value": 0.29999999999984084,
+      "value": 0.29999999988702086,
       "limit": 0.2
     },
     {
@@ -261,7 +262,7 @@
       "name": "screw heads on the cheeks",
       "status": "pass",
       "detail": "6 touching, widest gap 0.0000 mm (\u2264 0.01), no overlap",
-      "value": 1.1368683772161603e-13,
+      "value": 1.8239710067743416e-15,
       "limit": 0.01
     },
     {
@@ -288,8 +289,8 @@
     {
       "name": "faces of one part keep their gaps",
       "status": "pass",
-      "detail": "16 unjoined face pairs, tightest 6.000 mm (bottom: front_wall vs left_tab_front), need \u2265 0.2",
-      "value": 6,
+      "detail": "16 unjoined face pairs, tightest 6.000 mm (bottom: back_wall vs left_tab_rear), need \u2265 0.2",
+      "value": 5.999999999999972,
       "limit": 0.2
     },
     {
@@ -309,28 +310,28 @@
     {
       "name": "bottom: fits sheet",
       "status": "pass",
-      "detail": "flat 542.9 \u00d7 330.0 mm, sheet limit 800 \u00d7 800",
+      "detail": "flat 542.9 \u00d7 324.7 mm, sheet limit 800 \u00d7 800",
       "value": null,
       "limit": null
     },
     {
       "name": "bottom_flat.dxf reads back",
       "status": "pass",
-      "detail": "21 circles, 40 lines, 4 arcs, 6 bends, cut 2183.5 mm, extent 542.948 \u00d7 330.048",
+      "detail": "21 circles, 40 lines, 8 arcs, 6 bends, cut 2170.4 mm, extent 542.948 \u00d7 324.677",
       "value": null,
       "limit": null
     },
     {
       "name": "top: fits sheet",
       "status": "pass",
-      "detail": "flat 640.5 \u00d7 251.9 mm, sheet limit 800 \u00d7 800",
+      "detail": "flat 631.4 \u00d7 256.9 mm, sheet limit 800 \u00d7 800",
       "value": null,
       "limit": null
     },
     {
       "name": "top_flat.dxf reads back",
       "status": "pass",
-      "detail": "15 circles, 8 lines, 0 arcs, 2 bends, cut 2333.1 mm, extent 640.548 \u00d7 251.900",
+      "detail": "15 circles, 8 lines, 4 arcs, 2 bends, cut 2329.0 mm, extent 631.406 \u00d7 256.900",
       "value": null,
       "limit": null
     }
@@ -343,7 +344,7 @@
       "size": "\u00d83.4",
       "face": "base",
       "x": 23.9,
-      "y": 74.2,
+      "y": 76.7,
       "z": 0.0,
       "facing": "\u2212Z down"
     },
@@ -354,7 +355,7 @@
       "size": "\u00d83.4",
       "face": "base",
       "x": 159.5,
-      "y": 74.2,
+      "y": 76.7,
       "z": 0.0,
       "facing": "\u2212Z down"
     },
@@ -365,7 +366,7 @@
       "size": "\u00d83.4",
       "face": "base",
       "x": 336.3,
-      "y": 74.2,
+      "y": 76.7,
       "z": 0.0,
       "facing": "\u2212Z down"
     },
@@ -376,7 +377,7 @@
       "size": "\u00d83.4",
       "face": "base",
       "x": 499.4,
-      "y": 74.2,
+      "y": 76.7,
       "z": 0.0,
       "facing": "\u2212Z down"
     },
@@ -387,7 +388,7 @@
       "size": "\u00d83.4",
       "face": "base",
       "x": 23.9,
-      "y": 149.7,
+      "y": 152.2,
       "z": 0.0,
       "facing": "\u2212Z down"
     },
@@ -398,7 +399,7 @@
       "size": "\u00d83.4",
       "face": "base",
       "x": 159.5,
-      "y": 149.7,
+      "y": 152.2,
       "z": 0.0,
       "facing": "\u2212Z down"
     },
@@ -409,7 +410,7 @@
       "size": "\u00d83.4",
       "face": "base",
       "x": 336.3,
-      "y": 149.7,
+      "y": 152.2,
       "z": 0.0,
       "facing": "\u2212Z down"
     },
@@ -420,7 +421,7 @@
       "size": "\u00d83.4",
       "face": "base",
       "x": 499.4,
-      "y": 149.7,
+      "y": 152.2,
       "z": 0.0,
       "facing": "\u2212Z down"
     },
@@ -453,7 +454,7 @@
       "size": "\u00d83.4",
       "face": "base",
       "x": 30.0,
-      "y": 226.9,
+      "y": 231.9,
       "z": 0.0,
       "facing": "\u2212Z down"
     },
@@ -464,7 +465,7 @@
       "size": "\u00d83.4",
       "face": "base",
       "x": 488.4,
-      "y": 226.9,
+      "y": 231.9,
       "z": 0.0,
       "facing": "\u2212Z down"
     },
@@ -475,8 +476,8 @@
       "size": "\u00d89.5",
       "face": "back_wall",
       "x": 458.4,
-      "y": 251.9,
-      "z": 38.5,
+      "y": 254.4,
+      "z": 31.42887,
       "facing": "+Y back"
     },
     {
@@ -486,8 +487,8 @@
       "size": "\u00d89.5",
       "face": "back_wall",
       "x": 428.4,
-      "y": 251.9,
-      "z": 38.5,
+      "y": 254.4,
+      "z": 31.42887,
       "facing": "+Y back"
     },
     {
@@ -497,8 +498,8 @@
       "size": "9.4\u00d73.8 R1.6",
       "face": "back_wall",
       "x": 388.4,
-      "y": 251.9,
-      "z": 38.5,
+      "y": 254.4,
+      "z": 31.42887,
       "facing": "+Y back"
     },
     {
@@ -508,8 +509,8 @@
       "size": "\u00d88.2",
       "face": "back_wall",
       "x": 358.4,
-      "y": 251.9,
-      "z": 38.5,
+      "y": 254.4,
+      "z": 31.42887,
       "facing": "+Y back"
     },
     {
@@ -519,7 +520,7 @@
       "size": "\u00d84.22",
       "face": "left_tab_front",
       "x": 2.3,
-      "y": 26.5,
+      "y": 29.0,
       "z": 11.0,
       "facing": "\u2212X left"
     },
@@ -530,7 +531,7 @@
       "size": "\u00d84.22",
       "face": "left_tab_rear",
       "x": 2.3,
-      "y": 185.9,
+      "y": 188.4,
       "z": 11.0,
       "facing": "\u2212X left"
     },
@@ -541,7 +542,7 @@
       "size": "\u00d84.22",
       "face": "left_tab_rear",
       "x": 2.3,
-      "y": 228.9,
+      "y": 231.4,
       "z": 11.0,
       "facing": "\u2212X left"
     },
@@ -552,7 +553,7 @@
       "size": "\u00d84.22",
       "face": "right_tab_front",
       "x": 516.1,
-      "y": 26.5,
+      "y": 29.0,
       "z": 11.0,
       "facing": "+X right"
     },
@@ -563,7 +564,7 @@
       "size": "\u00d84.22",
       "face": "right_tab_rear",
       "x": 516.1,
-      "y": 185.9,
+      "y": 188.4,
       "z": 11.0,
       "facing": "+X right"
     },
@@ -574,7 +575,7 @@
       "size": "\u00d84.22",
       "face": "right_tab_rear",
       "x": 516.1,
-      "y": 228.9,
+      "y": 231.4,
       "z": 11.0,
       "facing": "+X right"
     },
@@ -585,8 +586,8 @@
       "size": "\u00d87.2",
       "face": "panel",
       "x": 77.2,
-      "y": 207.62,
-      "z": 64.5,
+      "y": 211.495,
+      "z": 57.42887,
       "facing": "+Z up"
     },
     {
@@ -596,8 +597,8 @@
       "size": "\u00d87.2",
       "face": "panel",
       "x": 129.2,
-      "y": 207.62,
-      "z": 64.5,
+      "y": 211.495,
+      "z": 57.42887,
       "facing": "+Z up"
     },
     {
@@ -607,8 +608,8 @@
       "size": "\u00d87.2",
       "face": "panel",
       "x": 181.2,
-      "y": 207.62,
-      "z": 64.5,
+      "y": 211.495,
+      "z": 57.42887,
       "facing": "+Z up"
     },
     {
@@ -618,8 +619,8 @@
       "size": "\u00d87.2",
       "face": "panel",
       "x": 233.2,
-      "y": 207.62,
-      "z": 64.5,
+      "y": 211.495,
+      "z": 57.42887,
       "facing": "+Z up"
     },
     {
@@ -629,8 +630,8 @@
       "size": "\u00d87.2",
       "face": "panel",
       "x": 285.2,
-      "y": 207.62,
-      "z": 64.5,
+      "y": 211.495,
+      "z": 57.42887,
       "facing": "+Z up"
     },
     {
@@ -640,8 +641,8 @@
       "size": "\u00d87.2",
       "face": "panel",
       "x": 337.2,
-      "y": 207.62,
-      "z": 64.5,
+      "y": 211.495,
+      "z": 57.42887,
       "facing": "+Z up"
     },
     {
@@ -651,8 +652,8 @@
       "size": "\u00d87.2",
       "face": "panel",
       "x": 389.2,
-      "y": 207.62,
-      "z": 64.5,
+      "y": 211.495,
+      "z": 57.42887,
       "facing": "+Z up"
     },
     {
@@ -662,8 +663,8 @@
       "size": "\u00d87.2",
       "face": "panel",
       "x": 441.2,
-      "y": 207.62,
-      "z": 64.5,
+      "y": 211.495,
+      "z": 57.42887,
       "facing": "+Z up"
     },
     {
@@ -673,8 +674,8 @@
       "size": "\u00d83.2",
       "face": "panel",
       "x": 478.4,
-      "y": 207.62,
-      "z": 64.5,
+      "y": 211.495,
+      "z": 57.42887,
       "facing": "+Z up"
     },
     {
@@ -684,7 +685,7 @@
       "size": "\u00d83.4",
       "face": "left_cheek",
       "x": 0.0,
-      "y": 26.5,
+      "y": 29.0,
       "z": 11.0,
       "facing": "\u2212X left"
     },
@@ -695,7 +696,7 @@
       "size": "\u00d83.4",
       "face": "left_cheek",
       "x": 0.0,
-      "y": 185.9,
+      "y": 188.4,
       "z": 11.0,
       "facing": "\u2212X left"
     },
@@ -706,7 +707,7 @@
       "size": "\u00d83.4",
       "face": "left_cheek",
       "x": 0.0,
-      "y": 228.9,
+      "y": 231.4,
       "z": 11.0,
       "facing": "\u2212X left"
     },
@@ -717,7 +718,7 @@
       "size": "\u00d83.4",
       "face": "right_cheek",
       "x": 518.4,
-      "y": 26.5,
+      "y": 29.0,
       "z": 11.0,
       "facing": "+X right"
     },
@@ -728,7 +729,7 @@
       "size": "\u00d83.4",
       "face": "right_cheek",
       "x": 518.4,
-      "y": 185.9,
+      "y": 188.4,
       "z": 11.0,
       "facing": "+X right"
     },
@@ -739,7 +740,7 @@
       "size": "\u00d83.4",
       "face": "right_cheek",
       "x": 518.4,
-      "y": 228.9,
+      "y": 231.4,
       "z": 11.0,
       "facing": "+X right"
     }
@@ -789,47 +790,47 @@
   "bodies": {
     "bottom#bottom": {
       "valid": true,
-      "volume": 345382.0625667949,
-      "area": 349755.5032146198,
+      "volume": 339859.32472308306,
+      "area": 344206.47377094073,
       "com": [
-        256.69523275875036,
-        139.5537092903939,
-        7.219132684341954
+        256.6919052767304,
+        137.74556139682744,
+        6.4066283837797835
       ],
       "bbox": [
         -2.0317081350640365e-15,
-        -2.7533531010703883e-15,
+        -2.753353101070389e-15,
         0,
         513.8000000000001,
         251.9,
-        60.5
+        55.12887029300001
       ],
       "solids": 1,
-      "faces": 91,
-      "edges": 267,
-      "parts_volume": 345382.0625667941
+      "faces": 95,
+      "edges": 279,
+      "parts_volume": 339859.32472308306
     },
     "top#top": {
       "valid": true,
-      "volume": 160417.22063215013,
-      "area": 165085.60093664486,
+      "volume": 161012.0373578878,
+      "area": 165672.24095550456,
       "com": [
-        259.1780209257615,
-        22.062468642222214,
-        -13.540660909160641
+        259.17810212168354,
+        23.215209556470636,
+        -11.99710868074412
       ],
       "bbox": [
-        -7.194245199571014e-15,
-        -153.5,
-        -64.5,
+        -6.68674785464507e-15,
+        -156,
+        -59.928870293,
         518.4,
-        98.4,
+        100.9,
         0
       ],
       "solids": 1,
-      "faces": 33,
-      "edges": 93,
-      "parts_volume": 160417.22063215025
+      "faces": 37,
+      "edges": 105,
+      "parts_volume": 161012.03735788775
     },
     "keybed:Huaxin 37-key keybed (simplified)#Huaxin 37-key keybed (simplified)": {
       "valid": true,
@@ -986,55 +987,55 @@
     },
     "bottom#flat": {
       "valid": true,
-      "volume": 344715.75589770905,
-      "area": 349082.78769652074,
+      "volume": 339193.01805399783,
+      "area": 343533.7582528418,
       "com": [
-        256.6948369608323,
-        143.8258452997763,
-        0.9999999999999998
+        256.69149649796833,
+        141.19177628050303,
+        1.0000000000000002
       ],
       "bbox": [
         -14.57411470679109,
-        -21.07411470679109,
+        -21.074114706791104,
         0,
         528.374114706791,
-        308.9741147067911,
+        303.6029849997911,
         2
       ],
       "solids": 1,
-      "faces": 67,
-      "edges": 195,
-      "parts_volume": 344715.75589770894
+      "faces": 71,
+      "edges": 207,
+      "parts_volume": 339193.01805399783
     },
     "top#flat": {
       "valid": true,
-      "volume": 160312.1155083317,
-      "area": 164978.35952982164,
+      "volume": 160904.2618803137,
+      "area": 165562.32919492596,
       "com": [
-        259.1780065156626,
-        -22.044676514756,
-        0.9999999999999998
+        259.17808745423946,
+        -23.19696738865985,
+        1
       ],
       "bbox": [
-        -61.07411470679109,
-        -98.4,
+        -56.502984999791096,
+        -100.9,
         0,
-        579.4741147067909,
-        153.5,
+        574.902984999791,
+        156,
         2
       ],
       "solids": 1,
-      "faces": 25,
-      "edges": 69,
-      "parts_volume": 160312.11550833174
+      "faces": 29,
+      "edges": 81,
+      "parts_volume": 160904.2618803137
     },
     "bottom#face:base": {
       "valid": true,
-      "volume": 249389.81913354705,
+      "volume": 249389.81913354708,
       "area": 252744.97309407982,
       "com": [
         256.90257752124063,
-        125.82411796243781,
+        125.82411796243782,
         1
       ],
       "bbox": [
@@ -1048,51 +1049,51 @@
       "solids": 1,
       "faces": 50,
       "edges": 144,
-      "parts_volume": 249389.81913354705
+      "parts_volume": 249389.81913354708
     },
     "bottom#face:front_wall": {
       "valid": true,
-      "volume": 21374.08,
-      "area": 23512.479999999996,
+      "volume": 21372.397521601037,
+      "area": 23508.393981031084,
       "com": [
-        256.90000000000003,
-        0.9999999999999983,
-        14.099999999999998
+        256.9,
+        0.9999999999999987,
+        14.09920590851322
       ],
       "bbox": [
-        0,
-        -2.7533531010703883e-15,
+        -2.220446049250313e-16,
+        -2.753353101070389e-15,
         3.6999999999999993,
         513.8,
         1.9999999999999996,
-        24.5
+        24.50000000000001
       ],
       "solids": 1,
-      "faces": 6,
-      "edges": 12,
-      "parts_volume": 21374.08
+      "faces": 8,
+      "edges": 18,
+      "parts_volume": 21372.397521601037
     },
     "bottom#face:back_wall": {
       "valid": true,
-      "volume": 57911.48596361345,
-      "area": 60412.0947969517,
+      "volume": 52390.43059830128,
+      "area": 54867.151372241606,
       "com": [
-        255.66767555697285,
-        250.89999999999995,
-        32.049584408269055
+        255.53780963679847,
+        250.9,
+        29.396078528034835
       ],
       "bbox": [
         0,
-        249.9,
+        249.89999999999998,
         3.6999999999999997,
         513.8,
         251.9,
-        60.5
+        55.12887029300001
       ],
       "solids": 1,
-      "faces": 17,
-      "edges": 45,
-      "parts_volume": 57911.48596361345
+      "faces": 19,
+      "edges": 51,
+      "parts_volume": 52390.43059830128
     },
     "bottom#face:left_tab_front": {
       "valid": true,
@@ -1184,11 +1185,11 @@
     },
     "top#face:panel": {
       "valid": true,
-      "volume": 99897.27439296531,
-      "area": 102716.89205964182,
+      "volume": 102452.2743929653,
+      "area": 105281.89205964182,
       "com": [
-        259.16470552351973,
-        49.16712396803043,
+        259.1655857127391,
+        50.41712941018203,
         -1
       ],
       "bbox": [
@@ -1196,66 +1197,66 @@
         0,
         -2,
         514.7,
-        98.4,
+        100.9,
         0
       ],
       "solids": 1,
       "faces": 15,
       "edges": 39,
-      "parts_volume": 99897.27439296531
+      "parts_volume": 102452.2743929653
     },
     "top#face:left_cheek": {
       "valid": true,
-      "volume": 29425.314783386744,
-      "area": 30726.331501966375,
+      "volume": 28424.01739584377,
+      "area": 29725.945760984516,
       "com": [
-        0.999999999999996,
-        -24.716679588113248,
-        -35.15819629663287
+        0.9999999999999964,
+        -26.628503165443142,
+        -32.12019600116408
       ],
       "bbox": [
-        -7.194245199571014e-15,
-        -153.5,
-        -64.5,
+        -6.68674785464507e-15,
+        -156,
+        -59.928870293,
         1.9999999999999996,
-        98.4,
+        100.9,
         -3.6999999999999997
       ],
       "solids": 1,
-      "faces": 11,
-      "edges": 27,
-      "parts_volume": 29425.314783386744
+      "faces": 13,
+      "edges": 33,
+      "parts_volume": 28424.01739584377
     },
     "top#face:right_cheek": {
       "valid": true,
-      "volume": 29425.31478338675,
-      "area": 30726.331501966375,
+      "volume": 28424.01739584377,
+      "area": 29725.945760984516,
       "com": [
         517.4,
-        -24.71667958811324,
-        -35.15819629663287
+        -26.62850316544315,
+        -32.12019600116408
       ],
       "bbox": [
-        516.3999999999999,
-        -153.5,
-        -64.5,
+        516.4,
+        -156,
+        -59.928870293,
         518.4,
-        98.4,
+        100.9,
         -3.6999999999999997
       ],
       "solids": 1,
-      "faces": 11,
-      "edges": 27,
-      "parts_volume": 29425.31478338675
+      "faces": 13,
+      "edges": 33,
+      "parts_volume": 28424.01739584377
     }
   },
   "envelope": [
-    -2.000000000000006,
-    -2.7533531010703883e-15,
+    -2.0000000000000058,
+    -4.440892098500626e-15,
     -4,
     520.4,
-    251.9,
-    82.5
+    256.90000000000003,
+    75.42887029288703
   ],
   "pairs": [
     {
@@ -1268,12 +1269,12 @@
       "closest": [
         [
           20.15,
-          74.2,
+          76.7,
           2
         ],
         [
           20.15,
-          74.2,
+          76.7,
           2
         ]
       ]
@@ -1284,16 +1285,16 @@
       "a": "keybed",
       "b": "top+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6",
       "interference_volume": 0,
-      "min_distance": 1.4999999999998863,
+      "min_distance": 1.5,
       "closest": [
         [
-          514.9,
           3.5,
+          6,
           50.5
         ],
         [
-          516.3999999999999,
-          3.5,
+          1.9999999999999964,
+          6,
           50.5
         ]
       ]
@@ -1304,16 +1305,16 @@
       "a": "key_travel",
       "b": "top+bottom+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6",
       "interference_volume": 0,
-      "min_distance": 1.4999999999998863,
+      "min_distance": 1.5,
       "closest": [
         [
-          514.9,
           3.5,
+          6,
           36.5
         ],
         [
-          516.3999999999999,
-          3.5,
+          1.9999999999999964,
+          6,
           36.5
         ]
       ]
@@ -1324,17 +1325,17 @@
       "a": "top",
       "b": "bottom",
       "interference_volume": 0,
-      "min_distance": 0.29999999999984084,
+      "min_distance": 0.29999999988702086,
       "closest": [
         [
-          516.4,
-          248.20000000000002,
-          0
+          514.7,
+          254.4,
+          55.42887029288703
         ],
         [
-          516.0999999999999,
-          248.20000000000002,
-          0
+          514.6999999999999,
+          254.4,
+          55.128870293000006
         ]
       ]
     },
@@ -1348,12 +1349,12 @@
       "closest": [
         [
           4.299999999999999,
-          26.5,
+          29,
           13.8
         ],
         [
           4.299999999999999,
-          26.5,
+          29,
           13.8
         ]
       ]
@@ -1368,12 +1369,12 @@
       "closest": [
         [
           4.299999999999999,
-          185.9,
+          188.4,
           13.8
         ],
         [
           4.299999999999999,
-          185.9,
+          188.4,
           13.8
         ]
       ]
@@ -1388,12 +1389,12 @@
       "closest": [
         [
           4.299999999999999,
-          228.9,
+          231.4,
           13.8
         ],
         [
           4.299999999999999,
-          228.9,
+          231.4,
           13.8
         ]
       ]
@@ -1408,12 +1409,12 @@
       "closest": [
         [
           514.0999999999999,
-          26.5,
+          29,
           13.8
         ],
         [
           514.1,
-          26.5,
+          29,
           13.8
         ]
       ]
@@ -1428,12 +1429,12 @@
       "closest": [
         [
           514.0999999999999,
-          185.9,
+          188.4,
           13.8
         ],
         [
           514.0999999999998,
-          185.9,
+          188.4,
           13.8
         ]
       ]
@@ -1448,12 +1449,12 @@
       "closest": [
         [
           514.0999999999999,
-          228.9,
+          231.4,
           13.8
         ],
         [
           514.0999999999998,
-          228.9,
+          231.4,
           13.8
         ]
       ]
@@ -1464,16 +1465,16 @@
       "a": "screw_1",
       "b": "top",
       "interference_volume": 0,
-      "min_distance": 2.1649348980190553e-15,
+      "min_distance": 1.8239710067743416e-15,
       "closest": [
         [
-          -6.27831120425526e-15,
-          26.5,
+          -5.493258103160484e-15,
+          29,
           8.25
         ],
         [
-          -3.9556807450136626e-15,
-          26.5,
+          -3.579975713905172e-15,
+          29,
           8.25
         ]
       ]
@@ -1484,16 +1485,16 @@
       "a": "screw_2",
       "b": "top",
       "interference_volume": 0,
-      "min_distance": 2.1649348980190553e-15,
+      "min_distance": 1.8239710067743416e-15,
       "closest": [
         [
-          -6.27831120425526e-15,
-          185.9,
+          -5.493258103160484e-15,
+          188.4,
           8.25
         ],
         [
-          -3.9556807450136626e-15,
-          185.9,
+          -3.579975713905172e-15,
+          188.4,
           8.25
         ]
       ]
@@ -1504,16 +1505,16 @@
       "a": "screw_3",
       "b": "top",
       "interference_volume": 0,
-      "min_distance": 2.1649348980190553e-15,
+      "min_distance": 1.8239710067743416e-15,
       "closest": [
         [
-          -6.27831120425526e-15,
-          228.9,
+          -5.493258103160484e-15,
+          231.4,
           8.25
         ],
         [
-          -3.9556807450136626e-15,
-          228.9,
+          -3.579975713905172e-15,
+          231.4,
           8.25
         ]
       ]
@@ -1524,16 +1525,16 @@
       "a": "screw_4",
       "b": "top",
       "interference_volume": 0,
-      "min_distance": 1.1368683772161603e-13,
+      "min_distance": 0,
       "closest": [
         [
           518.4,
-          26.5,
+          29,
           8.25
         ],
         [
-          518.3999999999999,
-          26.5,
+          518.4,
+          29,
           8.25
         ]
       ]
@@ -1544,16 +1545,16 @@
       "a": "screw_5",
       "b": "top",
       "interference_volume": 0,
-      "min_distance": 1.1368683772161603e-13,
+      "min_distance": 0,
       "closest": [
         [
           518.4,
-          185.9,
+          188.4,
           8.25
         ],
         [
-          518.3999999999999,
-          185.9,
+          518.4,
+          188.4,
           8.25
         ]
       ]
@@ -1564,16 +1565,16 @@
       "a": "screw_6",
       "b": "top",
       "interference_volume": 0,
-      "min_distance": 1.1368683772161603e-13,
+      "min_distance": 0,
       "closest": [
         [
           518.4,
-          228.9,
+          231.4,
           8.25
         ],
         [
-          518.3999999999999,
-          228.9,
+          518.4,
+          231.4,
           8.25
         ]
       ]
@@ -1628,12 +1629,12 @@
       "closest": [
         [
           36,
-          226.9,
+          231.89999999999998,
           0
         ],
         [
           36,
-          226.9,
+          231.89999999999998,
           0
         ]
       ]
@@ -1648,12 +1649,12 @@
       "closest": [
         [
           494.4,
-          226.9,
+          231.89999999999998,
           0
         ],
         [
           494.4,
-          226.9,
+          231.89999999999998,
           0
         ]
       ]
@@ -1668,13 +1669,13 @@
       "closest": [
         [
           72.44999999999999,
-          202.12,
-          62.5
+          205.995,
+          55.42887029288703
         ],
         [
           72.44999999999999,
-          202.12,
-          62.5
+          205.995,
+          55.42887029288703
         ]
       ]
     },
@@ -1688,13 +1689,13 @@
       "closest": [
         [
           124.44999999999999,
-          202.12,
-          62.5
+          205.995,
+          55.42887029288703
         ],
         [
           124.44999999999999,
-          202.12,
-          62.5
+          205.995,
+          55.42887029288703
         ]
       ]
     },
@@ -1708,13 +1709,13 @@
       "closest": [
         [
           176.45,
-          202.12,
-          62.5
+          205.995,
+          55.42887029288703
         ],
         [
           176.45,
-          202.12,
-          62.5
+          205.995,
+          55.42887029288703
         ]
       ]
     },
@@ -1728,13 +1729,13 @@
       "closest": [
         [
           228.45,
-          202.12,
-          62.5
+          205.995,
+          55.42887029288703
         ],
         [
           228.45,
-          202.12,
-          62.5
+          205.995,
+          55.42887029288703
         ]
       ]
     },
@@ -1748,13 +1749,13 @@
       "closest": [
         [
           280.45,
-          202.12,
-          62.5
+          205.995,
+          55.42887029288703
         ],
         [
           280.45,
-          202.12,
-          62.5
+          205.995,
+          55.42887029288703
         ]
       ]
     },
@@ -1768,13 +1769,13 @@
       "closest": [
         [
           332.45,
-          202.12,
-          62.5
+          205.995,
+          55.42887029288703
         ],
         [
           332.45,
-          202.12,
-          62.5
+          205.995,
+          55.42887029288703
         ]
       ]
     },
@@ -1788,13 +1789,13 @@
       "closest": [
         [
           384.45,
-          202.12,
-          62.5
+          205.995,
+          55.42887029288703
         ],
         [
           384.45,
-          202.12,
-          62.5
+          205.995,
+          55.42887029288703
         ]
       ]
     },
@@ -1808,13 +1809,13 @@
       "closest": [
         [
           436.45,
-          202.12,
-          62.5
+          205.995,
+          55.42887029288703
         ],
         [
           436.45,
-          202.12,
-          62.5
+          205.995,
+          55.42887029288703
         ]
       ]
     },
@@ -1824,17 +1825,17 @@
       "a": "led",
       "b": "top",
       "interference_volume": 0,
-      "min_distance": 0.09999999999997967,
+      "min_distance": 0.09999999999998865,
       "closest": [
         [
           479.9,
-          207.62,
-          64.5
+          211.495,
+          57.42887029288703
         ],
         [
           480,
-          207.62,
-          64.5
+          211.495,
+          57.42887029288703
         ]
       ]
     },
@@ -1844,7 +1845,7 @@
       "a": "bottom#face:front_wall",
       "b": "bottom#face:back_wall",
       "interference_volume": 0,
-      "min_distance": 247.9,
+      "min_distance": 247.89999999999998,
       "closest": [
         [
           0,
@@ -1944,7 +1945,7 @@
       "a": "bottom#face:back_wall",
       "b": "bottom#face:left_tab_front",
       "interference_volume": 0,
-      "min_distance": 204.9,
+      "min_distance": 204.89999999999998,
       "closest": [
         [
           0,
@@ -1964,7 +1965,7 @@
       "a": "bottom#face:back_wall",
       "b": "bottom#face:left_tab_rear",
       "interference_volume": 0,
-      "min_distance": 6,
+      "min_distance": 5.999999999999972,
       "closest": [
         [
           0,
@@ -1984,7 +1985,7 @@
       "a": "bottom#face:back_wall",
       "b": "bottom#face:right_tab_front",
       "interference_volume": 0,
-      "min_distance": 204.9,
+      "min_distance": 204.89999999999998,
       "closest": [
         [
           513.8,
@@ -2004,7 +2005,7 @@
       "a": "bottom#face:back_wall",
       "b": "bottom#face:right_tab_rear",
       "interference_volume": 0,
-      "min_distance": 6,
+      "min_distance": 5.999999999999972,
       "closest": [
         [
           513.8,
@@ -2144,7 +2145,7 @@
       "a": "top#face:left_cheek",
       "b": "top#face:right_cheek",
       "interference_volume": 0,
-      "min_distance": 514.3999999999999,
+      "min_distance": 514.4,
       "closest": [
         [
           1.9999999999999996,
@@ -2394,11 +2395,11 @@
   "flat_sizes": {
     "bottom": [
       542.9482294135821,
-      330.0482294135822
+      324.67709970658217
     ],
     "top": [
-      640.548229413582,
-      251.9
+      631.4059699995821,
+      256.9
     ]
   },
   "facts": {
@@ -2406,6 +2407,7 @@
     "White key tops": "z = 50.5",
     "Pressed key underside": "z = 26.5",
     "Front wall top": "z = 24.5",
-    "Panel top": "z = 64.5"
+    "Panel top": "z = 57.43",
+    "Highest key under the panel": "z = 53.43"
   }
 }
