@@ -288,3 +288,19 @@ def test_level_extension_with_a_rounded_tip(tmp_path):
                                 extend_round=(6.0, 0))
     with pytest.raises(ValueError, match="needs a level extension"):
         sloped.layout()
+
+
+@pytest.mark.parametrize("kw, top_z", [(dict(extend_level=(0, None)), 0.0),
+                                        (dict(extend_blend=(True, False)), 0.0),
+                                        (dict(extend_level=(8.0, None)), -8.0)])
+def test_extension_edge_can_rise_to_the_parents_surface(tmp_path, kw, top_z):
+    s = Sheet("top", RULE, up=False, bend_relief="shear")
+    s.base(100, 40, name="panel").flange("left", 60, name="cheek", extend=(80, 0), **kw)
+    lay, m = solid(s, tmp_path)  # a sound solid whose flat pattern doesn't overlap itself
+    cheek = lay.faces["cheek"]
+    pts = np.array([cheek.to3d(*q[:2]) for q in cheek.face.outline])
+    ext = pts[pts[:, 1] < -0.5]  # ahead of the panel's front edge
+    assert ext[:, 2].max() == pytest.approx(top_z)
+    if "extend_blend" in kw:  # low for most of its length, one quarter-circle sweep up
+        assert sorted(set(np.round(ext[:, 2], 3)))[-2] == pytest.approx(-(A + 0.2))
+        assert len([q for q in cheek.face.outline if len(q) > 2]) == 1

@@ -101,6 +101,8 @@ class Panel:
     extend_drop: tuple = (None, None)
     round: tuple = (0.0, 0.0)
     extend_round: tuple = (0.0, 0.0)
+    extend_level: tuple = (None, None)
+    extend_blend: tuple = (False, False)
     children: list["Panel"] = field(default_factory=list)
 
     @property
@@ -112,7 +114,8 @@ class Panel:
                radius: float | None = None, inside: bool | None = None,
                relief: str | None = None, extend: tuple = (0.0, 0.0),
                extend_drop: tuple = (None, None), round: tuple = (0.0, 0.0),
-               extend_round: tuple = (0.0, 0.0)) -> "Panel":
+               extend_round: tuple = (0.0, 0.0), extend_level: tuple = (None, None),
+               extend_blend: tuple = (False, False)) -> "Panel":
         """Fold a wall up from one edge.
 
         height: from the outside of this face to the wall's far edge (or,
@@ -127,6 +130,13 @@ class Panel:
         extend_drop: for each extension, how far below the parent's outside
             surface its edge is at its tip; the edge slopes there from the
             end of the bend. Default: level with the bend.
+        extend_level: for each extension, how far below the parent's
+            outside surface its edge runs, level. 0 puts it flush with the
+            parent's surface: the wall's flat face then stands above where
+            the bend starts, parted from the bend's end by a relief slit.
+        extend_blend: for each extension, True keeps the edge low and sweeps
+            it up in a quarter circle to the parent's surface beside the
+            bend's end, in place of a square step.
         extend_round: for each extension, a radius on the corner of its tip
             nearest the bend (a level extension only).
         round: (at the start, at the end) radius on the wall's two far
@@ -151,7 +161,8 @@ class Panel:
             _style(relief, BEND_RELIEFS, "bend relief")
         child = Panel(s, name or f"{self.name}_{edge}", None, names[edge], height, angle, radius,
                       over, start, end, len(s.panels), inside, relief, tuple(extend),
-                      tuple(extend_drop), tuple(round), tuple(extend_round))
+                      tuple(extend_drop), tuple(round), tuple(extend_round),
+                      tuple(extend_level), tuple(extend_blend))
         if child.name in s.panels:
             raise ValueError(f"{s.name}: two faces are named {child.name!r}")
         s.panels[child.name] = child
@@ -253,9 +264,10 @@ class Sheet:
         rd, rw = self._relief_depth(c), self.relief_width
         return style, rw, max(rd, rw / 2) if style == "round" else rd
 
-    def _face(self, p: Panel, box, bottom_cuts=(), top=None, fillets=(), moves=()) -> Face:
+    def _face(self, p: Panel, box, own_cuts=(), top=None, fillets=(), moves=()) -> Face:
         """box: the face's outside limits (U0, U1, V0, V1) in its own (u, v).
-        bottom_cuts: notches beside its own bend. top: sloped top edge."""
+        own_cuts: rectangles (u0, u1, v0, v1) cut beside its own bend. top:
+        sloped top edge."""
         U0, U1, V0, V1 = box
         T, cr, gap = self.rule.T, self._corner(), self.corner_gap
         length = {"N": V1 - V0, "S": V1 - V0, "W": U1 - U0, "E": U1 - U0}
@@ -283,7 +295,7 @@ class Sheet:
             return (r[0] if side == "N" else r[1] if side == "S" else r[0],
                     r[2] if side in ("N", "S") else (r[3] if side == "W" else r[2]))
 
-        cuts = [(0.0, d, a, b) for a, b, d in bottom_cuts]
+        cuts = list(own_cuts)
         flanges = []
         for c in sorted(p.children, key=lambda c: c.order):
             side, L, s = c.edge, length[c.edge], self._setback(c)
@@ -335,31 +347,62 @@ class Sheet:
             if min(h0, h1) - s <= rd:
                 raise ValueError(f"{c.name}: height {min(h0, h1):g} is too short for its bend "
                                  f"(set-back {s:.2f}) and relief ({rd:.2f})")
-            notches, wall_fillets, wall_moves = [], [], []
+            wall_cuts, wall_fillets, wall_moves = [], [], []
+            # A raised or blended extension rises above the bend's tangent line
+            # (u < 0), up to the parent's outside surface at u = -s.
+            lifted = [c.extend[i] > 0 and (c.extend_blend[i] or (
+                c.extend_level[i] is not None and c.extend_level[i] < s)) for i in (0, 1)]
+            u_lo = -s if any(lifted) else 0.0
             for i, (lo, hi, corner_v, tip_v) in enumerate(((w[0], b[0], b[0], w[0]),
                                                            (b[1], w[1], b[1], w[1]))):
-                if hi - lo > 1e-9:  # the wall runs past its bend here
-                    notches.append((lo, hi, rd))
-                    drop = c.extend_drop[i] if c.extend[i] > 0 else None
+                if hi - lo <= 1e-9:
+                    continue  # the wall ends with its bend here
+                drop = c.extend_drop[i] if c.extend[i] > 0 else None
+                if not lifted[i]:
+                    edge = rd
+                    if c.extend[i] > 0 and c.extend_level[i] is not None:
+                        edge = c.extend_level[i] - s  # a level edge further down
+                    wall_cuts.append((u_lo, edge, lo, hi))
                     if drop is not None:  # slope the extension's edge down to its tip
                         if not rd < drop - s < min(h0, h1) - s:
                             raise ValueError(f"{c.name}: extend_drop {drop:g} must be between "
                                              f"{s + rd:.2f} and the wall's height")
                         wall_moves.append(((rd, tip_v), (drop - s, tip_v)))
-                    elif style == "round":
+                    elif style == "round" and edge == rd:
                         wall_fillets.append(((rd, corner_v), min(rd, hi - lo)))
-                    if c.extend[i] > 0 and c.extend_round[i] > 0:
-                        if drop is not None:
-                            raise ValueError(f"{c.name}: extend_round needs a level extension "
-                                             "(no extend_drop)")
-                        wall_fillets.append(((rd, tip_v), c.extend_round[i]))
+                else:
+                    if drop is not None:
+                        raise ValueError(f"{c.name}: extend_drop can't be combined with "
+                                         "extend_level or extend_blend")
+                    # A slit, one relief wide, parts the extension from the bend's end.
+                    sgn = 1 if i == 0 else -1
+                    slit = corner_v - sgn * rw  # the extension's edge of the slit
+                    wall_cuts.append((u_lo, rd, min(slit, corner_v), max(slit, corner_v)))
+                    if c.extend_blend[i]:
+                        # Low edge, sweeping up to the parent's surface beside the slit.
+                        land = min(1.0, abs(slit - tip_v) / 4)
+                        foot = slit - sgn * land
+                        wall_cuts.append((u_lo, rd, min(tip_v, foot), max(tip_v, foot)))
+                        wall_fillets.append(((rd, foot), s + rd))
+                        edge = rd
+                    else:
+                        edge = c.extend_level[i] - s
+                        if edge > u_lo:
+                            wall_cuts.append((u_lo, edge, min(tip_v, slit), max(tip_v, slit)))
+                if c.extend[i] > 0 and c.extend_round[i] > 0:
+                    if drop is not None:
+                        raise ValueError(f"{c.name}: extend_round needs a level extension "
+                                         "(no extend_drop)")
+                    wall_fillets.append(((edge, tip_v), c.extend_round[i]))
+            if u_lo < 0:  # nothing above the tangent line where the bend itself is
+                wall_cuts.append((u_lo, 0.0, b[0], b[1]))
             for i in (0, 1):
                 if c.round[i] > 0:
                     if sloped:
                         raise ValueError(f"{c.name}: a wall with a sloped top can't have "
                                          "rounded far corners")
                     wall_fillets.append(((h0 - s, w[i]), c.round[i]))
-            wall = self._face(c, (0.0, max(h0, h1) - s, w[0], w[1]), notches,
+            wall = self._face(c, (u_lo, max(h0, h1) - s, w[0], w[1]), wall_cuts,
                               (h0 - s, h1 - s) if sloped else None, wall_fillets, wall_moves)
             if side in ("N", "S"):
                 p0 = (U1 - s if side == "N" else U0 + s, V0)

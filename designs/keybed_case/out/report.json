@@ -15,6 +15,7 @@
     "key_clear": "2",
     "panel_gap": "3",
     "recess": "2.5",
+    "cheek_top": "blend",
     "tab": "18",
     "fit": "0.3",
     "corner": "overlap",
@@ -135,14 +136,14 @@
     {
       "name": "top: valid solid",
       "status": "pass",
-      "detail": "valid=True, solids=1, faces=39",
+      "detail": "valid=True, solids=1, faces=47",
       "value": null,
       "limit": null
     },
     {
       "name": "top: no self-intersection",
       "status": "pass",
-      "detail": "folded fuse loses 2.91e-10 mm\u00b3, flat fuse loses 8.73e-11 mm\u00b3 (limit 1.7e-04)",
+      "detail": "folded fuse loses -8.73e-10 mm\u00b3, flat fuse loses 8.73e-11 mm\u00b3 (limit 1.7e-04)",
       "value": null,
       "limit": null
     },
@@ -212,14 +213,14 @@
     {
       "name": "top.step reads back",
       "status": "pass",
-      "detail": "1 solid(s), volume 169935.775 mm\u00b3 (model 169935.775)",
+      "detail": "1 solid(s), volume 169964.431 mm\u00b3 (model 169964.431)",
       "value": null,
       "limit": null
     },
     {
       "name": "assembly.step reads back",
       "status": "pass",
-      "detail": "74 solid(s), volume 2454406.839 mm\u00b3 (model 2454406.839)",
+      "detail": "74 solid(s), volume 2454435.495 mm\u00b3 (model 2454435.495)",
       "value": null,
       "limit": null
     },
@@ -331,7 +332,7 @@
     {
       "name": "top_flat.dxf reads back",
       "status": "pass",
-      "detail": "15 circles, 8 lines, 6 arcs, 2 bends, cut 2294.2 mm, extent 625.548 \u00d7 256.900",
+      "detail": "15 circles, 14 lines, 8 arcs, 2 bends, cut 2306.5 mm, extent 625.548 \u00d7 256.900",
       "value": null,
       "limit": null
     }
@@ -812,12 +813,12 @@
     },
     "top#top": {
       "valid": true,
-      "volume": 169935.77474137573,
-      "area": 174526.36583569125,
+      "volume": 169964.4311171158,
+      "area": 174579.52663412807,
       "com": [
-        259.179252032087,
-        32.682474593063525,
-        -10.41851051662021
+        259.17925553023974,
+        32.6767409064214,
+        -10.417165583739237
       ],
       "bbox": [
         -6.361577931102148e-15,
@@ -825,12 +826,12 @@
         -57.000000000000014,
         518.4000000000001,
         111.8,
-        0
+        4.440892098500626e-16
       ],
       "solids": 1,
-      "faces": 39,
-      "edges": 111,
-      "parts_volume": 169935.77474137602
+      "faces": 47,
+      "edges": 135,
+      "parts_volume": 169964.43111711493
     },
     "keybed:Huaxin 37-key keybed (simplified)#Huaxin 37-key keybed (simplified)": {
       "valid": true,
@@ -1009,11 +1010,11 @@
     },
     "top#flat": {
       "valid": true,
-      "volume": 169816.35652142766,
-      "area": 174404.8113327385,
+      "volume": 169845.01289716657,
+      "area": 174457.97213117534,
       "com": [
-        259.17923744170616,
-        -32.66614757008109,
+        259.1792409447803,
+        -32.66041260678505,
         0.9999999999999998
       ],
       "bbox": [
@@ -1025,9 +1026,9 @@
         2
       ],
       "solids": 1,
-      "faces": 31,
-      "edges": 87,
-      "parts_volume": 169816.35652142775
+      "faces": 39,
+      "edges": 111,
+      "parts_volume": 169845.01289716666
     },
     "bottom#face:base": {
       "valid": true,
@@ -1229,34 +1230,34 @@
     },
     "top#face:left_cheek": {
       "valid": true,
-      "volume": 27223.52901579273,
-      "area": 28512.451129282737,
+      "volume": 27237.857203662184,
+      "area": 28539.031528501186,
       "com": [
-        0.9999999999999968,
-        -16.496137495167428,
-        -30.364857528856597
+        0.9999999999999966,
+        -16.488156727906944,
+        -30.350168767537703
       ],
       "bbox": [
         -6.361577931102148e-15,
         -145.1,
         -57.000000000000014,
-        1.9999999999999996,
+        2,
         111.8,
-        -3.6999999999999997
+        4.440892098500626e-16
       ],
       "solids": 1,
-      "faces": 14,
-      "edges": 36,
-      "parts_volume": 27223.52901579273
+      "faces": 18,
+      "edges": 48,
+      "parts_volume": 27237.857203662184
     },
     "top#face:right_cheek": {
       "valid": true,
-      "volume": 27223.52901579273,
-      "area": 28512.451129282737,
+      "volume": 27237.857203662184,
+      "area": 28539.031528501186,
       "com": [
         517.4000000000002,
-        -16.496137495167428,
-        -30.364857528856597
+        -16.488156727906944,
+        -30.350168767537713
       ],
       "bbox": [
         516.4,
@@ -1264,12 +1265,12 @@
         -57.000000000000014,
         518.4000000000001,
         111.8,
-        -3.6999999999999997
+        4.440892098500626e-16
       ],
       "solids": 1,
-      "faces": 14,
-      "edges": 36,
-      "parts_volume": 27223.52901579273
+      "faces": 18,
+      "edges": 48,
+      "parts_volume": 27237.857203662184
     }
   },
   "envelope": [
@@ -1487,7 +1488,7 @@
       "a": "screw_1",
       "b": "top",
       "interference_volume": 0,
-      "min_distance": 1.609823385706477e-15,
+      "min_distance": 1.7208456881689926e-15,
       "closest": [
         [
           -5.168088179630103e-15,
@@ -1495,7 +1496,7 @@
           8.25
         ],
         [
-          -3.393991063044389e-15,
+          -3.361636391562317e-15,
           29,
           8.25
         ]
@@ -1507,7 +1508,7 @@
       "a": "screw_2",
       "b": "top",
       "interference_volume": 0,
-      "min_distance": 1.609823385706477e-15,
+      "min_distance": 1.7208456881689926e-15,
       "closest": [
         [
           -5.168088179630103e-15,
@@ -1515,7 +1516,7 @@
           8.25
         ],
         [
-          -3.393991063044389e-15,
+          -3.361636391562317e-15,
           188.4,
           8.25
         ]
@@ -1527,7 +1528,7 @@
       "a": "screw_3",
       "b": "top",
       "interference_volume": 0,
-      "min_distance": 1.609823385706477e-15,
+      "min_distance": 1.7208456881689926e-15,
       "closest": [
         [
           -5.168088179630103e-15,
@@ -1535,7 +1536,7 @@
           8.25
         ],
         [
-          -3.393991063044389e-15,
+          -3.361636391562317e-15,
           231.4,
           8.25
         ]
@@ -2290,14 +2291,14 @@
       "min_distance": 514.4,
       "closest": [
         [
-          1.9999999999999996,
-          0,
-          -3.7
+          2,
+          -1.2000000000000002,
+          2.220446049250313e-16
         ],
         [
           516.4,
-          0,
-          -3.7
+          -1.2000000000000002,
+          2.220446049250313e-16
         ]
       ]
     },

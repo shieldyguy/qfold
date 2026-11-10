@@ -1,6 +1,6 @@
 """A clamshell case for the Huaxin 37-key keybed.
 
-    python -m designs.keybed_case [out_dir]
+    python -m designs.keybed_case [out_dir] [blend|flush|step]
 
 Top, folding down: the control panel behind the keys, with a cheek at each
 end folded down to the table. The cheeks run forward past the panel,
@@ -63,6 +63,10 @@ class Params:
     key_clear: float = 2.0  # panel underside above the white key tops beneath it
     panel_gap: float = 3.0  # panel front edge, behind the back of the black keys
     recess: float = 2.5  # cheeks and panel reach this far past the bottom
+    # The cheeks' top edge beside the keys: "blend" runs level with the white
+    # keys and sweeps up to the panel at its front corner; "flush" runs at
+    # panel height all the way forward; "step" is level with a square step.
+    cheek_top: str = "blend"
     tab: float = 18.0  # height of the floor's side tabs, outside
     fit: float = 0.3  # between the cheeks' inside faces and the bottom
     corner: str = "overlap"
@@ -100,8 +104,10 @@ def build(p: Params | None = None) -> Project:
         # as the bottom's bends (outside radius R + T), `recess` further out, and
         # the front top corner gets the same radius.
         r_out = R + T + rc
+        edge = {"blend": dict(extend_blend=(True, False)), "flush": dict(extend_level=(0, None)),
+                "step": {}}[p.cheek_top]
         panel.flange(side, z_top + rc, name=f"{side}_cheek", inside=False, extend=(y_panel, 0),
-                     round=(r_out, r_out), extend_round=(r_out, 0))
+                     round=(r_out, r_out), extend_round=(r_out, 0), **edge)
 
     def on_top(x, y, z):  # case coordinates -> the top's own (origin: panel's front-left corner)
         return (x, y - y_panel, z - z_top)
@@ -216,5 +222,6 @@ def build(p: Params | None = None) -> Project:
     return proj
 
 
-if __name__ == "__main__":
-    sys.exit(build().main())
+if __name__ == "__main__":  # [out_dir] [blend|flush|step]
+    style = sys.argv[2] if len(sys.argv) > 2 else Params.cheek_top
+    sys.exit(build(Params(cheek_top=style)).main(sys.argv[1:2]))
