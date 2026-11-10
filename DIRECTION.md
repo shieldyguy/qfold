@@ -38,6 +38,16 @@ keybed touch the PEM nuts. Two failures qfold must prevent:
 - **Failing loudly is fine.** A bad parameter that breaks the build in ten
   seconds is useful information; don't guard against it in advance.
 
+## House style
+
+Unless a design says otherwise, the owner's preferred corner is the tight
+one: `corner="overlap"`, `corner_relief="tear"`, `bend_relief="shear"`, with
+a small `corner_gap` (0.3 mm). Library defaults stay conservative (square
+and straight, relief width one thickness) because defaults can always be
+overridden. Before ordering a tight-corner part, confirm with the shop that
+it will cut the slit width (`kerf=`) and accepts tear corners at that
+thickness.
+
 ## Done
 
 - **Generic runner** (`qfold/project.py`). One `Project` takes any design and
