@@ -83,9 +83,11 @@ side.flange("top", 14, name="right_lip")         # a lip folding inward off the 
   `extend=(80, 0)` runs a wall on past the end of the edge it hangs from, and
   `extend_drop=(11, None)` slopes that extension's edge down to its tip, or
   `extend_round=(6, 0)` rounds the tip's corner on a level one;
-  `extend_level=(0, None)` runs the extension's edge flush with the parent's
-  surface, and `extend_blend=(True, False)` keeps it low and sweeps it up to
-  that surface beside the bend's end (a
+  `extend_fillet=(6, 0)` draws a radius in the flat pattern from the parent's
+  edge across the bend into the extension's edge, so the bend ends on a
+  curve with no relief; `extend_level=(0, None)` instead runs the
+  extension's edge flush with the parent's surface, with a relief slot
+  beside the bend's end (give that flange `relief="round"`) (a
   cheek that carries on beyond its panel, as in `designs/keybed_case`);
   `round=(1.4, 1.4)` rounds a wall's two far corners, to nest it inside
   another part's bend (that bend's inside radius less the gap) or around

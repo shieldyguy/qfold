@@ -55,7 +55,8 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, field
 
-from .fold import Face, Flange, Hole, SheetLayout, SheetMetalBody, SheetMetalRule, hole_at, layout
+from .fold import (Face, Flange, Hole, SheetLayout, SheetMetalBody, SheetMetalRule, arc_bulge,
+                   hole_at, layout)
 
 # Sides of a face in its own (u, v): S is u-min, N is u-max, W is v-min, E is v-max.
 BASE_EDGES = {"left": "S", "right": "N", "front": "W", "back": "E"}
@@ -102,7 +103,7 @@ class Panel:
     round: tuple = (0.0, 0.0)
     extend_round: tuple = (0.0, 0.0)
     extend_level: tuple = (None, None)
-    extend_blend: tuple = (False, False)
+    extend_fillet: tuple = (0.0, 0.0)
     children: list["Panel"] = field(default_factory=list)
 
     @property
@@ -115,7 +116,7 @@ class Panel:
                relief: str | None = None, extend: tuple = (0.0, 0.0),
                extend_drop: tuple = (None, None), round: tuple = (0.0, 0.0),
                extend_round: tuple = (0.0, 0.0), extend_level: tuple = (None, None),
-               extend_blend: tuple = (False, False)) -> "Panel":
+               extend_fillet: tuple = (0.0, 0.0)) -> "Panel":
         """Fold a wall up from one edge.
 
         height: from the outside of this face to the wall's far edge (or,
@@ -133,10 +134,14 @@ class Panel:
         extend_level: for each extension, how far below the parent's
             outside surface its edge runs, level. 0 puts it flush with the
             parent's surface: the wall's flat face then stands above where
-            the bend starts, parted from the bend's end by a relief slit.
-        extend_blend: for each extension, True keeps the edge low and sweeps
-            it up in a quarter circle to the parent's surface beside the
-            bend's end, in place of a square step.
+            the bend starts, parted from the bend's end by a relief slot in
+            this flange's bend relief style (a real part needs a slot with
+            some width there: relief="round").
+        extend_fillet: for each extension, a radius drawn in the flat
+            pattern across the inside corner where the parent's edge meets
+            the extension's. The fillet crosses the bend, so the bend ends
+            on a curve, with no relief; the extension's edge starts on the
+            bend's tangent line.
         extend_round: for each extension, a radius on the corner of its tip
             nearest the bend (a level extension only).
         round: (at the start, at the end) radius on the wall's two far
@@ -162,7 +167,7 @@ class Panel:
         child = Panel(s, name or f"{self.name}_{edge}", None, names[edge], height, angle, radius,
                       over, start, end, len(s.panels), inside, relief, tuple(extend),
                       tuple(extend_drop), tuple(round), tuple(extend_round),
-                      tuple(extend_level), tuple(extend_blend))
+                      tuple(extend_level), tuple(extend_fillet))
         if child.name in s.panels:
             raise ValueError(f"{s.name}: two faces are named {child.name!r}")
         s.panels[child.name] = child
@@ -296,7 +301,7 @@ class Sheet:
                     r[2] if side in ("N", "S") else (r[3] if side == "W" else r[2]))
 
         cuts = list(own_cuts)
-        flanges = []
+        flanges, horns = [], []
         for c in sorted(p.children, key=lambda c: c.order):
             side, L, s = c.edge, length[c.edge], self._setback(c)
             style, rw, rd = self._relief(c)
@@ -348,17 +353,61 @@ class Sheet:
                 raise ValueError(f"{c.name}: height {min(h0, h1):g} is too short for its bend "
                                  f"(set-back {s:.2f}) and relief ({rd:.2f})")
             wall_cuts, wall_fillets, wall_moves = [], [], []
-            # A raised or blended extension rises above the bend's tangent line
-            # (u < 0), up to the parent's outside surface at u = -s.
-            lifted = [c.extend[i] > 0 and (c.extend_blend[i] or (
-                c.extend_level[i] is not None and c.extend_level[i] < s)) for i in (0, 1)]
+            # A raised extension rises above the bend's tangent line (u < 0),
+            # up to the parent's outside surface at u = -s.
+            lifted = [c.extend[i] > 0 and c.extend_level[i] is not None
+                      and c.extend_level[i] < s for i in (0, 1)]
             u_lo = -s if any(lifted) else 0.0
+            # A fillet across the bend: the bend's flat strip ends on an arc,
+            # from the parent's edge to the extension's edge on the wall's
+            # tangent line. Wider than the strip, it starts on the parent.
+            R = c.radius if c.radius is not None else self.rule.R
+            BA = math.radians(abs(c.angle)) * (R + self.rule.K * T)
+            ends = []  # each end of the strip, from the parent's side to the wall's
+            for i, (sign, at) in enumerate(((1, 0.0), (-1, L))):
+                r = c.extend_fillet[i]
+                if r <= 0:
+                    ends.append([(0.0, b[i]), (BA, b[i])])
+                    continue
+                if c.extend[i] <= 0 or c.extend_level[i] is not None \
+                        or c.extend_drop[i] is not None:
+                    raise ValueError(f"{c.name}: extend_fillet needs a plain extension at "
+                                     "that end (no extend_level or extend_drop)")
+                if r > c.extend[i] - c.extend_round[i]:
+                    raise ValueError(f"{c.name}: a {r:g} mm extend_fillet doesn't fit a "
+                                     f"{c.extend[i]:g} mm extension")
+                centre, foot = (BA - r, at - sign * r), (BA, at - sign * r)
+                if r > BA:  # the arc starts on the parent: a small horn on its corner
+                    hd = r - math.sqrt(r * r - (r - BA) ** 2)
+                    head = (0.0, at - sign * hd)
+                    horns.append((point(side, at, s),
+                                  [point(side, at, s + r - BA), point(side, at - sign * hd, s)],
+                                  point(side, at - sign * r, s + r - BA)))
+                    ends.append([head, foot])
+                else:
+                    head = (BA - r, at)
+                    ends.append([(0.0, at), head, foot] if r < BA else [head, foot])
+                ends[-1] = [(*q, centre) if q == head else q for q in ends[-1]]
+                b[i] = at - sign * r
+            strip = None
+            if any(r > 0 for r in c.extend_fillet):
+                loop = ends[0] + ends[1][::-1]
+                strip = []
+                for k, q in enumerate(loop):
+                    nxt = loop[(k + 1) % len(loop)]
+                    # An arc runs between a head and the foot after (or before) it.
+                    centre = q[2] if len(q) > 2 and k < len(ends[0]) else (
+                        nxt[2] if len(nxt) > 2 and len(ends[0]) <= k < len(loop) - 1 else None)
+                    strip.append((q[0], q[1], arc_bulge(q[:2], nxt[:2], centre))
+                                 if centre else q[:2])
             for i, (lo, hi, corner_v, tip_v) in enumerate(((w[0], b[0], b[0], w[0]),
                                                            (b[1], w[1], b[1], w[1]))):
                 if hi - lo <= 1e-9:
                     continue  # the wall ends with its bend here
                 drop = c.extend_drop[i] if c.extend[i] > 0 else None
-                if not lifted[i]:
+                if c.extend_fillet[i] > 0:
+                    edge = 0.0  # the extension's edge is the tangent line: nothing to cut
+                elif not lifted[i]:
                     edge = rd
                     if c.extend[i] > 0 and c.extend_level[i] is not None:
                         edge = c.extend_level[i] - s  # a level edge further down
@@ -373,22 +422,16 @@ class Sheet:
                 else:
                     if drop is not None:
                         raise ValueError(f"{c.name}: extend_drop can't be combined with "
-                                         "extend_level or extend_blend")
-                    # A slit, one relief wide, parts the extension from the bend's end.
+                                         "extend_level")
+                    # A relief slot parts the extension from the bend's end.
                     sgn = 1 if i == 0 else -1
-                    slit = corner_v - sgn * rw  # the extension's edge of the slit
+                    slit = corner_v - sgn * rw  # the extension's edge of the slot
                     wall_cuts.append((u_lo, rd, min(slit, corner_v), max(slit, corner_v)))
-                    if c.extend_blend[i]:
-                        # Low edge, sweeping up to the parent's surface beside the slit.
-                        land = min(1.0, abs(slit - tip_v) / 4)
-                        foot = slit - sgn * land
-                        wall_cuts.append((u_lo, rd, min(tip_v, foot), max(tip_v, foot)))
-                        wall_fillets.append(((rd, foot), s + rd))
-                        edge = rd
-                    else:
-                        edge = c.extend_level[i] - s
-                        if edge > u_lo:
-                            wall_cuts.append((u_lo, edge, min(tip_v, slit), max(tip_v, slit)))
+                    if style == "round" and rw > 0:
+                        wall_fillets += [((rd, corner_v), rw / 2), ((rd, slit), rw / 2)]
+                    edge = c.extend_level[i] - s
+                    if edge > u_lo:
+                        wall_cuts.append((u_lo, edge, min(tip_v, slit), max(tip_v, slit)))
                 if c.extend[i] > 0 and c.extend_round[i] > 0:
                     if drop is not None:
                         raise ValueError(f"{c.name}: extend_round needs a level extension "
@@ -410,7 +453,7 @@ class Sheet:
             else:
                 p0 = (U0, V1 - s if side == "E" else V0 + s)
                 d, o = (1.0, 0.0), ((0.0, 1.0) if side == "E" else (0.0, -1.0))
-            flanges.append(Flange(c.name, p0, d, o, b[0], b[1], c.angle, wall, c.radius))
+            flanges.append(Flange(c.name, p0, d, o, b[0], b[1], c.angle, wall, c.radius, strip))
 
         # A cut out of every corner where two bends meet.
         if cr > 0:
@@ -424,7 +467,7 @@ class Sheet:
                         fillets.append(((U0 + du if a == "S" else U1 - du,
                                          V0 + dv if b_ == "W" else V1 - dv), cr))
 
-        outline = _outline((U0, U1, V0, V1), cuts, p.name, fillets, moves)
+        outline = _outline((U0, U1, V0, V1), cuts, p.name, fillets, moves, horns)
         if top is not None:  # slope the far edge
             def far_u(v):
                 return top[0] + (top[1] - top[0]) * (v - V0) / (V1 - V0)
@@ -456,10 +499,11 @@ class Sheet:
         return sheet_component(self.name, self.layout(), color)
 
 
-def _outline(box, cuts, name: str, fillets=(), moves=()) -> list[tuple]:
+def _outline(box, cuts, name: str, fillets=(), moves=(), horns=()) -> list[tuple]:
     """The outline of a rectangle with rectangles cut out of it, then with
-    the corners in moves ((from, to)) shifted and those in fillets
-    ((point, radius)) rounded."""
+    the corners in moves ((from, to)) shifted, those in fillets
+    ((point, radius)) rounded, and those in horns ((corner, [a, b], centre))
+    swapped for an arc from a to b that bulges out past the corner."""
     U0, U1, V0, V1 = box
     us = sorted({round(x, 9) for x in (U0, U1)} | {round(min(max(c[i], U0), U1), 9)
                                                    for c in cuts for i in (0, 1)})
@@ -497,6 +541,16 @@ def _outline(box, cuts, name: str, fillets=(), moves=()) -> list[tuple]:
         a, b = loop[k - 1], loop[(k + 1) % len(loop)]
         if abs((p[0] - a[0]) * (b[1] - p[1]) - (p[1] - a[1]) * (b[0] - p[0])) > 1e-12:
             out.append([float(p[0]), float(p[1]), 0.0])
+    for (fu, fv), (a, b), centre in horns:
+        k = next((k for k, q in enumerate(out) if abs(q[0] - fu) < 1e-7 and abs(q[1] - fv) < 1e-7),
+                 None)
+        if k is None:
+            raise ValueError(f"{name}: no corner at ({fu:g}, {fv:g}) for a fillet to start on")
+        prev = out[k - 1]
+        if abs((a[0] - prev[0]) * (fv - prev[1]) - (a[1] - prev[1]) * (fu - prev[0])) > 1e-7:
+            a, b = b, a  # walk in from the side the outline comes from
+        out[k:k + 1] = [[float(a[0]), float(a[1]), arc_bulge(a, b, centre)],
+                        [float(b[0]), float(b[1]), 0.0]]
     for (fu, fv), to in moves:
         q = next((q for q in out if abs(q[0] - fu) < 1e-7 and abs(q[1] - fv) < 1e-7), None)
         if q is None:

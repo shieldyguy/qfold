@@ -16,6 +16,7 @@
     "panel_gap": "3",
     "recess": "2.5",
     "cheek_top": "flush",
+    "cheek_fillet": "6",
     "tab": "18",
     "fit": "0.3",
     "corner": "overlap",
@@ -143,7 +144,7 @@
     {
       "name": "top: no self-intersection",
       "status": "pass",
-      "detail": "folded fuse loses -3.20e-10 mm\u00b3, flat fuse loses 2.91e-11 mm\u00b3 (limit 1.7e-04)",
+      "detail": "folded fuse loses 5.24e-10 mm\u00b3, flat fuse loses 8.73e-11 mm\u00b3 (limit 1.7e-04)",
       "value": null,
       "limit": null
     },
@@ -151,7 +152,7 @@
       "name": "top: flat pattern matches fold",
       "status": "pass",
       "detail": "folded\u2212flat volume 119.418220 mm\u00b3, bend allowance predicts 119.418220",
-      "value": 119.41821994827478,
+      "value": 119.41821994824568,
       "limit": 119.41821994825523
     },
     {
@@ -213,14 +214,14 @@
     {
       "name": "top.step reads back",
       "status": "pass",
-      "detail": "1 solid(s), volume 172196.215 mm\u00b3 (model 172196.215)",
+      "detail": "1 solid(s), volume 172153.748 mm\u00b3 (model 172153.748)",
       "value": null,
       "limit": null
     },
     {
       "name": "assembly.step reads back",
       "status": "pass",
-      "detail": "74 solid(s), volume 2456667.279 mm\u00b3 (model 2456667.279)",
+      "detail": "74 solid(s), volume 2456624.812 mm\u00b3 (model 2456624.812)",
       "value": null,
       "limit": null
     },
@@ -332,7 +333,7 @@
     {
       "name": "top_flat.dxf reads back",
       "status": "pass",
-      "detail": "15 circles, 12 lines, 6 arcs, 2 bends, cut 2309.8 mm, extent 625.548 \u00d7 256.900",
+      "detail": "15 circles, 10 lines, 8 arcs, 2 bends, cut 2316.2 mm, extent 625.548 \u00d7 256.900",
       "value": null,
       "limit": null
     }
@@ -813,12 +814,12 @@
     },
     "top#top": {
       "valid": true,
-      "volume": 172196.21474137635,
-      "area": 176818.00583569123,
+      "volume": 172153.7480148923,
+      "area": 176788.20902099845,
       "com": [
-        259.1795243931064,
-        31.299762788237935,
-        -10.308090720546272
+        259.1795193422049,
+        31.307746774689996,
+        -10.309913226621779
       ],
       "bbox": [
         -6.361577931102148e-15,
@@ -831,7 +832,7 @@
       "solids": 1,
       "faces": 43,
       "edges": 123,
-      "parts_volume": 172196.21474137602
+      "parts_volume": 172153.74801489283
     },
     "keybed:Huaxin 37-key keybed (simplified)#Huaxin 37-key keybed (simplified)": {
       "valid": true,
@@ -1010,12 +1011,12 @@
     },
     "top#flat": {
       "valid": true,
-      "volume": 172076.79652142772,
-      "area": 176696.4513327384,
+      "volume": 172034.3297949445,
+      "area": 176666.65451804566,
       "com": [
-        259.1795101834018,
-        -31.28269066348027,
-        0.9999999999999997
+        259.17950512548447,
+        -31.290675977784602,
+        0.9999999999999998
       ],
       "bbox": [
         -53.5741147067911,
@@ -1028,7 +1029,7 @@
       "solids": 1,
       "faces": 35,
       "edges": 99,
-      "parts_volume": 172076.79652142775
+      "parts_volume": 172034.32979494458
     },
     "bottom#face:base": {
       "valid": true,
@@ -1230,12 +1231,12 @@
     },
     "top#face:left_cheek": {
       "valid": true,
-      "volume": 28353.749015792728,
-      "area": 29658.271129282744,
+      "volume": 28332.515652551145,
+      "area": 29643.372721936328,
       "com": [
-        0.9999999999999969,
-        -18.73450881053957,
-        -29.23447100534819
+        0.9999999999999967,
+        -18.747750107997444,
+        -29.25419203330483
       ],
       "bbox": [
         -6.361577931102148e-15,
@@ -1248,16 +1249,16 @@
       "solids": 1,
       "faces": 16,
       "edges": 42,
-      "parts_volume": 28353.749015792728
+      "parts_volume": 28332.515652551137
     },
     "top#face:right_cheek": {
       "valid": true,
-      "volume": 28353.749015792735,
-      "area": 29658.271129282744,
+      "volume": 28332.51565255115,
+      "area": 29643.372721936328,
       "com": [
-        517.4000000000001,
-        -18.734508810539566,
-        -29.23447100534819
+        517.4,
+        -18.747750107997444,
+        -29.25419203330483
       ],
       "bbox": [
         516.4,
@@ -1270,7 +1271,7 @@
       "solids": 1,
       "faces": 16,
       "edges": 42,
-      "parts_volume": 28353.749015792735
+      "parts_volume": 28332.515652551137
     }
   },
   "envelope": [
@@ -1496,7 +1497,7 @@
           8.25
         ],
         [
-          -3.2551517585157575e-15,
+          -3.2434717095203906e-15,
           29,
           8.25
         ]
@@ -1516,7 +1517,7 @@
           8.25
         ],
         [
-          -3.2551517585157575e-15,
+          -3.2434717095203906e-15,
           188.4,
           8.25
         ]
@@ -1536,7 +1537,7 @@
           8.25
         ],
         [
-          -3.2551517585157575e-15,
+          -3.2434717095203906e-15,
           231.4,
           8.25
         ]

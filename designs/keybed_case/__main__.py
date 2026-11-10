@@ -1,10 +1,10 @@
 """A clamshell case for the Huaxin 37-key keybed.
 
-    python -m designs.keybed_case [out_dir] [blend|flush|step]
+    python -m designs.keybed_case [out_dir] [fillet|flush|step|flush_raw]
 
 Top, folding down: the control panel behind the keys, with a cheek at each
 end folded down to the table. The cheeks run forward past the panel,
-alongside the keys, level with the white keys. Bottom, folding up: the
+alongside the keys, their top edge just below the panel's bend. Bottom, folding up: the
 floor with a tall back wall and a low front wall whose top folds back
 inward as a shelf under the keys, sitting between the cheeks. The keybed
 stands on its eight bosses on the floor.
@@ -63,10 +63,14 @@ class Params:
     key_clear: float = 2.0  # panel underside above the white key tops beneath it
     panel_gap: float = 3.0  # panel front edge, behind the back of the black keys
     recess: float = 2.5  # cheeks and panel reach this far past the bottom
-    # The cheeks' top edge beside the keys: "blend" runs level with the white
-    # keys and sweeps up to the panel at its front corner; "flush" runs at
-    # panel height all the way forward; "step" is level with a square step.
-    cheek_top: str = "blend"
+    # The cheeks' top edge beside the keys. "fillet": just below the panel's
+    # bend, with a radius drawn in the flat pattern from the panel's front edge
+    # across the bend into the cheek's edge. "flush": at panel height all the
+    # way forward, with a round relief slot where the bend ends. "step": as
+    # fillet, with a square corner and a shear relief. "flush_raw": flush with
+    # no relief at all, to look at; it can't be formed.
+    cheek_top: str = "fillet"
+    cheek_fillet: float = 6.0  # that radius
     tab: float = 18.0  # height of the floor's side tabs, outside
     fit: float = 0.3  # between the cheeks' inside faces and the bottom
     corner: str = "overlap"
@@ -96,7 +100,8 @@ def build(p: Params | None = None) -> Project:
     y_kb_back = ky + KB_D  # back of the keybed frame
 
     # ---- top: the panel, with a cheek folded down at each end
-    top = Sheet("top", shop, dims="inside", up=False, **style)
+    top = Sheet("top", shop, dims="inside", up=False,
+                **{**style, **({"kerf": 0.0} if p.cheek_top == "flush_raw" else {})})
     panel = top.base(w_in, D - y_panel, name="panel")
     for side in ("left", "right"):
         # Down past the floor and forward past the front wall, its top edge level
@@ -104,8 +109,9 @@ def build(p: Params | None = None) -> Project:
         # as the bottom's bends (outside radius R + T), `recess` further out, and
         # the front top corner gets the same radius.
         r_out = R + T + rc
-        edge = {"blend": dict(extend_blend=(True, False)), "flush": dict(extend_level=(0, None)),
-                "step": {}}[p.cheek_top]
+        edge = {"fillet": dict(extend_fillet=(p.cheek_fillet, 0)),
+                "flush": dict(extend_level=(0, None), relief="round"),
+                "flush_raw": dict(extend_level=(0, None)), "step": {}}[p.cheek_top]
         panel.flange(side, z_top + rc, name=f"{side}_cheek", inside=False, extend=(y_panel, 0),
                      round=(r_out, r_out), extend_round=(r_out, 0), **edge)
 
@@ -222,6 +228,6 @@ def build(p: Params | None = None) -> Project:
     return proj
 
 
-if __name__ == "__main__":  # [out_dir] [blend|flush|step]
+if __name__ == "__main__":  # [out_dir] [fillet|flush|step|flush_raw]
     style = sys.argv[2] if len(sys.argv) > 2 else Params.cheek_top
     sys.exit(build(Params(cheek_top=style)).main(sys.argv[1:2]))

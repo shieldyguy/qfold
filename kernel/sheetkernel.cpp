@@ -35,6 +35,13 @@
 #include <BRepExtrema_DistShapeShape.hxx>
 #include <BRepGProp.hxx>
 #include <BRepLib.hxx>
+#include <BRepOffset_MakeOffset.hxx>
+#include <GCE2d_MakeSegment.hxx>
+#include <Geom2dAPI_Interpolate.hxx>
+#include <Geom2d_BSplineCurve.hxx>
+#include <Geom2d_TrimmedCurve.hxx>
+#include <Geom_CylindricalSurface.hxx>
+#include <TColgp_HArray1OfPnt2d.hxx>
 #include <BRepMesh_IncrementalMesh.hxx>
 #include <BRepPrimAPI_MakeBox.hxx>
 #include <BRepPrimAPI_MakeCylinder.hxx>
@@ -461,7 +468,50 @@ static TopoDS_Shape makePlate(const J& p) {
 // Annular sector: inner radius r_in, outer r_out, swept by `angle` (radians)
 // about the axis through `base` along `axis`, starting from direction `xdir`,
 // over `length` along the axis.
+// A bend whose ends aren't square: `profile` is its outline on the inside
+// cylinder as a closed chain of edges, each a list of [angle, axial] points
+// (two points: a straight edge; more: a curve through them). The solid is
+// that face thickened outward, so its cut faces are square to the sheet.
+static TopoDS_Shape makeTrimmedSector(const J& s) {
+  gp_Pnt base = P3(s["base"]);
+  gp_Vec ax = V3(s["axis"]).Normalized(), xd = V3(s["xdir"]).Normalized();
+  const double ri = s["r_in"].num(), ro = s["r_out"].num();
+  Handle(Geom_CylindricalSurface) cyl =
+      new Geom_CylindricalSurface(gp_Ax3(base, gp_Dir(ax), gp_Dir(xd)), ri);
+  const J& prof = s["profile"];
+  BRepBuilderAPI_MakeWire mw;
+  for (size_t k = 0; k < prof.size(); ++k) {
+    const J& e = prof[k];
+    Handle(Geom2d_Curve) c2;
+    if (e.size() == 2) {
+      c2 = GCE2d_MakeSegment(gp_Pnt2d(e[0][0].num(), e[0][1].num()),
+                             gp_Pnt2d(e[1][0].num(), e[1][1].num())).Value();
+    } else {
+      Handle(TColgp_HArray1OfPnt2d) pts = new TColgp_HArray1OfPnt2d(1, (int)e.size());
+      for (size_t i = 0; i < e.size(); ++i)
+        pts->SetValue((int)i + 1, gp_Pnt2d(e[i][0].num(), e[i][1].num()));
+      Geom2dAPI_Interpolate it(pts, Standard_False, 1e-10);
+      it.Perform();
+      if (!it.IsDone()) throw std::runtime_error("bend profile curve failed");
+      c2 = it.Curve();
+    }
+    TopoDS_Edge ed = BRepBuilderAPI_MakeEdge(c2, cyl).Edge();
+    BRepLib::BuildCurve3d(ed);
+    mw.Add(ed);
+  }
+  if (!mw.IsDone()) throw std::runtime_error("bend profile wire failed");
+  BRepBuilderAPI_MakeFace mf(cyl, mw.Wire(), Standard_True);
+  if (!mf.IsDone()) throw std::runtime_error("bend profile face failed");
+  BRepOffset_MakeOffset mk;
+  mk.Initialize(mf.Face(), ro - ri, 1e-7, BRepOffset_Skin, Standard_False, Standard_False,
+                GeomAbs_Intersection, Standard_True);
+  mk.MakeOffsetShape();
+  if (!mk.IsDone()) throw std::runtime_error("thickening the bend failed");
+  return mk.Shape();
+}
+
 static TopoDS_Shape makeSector(const J& s) {
+  if (s["profile"].kind == J::ARR) return makeTrimmedSector(s);
   gp_Pnt base = P3(s["base"]);
   gp_Vec ax = V3(s["axis"]).Normalized(), xd = V3(s["xdir"]).Normalized();
   const double ri = s["r_in"].num(), ro = s["r_out"].num(), L = s["length"].num(),
@@ -510,9 +560,33 @@ static gp_Trsf trsfFrom(const J& m) {
 // ---------------------------------------------------------------------------
 // Queries.
 
+// Volume to near machine precision. The default integration is exact for
+// planes and cylinders bounded by lines and circles, but only approximate
+// once a face has a free-form boundary (a curved bend end), so those use the
+// adaptive form.
+static bool hasFreeFormEdge(const TopoDS_Shape& s) {
+  for (TopExp_Explorer e(s, TopAbs_EDGE); e.More(); e.Next()) {
+    BRepAdaptor_Curve c(TopoDS::Edge(e.Current()));
+    if (c.GetType() == GeomAbs_BSplineCurve || c.GetType() == GeomAbs_BezierCurve ||
+        c.GetType() == GeomAbs_OtherCurve)
+      return true;
+  }
+  return false;
+}
+
+static double volumeOf(const TopoDS_Shape& s) {
+  GProp_GProps g;
+  if (hasFreeFormEdge(s))
+    BRepGProp::VolumeProperties(s, g, 1e-11);
+  else
+    BRepGProp::VolumeProperties(s, g);
+  return g.Mass();
+}
+
 static std::string measureJson(const TopoDS_Shape& s) {
   GProp_GProps vp, sp;
-  BRepGProp::VolumeProperties(s, vp);
+  BRepGProp::VolumeProperties(s, vp);  // for the centre of mass
+  const double volume = volumeOf(s);
   BRepGProp::SurfaceProperties(s, sp);
   Bnd_Box bb;
   BRepBndLib::AddOptimal(s, bb, Standard_False, Standard_False);
@@ -527,7 +601,7 @@ static std::string measureJson(const TopoDS_Shape& s) {
   nEdges = em.Extent();
   BRepCheck_Analyzer chk(s);
   std::ostringstream o;
-  o << "{\"valid\":" << (chk.IsValid() ? "true" : "false") << ",\"volume\":" << fmt(vp.Mass())
+  o << "{\"valid\":" << (chk.IsValid() ? "true" : "false") << ",\"volume\":" << fmt(volume)
     << ",\"area\":" << fmt(sp.Mass()) << ",\"com\":" << pt3(vp.CentreOfMass())
     << ",\"bbox\":[" << fmt(x0) << "," << fmt(y0) << "," << fmt(z0) << "," << fmt(x1) << ","
     << fmt(y1) << "," << fmt(z1) << "],\"solids\":" << nSolids << ",\"faces\":" << nFaces
@@ -861,9 +935,7 @@ static void writeStepTree(const J& tree, const std::map<std::string, TopoDS_Shap
 static double commonVolume(const TopoDS_Shape& a, const TopoDS_Shape& b) {
   BRepAlgoAPI_Common cm(a, b);
   if (!cm.IsDone()) throw std::runtime_error("common failed");
-  GProp_GProps g;
-  BRepGProp::VolumeProperties(cm.Shape(), g);
-  return std::abs(g.Mass());
+  return std::abs(volumeOf(cm.Shape()));
 }
 
 static void writeStep(const TopoDS_Shape& s, const std::string& path, const std::string& product) {
@@ -882,9 +954,7 @@ static std::string readbackJson(const std::string& path) {
   int nsol = 0;
   if (rd.ReadFile(path.c_str()) == IFSelect_RetDone && rd.TransferRoots() > 0) {
     TopoDS_Shape back = rd.OneShape();
-    GProp_GProps g;
-    BRepGProp::VolumeProperties(back, g);
-    vol = g.Mass();
+    vol = volumeOf(back);
     for (TopExp_Explorer e(back, TopAbs_SOLID); e.More(); e.Next()) ++nsol;
   }
   return "{\"path\":" + quote(path) + ",\"readback_volume\":" + fmt(vol) +
@@ -940,9 +1010,7 @@ int main(int argc, char** argv) {
         // than this sum; that is how self-intersection is detected.
         double sum = 0.0;
         for (const auto& part : parts) {
-          GProp_GProps g;
-          BRepGProp::VolumeProperties(part, g);
-          sum += g.Mass();
+          sum += volumeOf(part);
         }
         partsVolume[name] = sum;
         shape = fuseAll(parts);

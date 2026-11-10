@@ -291,7 +291,7 @@ def test_level_extension_with_a_rounded_tip(tmp_path):
 
 
 @pytest.mark.parametrize("kw, top_z", [(dict(extend_level=(0, None)), 0.0),
-                                        (dict(extend_blend=(True, False)), 0.0),
+                                        (dict(extend_level=(0, None), relief="round"), 0.0),
                                         (dict(extend_level=(8.0, None)), -8.0)])
 def test_extension_edge_can_rise_to_the_parents_surface(tmp_path, kw, top_z):
     s = Sheet("top", RULE, up=False, bend_relief="shear")
@@ -301,6 +301,34 @@ def test_extension_edge_can_rise_to_the_parents_surface(tmp_path, kw, top_z):
     pts = np.array([cheek.to3d(*q[:2]) for q in cheek.face.outline])
     ext = pts[pts[:, 1] < -0.5]  # ahead of the panel's front edge
     assert ext[:, 2].max() == pytest.approx(top_z)
-    if "extend_blend" in kw:  # low for most of its length, one quarter-circle sweep up
-        assert sorted(set(np.round(ext[:, 2], 3)))[-2] == pytest.approx(-(A + 0.2))
-        assert len([q for q in cheek.face.outline if len(q) > 2]) == 1
+    if "relief" in kw:  # a slot one relief wide with a round end, beside the bend's end
+        assert len([q for q in cheek.face.outline if len(q) > 2]) == 2
+
+
+@pytest.mark.parametrize("r", [1.0, 6.0])  # narrower and wider than the bend's flat strip
+def test_fillet_drawn_across_the_bend(tmp_path, r):
+    s = Sheet("top", RULE, up=False, bend_relief="shear")
+    s.base(100, 40, name="panel").flange("left", 60, name="cheek", extend=(80, 0),
+                                         extend_fillet=(r, 0), extend_round=(6.0, 0))
+    lay, m = solid(s, tmp_path)  # one sound solid, and the flat pattern holds the same metal
+    bend, = lay.bends
+    assert bend.bend.v0 == pytest.approx(-r)  # the bend runs on until the fillet meets the cheek
+    assert bend.area == pytest.approx(bend.allowance * 40 + r * r * (1 - math.pi / 4)
+                                      - (0 if r <= bend.allowance else horn_area(r, bend.allowance)))
+    cheek, panel = lay.faces["cheek"], lay.faces["panel"]
+    pts = np.array([cheek.to3d(*q[:2]) for q in cheek.face.outline])
+    # No relief: the cheek's edge ahead of the panel is the bend's tangent line.
+    assert pts[pts[:, 1] < -r - 1e-6][:, 2].max() == pytest.approx(-A)
+    horn = min(q[1] for q in panel.face.outline)  # how far the panel runs on ahead of its edge
+    assert (horn < -1e-6) == (r > bend.allowance)
+    with pytest.raises(ValueError, match="needs a plain extension"):
+        bad = Sheet("top", RULE, up=False)
+        bad.base(100, 40).flange("left", 60, extend=(80, 0), extend_fillet=(6, 0),
+                                 extend_level=(0, None))
+        bad.layout()
+
+
+def horn_area(r, ba):
+    """The part of a fillet (corner area r^2 (1 - pi/4)) that lies past a bend strip ba wide."""
+    x = r - ba  # across the fillet from where it starts; the gap under the arc is r - sqrt(r^2 - t^2)
+    return r * x - (x * math.sqrt(r * r - x * x) + r * r * math.asin(x / r)) / 2

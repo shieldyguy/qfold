@@ -87,6 +87,8 @@ the other by a couple of millimetres, not flush. Panels can come within
 
 ## Known limits
 
+- A wall that runs on past its parent at the parent's own height (`extend_level=0`) is drawn as a flat plate beside the bend, parted by a relief slot. Real metal there is up to the shop; prefer `extend_fillet`, which is an ordinary bend with a curved end.
+
 - qfold cannot unfold someone else's STEP. A design made elsewhere is
   re-described in qfold; its STEP can still be inserted to measure against.
 - Flat faces and straight bends only. No hems, jogs, countersinks, louvers,

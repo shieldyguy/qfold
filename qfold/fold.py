@@ -138,6 +138,32 @@ def outline_points(outline, step_deg: float = 6.0) -> np.ndarray:
     return np.array(pts)
 
 
+def arc_bulge(p, q, centre) -> float:
+    """The bulge of the (minor) arc from p to q about centre: see outline_points."""
+    p, q, c = (np.array(x, float) for x in (p, q, centre))
+    r = np.linalg.norm(p - c)
+    mid = (p + q) / 2 - c
+    m = c + r * mid / np.linalg.norm(mid)
+    d = q - p
+    return float(-2 * (d[0] * (m - p)[1] - d[1] * (m - p)[0]) / (d @ d))
+
+
+def outline_area(outline) -> float:
+    """Area enclosed by an outline, arcs included (positive if counter-clockwise)."""
+    area, n = 0.0, len(outline)
+    for k, p in enumerate(outline):
+        q = outline[(k + 1) % n]
+        area += (p[0] * q[1] - q[0] * p[1]) / 2
+        bulge = p[2] if len(p) > 2 else 0.0
+        if abs(bulge) > 1e-12:  # the segment between chord and arc
+            c = math.hypot(q[0] - p[0], q[1] - p[1])
+            theta = 4 * math.atan(abs(bulge))
+            r = c / (2 * math.sin(theta / 2))
+            # Bulging right of the chord adds area on a counter-clockwise outline.
+            area += math.copysign(r * r * (theta - math.sin(theta)) / 2, bulge)
+    return area
+
+
 @dataclass
 class Face:
     name: str
@@ -158,6 +184,11 @@ class Flange:
     angle: float  # degrees; + folds toward the material side
     wall: Face
     radius: float | None = None  # inside radius override
+    # The bend's own outline when its ends aren't square, in (s, v): s across
+    # the bend from the parent's tangent line (0) to the wall's (the bend
+    # allowance), v along the edge. Vertices may carry bulges. Default: the
+    # rectangle 0..allowance by v0..v1. v0 and v1 must still span it.
+    strip: list | None = None
 
 
 @dataclass
@@ -206,6 +237,7 @@ class BendState:
     line2d: tuple[np.ndarray, np.ndarray]  # centre line of the bend strip, flat pattern
     axis_point: np.ndarray  # a point on the bend axis (3D, part coords)
     axis: np.ndarray
+    area: float = 0.0  # of the bend's flat strip
 
 
 @dataclass
@@ -275,20 +307,44 @@ def layout(body: SheetMetalBody) -> SheetLayout:
             rot = rotation(w, th)
             Oc = A + rot @ (P - A)
             Uc, Vc, Nc = rot @ O3, D3, rot @ st.N
-            base = A + D3 * (b.v0 if np.dot(w, D3) > 0 else b.v1)
-            sectors.append({"base": list(map(float, base)), "axis": list(map(float, w)),
-                            "xdir": list(map(float, xdir)), "r_in": R, "r_out": R + T,
-                            "angle": th, "length": b.v1 - b.v0})
+            along = np.dot(w, D3) > 0  # does the axis run the way v does?
+            base = A + D3 * (b.v0 if along else b.v1)
+            sector = {"base": list(map(float, base)), "axis": list(map(float, w)),
+                      "xdir": list(map(float, xdir)), "r_in": R, "r_out": R + T,
+                      "angle": th, "length": b.v1 - b.v0}
+            if b.strip:
+                # The same outline on the inside cylinder: angle for s, and
+                # distance along the axis for v, counter-clockwise.
+                edges = []
+                for k, q in enumerate(b.strip):
+                    nxt = b.strip[(k + 1) % len(b.strip)]
+                    pts = (outline_points([q, nxt[:2]], step_deg=2.0)[:-1].tolist() + [list(nxt[:2])]
+                           if len(q) > 2 and abs(q[2]) > 1e-12 else [list(q[:2]), list(nxt[:2])])
+                    edges.append([[s_ / BA * th, (v_ - b.v0) if along else (b.v1 - v_)]
+                                  for s_, v_ in pts])
+                flat = [pt for e in edges for pt in e[:-1]]
+                if sum(a[0] * c[1] - c[0] * a[1] for a, c in zip(flat, flat[1:] + flat[:1])) < 0:
+                    edges = [e[::-1] for e in edges[::-1]]
+                sector["profile"] = edges
+            sectors.append(sector)
             P2 = st.to2d(*p0)
             d2 = d[0] * st.U2 + d[1] * st.V2
             o2 = o[0] * st.U2 + o[1] * st.V2
-            strip = [P2 + d2 * b.v0, P2 + d2 * b.v1, P2 + d2 * b.v1 + o2 * BA,
-                     P2 + d2 * b.v0 + o2 * BA]
+            if b.strip:
+                flip = -1.0 if o2[0] * d2[1] - o2[1] * d2[0] < 0 else 1.0  # a mirrored map
+                strip = [[*map(float, P2 + o2 * q[0] + d2 * q[1])]
+                         + ([flip * q[2]] if len(q) > 2 and q[2] else []) for q in b.strip]
+                area = abs(outline_area(b.strip))
+            else:
+                strip = [list(map(float, p)) for p in (
+                    P2 + d2 * b.v0, P2 + d2 * b.v1, P2 + d2 * b.v1 + o2 * BA,
+                    P2 + d2 * b.v0 + o2 * BA)]
+                area = BA * (b.v1 - b.v0)
             plates_flat.append({"frame": _frame([0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]),
-                                "T": T, "outline": [list(map(float, p)) for p in strip],
-                                "holes": []})
+                                "T": T, "outline": strip, "holes": []})
             mid = P2 + o2 * BA / 2
-            bends.append(BendState(b, f.name, R, BA, (mid + d2 * b.v0, mid + d2 * b.v1), A, w))
+            bends.append(BendState(b, f.name, R, BA, (mid + d2 * b.v0, mid + d2 * b.v1), A, w,
+                                   area))
             visit(FaceState(b.wall, Oc, Uc, Vc, Nc, P2 + o2 * BA, o2, d2))
 
     visit(root)
@@ -299,10 +355,11 @@ def expected_volume_difference(lay: SheetLayout) -> float:
     """Folded minus flat volume implied by the bend allowance.
 
     A bend sector holds theta*L*T*(R + T/2) of material; its flat strip holds
-    theta*L*T*(R + K*T). The difference is theta*L*T^2*(0.5 - K) per bend.
+    theta*L*T*(R + K*T). The difference is theta*L*T^2*(0.5 - K) per bend,
+    with L the strip's area over its width when its ends aren't square.
     """
     T, K = lay.body.rule.T, lay.body.rule.K
-    return sum(math.radians(abs(b.bend.angle)) * (b.bend.v1 - b.bend.v0) * T * T * (0.5 - K)
+    return sum(math.radians(abs(b.bend.angle)) * (b.area / b.allowance) * T * T * (0.5 - K)
                for b in lay.bends)
 
 
