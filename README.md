@@ -42,7 +42,7 @@ Four examples, each with committed output in their `out/` folder:
 - [`examples/synth_case`](examples/synth_case): a sloped desktop synth case
   with a control board inserted from a STEP file and its own drawing sheets.
 - [`examples/keybed_case`](examples/keybed_case/__main__.py): a clamshell
-  around a 37-key keybed from a STEP file. The top's cheeks wrap the sides,
+  around a blocked-out 37-key keybed (`keybed.py`). The top's cheeks wrap the sides,
   the bottom is recessed inside them with matched radii, and the checks
   hold the keys, pressed and at rest, clear of the case. `out/` has the
   cheeks' edge filleted into the panel; `out_flush/` has it at panel height

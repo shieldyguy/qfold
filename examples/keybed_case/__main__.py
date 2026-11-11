@@ -21,32 +21,33 @@ the keybed frame.
 
 Coordinates: x right, y back, z up; x = 0 is the left cheek's outside face,
 y = 0 the cheeks' front tips, z = 0 the floor's underside. The
-keybed STEP's own origin is the front-left corner of the lowest white key,
+keybed's own origin is the front-left corner of the lowest white key,
 at white key top height.
 """
 
 import sys
 from dataclasses import dataclass
-from pathlib import Path
 
 from qfold import parts, shops
-from qfold.assembly import Design, align, box, cyl, frame, insert_step, prim_component
+from qfold.assembly import Design, align, box, cyl, frame, prim_component
 from qfold.fold import Hole
 from qfold.project import Project
 from qfold.sheet import Sheet
 
-KEYBED = Path(__file__).resolve().parent / "keybed.step"
-# Read from the keybed STEP (its solids are named): overall size, where the
-# keys and frame end, and the eight mounting bosses.
-KB_W, KB_D = 511.4, 161.4  # width; depth to the back of the frame
-KB_KEYS = 160.0  # depth to the back ends of the keys
-KB_FRAME_FRONT = 47.5  # the keys overhang the frame's front by this much
-KB_SKIRT = 14.0  # a white key's front skirt, below its top
-KB_FLOOR = 48.5  # boss bottoms below the white key tops
-KB_BLACK_BACK = 136.1  # back face of the black keys' raised part (measured by probing
-# the model: nothing behind it rises above the white key tops)
-KB_BOSS_X = (20.4, 156.0, 332.8, 495.9)
-KB_BOSS_Y = (70.7, 146.2)
+from . import keybed as keybed_model
+
+# The keybed is a blocked-out stand-in, to the sizes measured from the
+# maker's model (keybed.py): overall size, where the keys and frame end, the
+# black keys and the eight mounting bosses.
+KB_W, KB_D = keybed_model.W, keybed_model.D  # width; depth to the back of the frame
+KB_KEYS = keybed_model.KEYS  # depth to the back ends of the keys
+KB_FRAME_FRONT = keybed_model.FRAME_FRONT  # the keys overhang the frame's front by this much
+KB_SKIRT = keybed_model.SKIRT  # a white key's underside where it meets the frame, below its
+# top: its lowest point. (At the very front the underside is only 8 below.)
+KB_FLOOR = keybed_model.FLOOR  # boss bottoms below the white key tops
+KB_BLACK_BACK = keybed_model.BLACK_BACK  # back face of the black keys' raised part: nothing
+# behind it rises above the white key tops
+KB_BOSS_X, KB_BOSS_Y = keybed_model.BOSS_X, keybed_model.BOSS_Y
 
 
 @dataclass
@@ -178,7 +179,7 @@ def build(p: Params | None = None) -> Project:
     align(b, "origin", onto=frame((x0, rc, 0)))
     t = d.add(top.component(color=(196, 198, 204)), "top")
     align(t, "origin", onto=frame((0, y_panel, z_top)))
-    keybed = insert_step(d, KEYBED, name="keybed", color=(235, 235, 230))
+    keybed = d.add(keybed_model.keybed(), "keybed")
     align(keybed, "origin", onto=frame((kx, ky, kz)))
     # The space the white keys' fronts sweep through when pressed. Not a part:
     # it is here so the checks can keep the case out of it.

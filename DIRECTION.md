@@ -78,7 +78,7 @@ the other by a couple of millimetres, not flush. Panels can come within
 ## Next, in order
 
 1. **Keybed case v2**: the enclosure is done and ships as
-   `examples/keybed_case`, with the keybed as STEP. Still to come: real
+   `examples/keybed_case`, with the keybed as a blocked-out stand-in to the maker's sizes. Still to come: real
    boards and controls in place of the stand-ins, the keybed's own screws,
    and the measured key travel. Add what it needs as it needs it: likely candidates are overlap ratio, mitered lips
    where two lips meet at a corner, hems, countersinks.

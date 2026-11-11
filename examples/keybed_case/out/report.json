@@ -221,7 +221,7 @@
     {
       "name": "assembly.step reads back",
       "status": "pass",
-      "detail": "74 solid(s), volume 2454555.835 mm\u00b3 (model 2454555.835)",
+      "detail": "42 solid(s), volume 2652546.603 mm\u00b3 (model 2652546.603)",
       "value": null,
       "limit": null
     },
@@ -759,9 +759,9 @@
       "source": "sheet metal"
     },
     {
-      "component": "Huaxin 37-key keybed (simplified)",
+      "component": "keybed",
       "qty": 1,
-      "source": "STEP: keybed.step"
+      "source": "stand-in, measured from the maker's model"
     },
     {
       "component": "screw_M3x6_pan",
@@ -834,26 +834,335 @@
       "edges": 115,
       "parts_volume": 170084.77068567084
     },
-    "keybed:Huaxin 37-key keybed (simplified)#Huaxin 37-key keybed (simplified)": {
+    "keybed#keys_and_frame": {
       "valid": true,
-      "volume": 1912349.885264873,
-      "area": 504763.0638909202,
+      "volume": 1860519.226,
+      "area": 209574.48676303955,
       "com": [
-        255.25036933716058,
-        90.74928506365157,
-        -12.154832029656864
+        255.69999999999996,
+        90.3523666264441,
+        -12.890866773499278
       ],
       "bbox": [
         0,
-        -3.1956659540810506e-09,
-        -48.5,
+        0,
+        -37,
         511.4,
         161.4,
-        11.000000003193364
+        0
       ],
-      "solids": 47,
-      "faces": 492,
-      "edges": 1120
+      "solids": 1,
+      "faces": 20,
+      "edges": 54,
+      "parts_volume": 1860519.226
+    },
+    "keybed#black_keys_1": {
+      "valid": true,
+      "volume": 30255.362999999998,
+      "area": 8458.378342741287,
+      "com": [
+        34.355000000000004,
+        93.17562297082118,
+        4.977728146907377
+      ],
+      "bbox": [
+        15.585,
+        51.1,
+        0,
+        53.125,
+        136.1,
+        11
+      ],
+      "solids": 1,
+      "faces": 7,
+      "edges": 15,
+      "parts_volume": 30255.362999999998
+    },
+    "keybed#black_keys_2": {
+      "valid": true,
+      "volume": 50758.731000000014,
+      "area": 13098.080235105124,
+      "com": [
+        115.94499999999996,
+        93.1756229708212,
+        4.977728146907377
+      ],
+      "bbox": [
+        84.455,
+        51.1,
+        0,
+        147.435,
+        136.1,
+        11
+      ],
+      "solids": 1,
+      "faces": 7,
+      "edges": 15,
+      "parts_volume": 50758.731000000014
+    },
+    "keybed#black_keys_3": {
+      "valid": true,
+      "volume": 30255.36299999999,
+      "area": 8458.378342741285,
+      "com": [
+        197.455,
+        93.1756229708212,
+        4.977728146907376
+      ],
+      "bbox": [
+        178.685,
+        51.1,
+        0,
+        216.225,
+        136.1,
+        11
+      ],
+      "solids": 1,
+      "faces": 7,
+      "edges": 15,
+      "parts_volume": 30255.36299999999
+    },
+    "keybed#black_keys_4": {
+      "valid": true,
+      "volume": 50758.73100000001,
+      "area": 13098.080235105126,
+      "com": [
+        279.04499999999996,
+        93.1756229708212,
+        4.977728146907377
+      ],
+      "bbox": [
+        247.555,
+        51.1,
+        0,
+        310.535,
+        136.1,
+        11
+      ],
+      "solids": 1,
+      "faces": 7,
+      "edges": 15,
+      "parts_volume": 50758.73100000001
+    },
+    "keybed#black_keys_5": {
+      "valid": true,
+      "volume": 30255.36299999997,
+      "area": 8458.378342741282,
+      "com": [
+        360.555,
+        93.17562297082118,
+        4.977728146907376
+      ],
+      "bbox": [
+        341.785,
+        51.1,
+        0,
+        379.325,
+        136.1,
+        11
+      ],
+      "solids": 1,
+      "faces": 7,
+      "edges": 15,
+      "parts_volume": 30255.36299999997
+    },
+    "keybed#black_keys_6": {
+      "valid": true,
+      "volume": 50758.731000000014,
+      "area": 13098.080235105126,
+      "com": [
+        442.1449999999999,
+        93.1756229708212,
+        4.977728146907376
+      ],
+      "bbox": [
+        410.655,
+        51.1,
+        0,
+        473.635,
+        136.1,
+        11
+      ],
+      "solids": 1,
+      "faces": 7,
+      "edges": 15,
+      "parts_volume": 50758.731000000014
+    },
+    "keybed#boss_1": {
+      "valid": true,
+      "volume": 856.4272171006227,
+      "area": 868.9488200196689,
+      "com": [
+        20.4,
+        70.69999999999999,
+        -36.65
+      ],
+      "bbox": [
+        16.65,
+        66.95,
+        -48.5,
+        24.15,
+        74.45,
+        -24.8
+      ],
+      "solids": 1,
+      "faces": 4,
+      "edges": 6,
+      "parts_volume": 856.4272171006227
+    },
+    "keybed#boss_2": {
+      "valid": true,
+      "volume": 856.4272171006238,
+      "area": 868.9488200196689,
+      "com": [
+        156,
+        70.70000000000002,
+        -36.650000000000006
+      ],
+      "bbox": [
+        152.25,
+        66.95,
+        -48.5,
+        159.75,
+        74.45,
+        -24.8
+      ],
+      "solids": 1,
+      "faces": 4,
+      "edges": 6,
+      "parts_volume": 856.4272171006238
+    },
+    "keybed#boss_3": {
+      "valid": true,
+      "volume": 856.4272171006219,
+      "area": 868.9488200196685,
+      "com": [
+        332.80000000000007,
+        70.69999999999999,
+        -36.64999999999999
+      ],
+      "bbox": [
+        329.05,
+        66.95,
+        -48.5,
+        336.55,
+        74.45,
+        -24.8
+      ],
+      "solids": 1,
+      "faces": 4,
+      "edges": 6,
+      "parts_volume": 856.4272171006219
+    },
+    "keybed#boss_4": {
+      "valid": true,
+      "volume": 856.4272171006211,
+      "area": 868.9488200196685,
+      "com": [
+        495.8999999999999,
+        70.69999999999999,
+        -36.65
+      ],
+      "bbox": [
+        492.15,
+        66.95,
+        -48.5,
+        499.65,
+        74.45,
+        -24.8
+      ],
+      "solids": 1,
+      "faces": 4,
+      "edges": 6,
+      "parts_volume": 856.4272171006211
+    },
+    "keybed#boss_5": {
+      "valid": true,
+      "volume": 838.3591323516652,
+      "area": 852.1412993229635,
+      "com": [
+        20.4,
+        146.2,
+        -36.9
+      ],
+      "bbox": [
+        16.65,
+        142.45,
+        -48.5,
+        24.15,
+        149.95,
+        -25.3
+      ],
+      "solids": 1,
+      "faces": 4,
+      "edges": 6,
+      "parts_volume": 838.3591323516652
+    },
+    "keybed#boss_6": {
+      "valid": true,
+      "volume": 838.3591323516661,
+      "area": 852.1412993229635,
+      "com": [
+        155.99999999999997,
+        146.19999999999996,
+        -36.9
+      ],
+      "bbox": [
+        152.25,
+        142.45,
+        -48.5,
+        159.75,
+        149.95,
+        -25.3
+      ],
+      "solids": 1,
+      "faces": 4,
+      "edges": 6,
+      "parts_volume": 838.3591323516661
+    },
+    "keybed#boss_7": {
+      "valid": true,
+      "volume": 838.3591323516644,
+      "area": 852.141299322963,
+      "com": [
+        332.8,
+        146.2,
+        -36.9
+      ],
+      "bbox": [
+        329.05,
+        142.45,
+        -48.5,
+        336.55,
+        149.95,
+        -25.3
+      ],
+      "solids": 1,
+      "faces": 4,
+      "edges": 6,
+      "parts_volume": 838.3591323516644
+    },
+    "keybed#boss_8": {
+      "valid": true,
+      "volume": 838.3591323516637,
+      "area": 852.141299322963,
+      "com": [
+        495.8999999999999,
+        146.2,
+        -36.9
+      ],
+      "bbox": [
+        492.15,
+        142.45,
+        -48.5,
+        499.65,
+        149.95,
+        -25.3
+      ],
+      "solids": 1,
+      "faces": 4,
+      "edges": 6,
+      "parts_volume": 838.3591323516637
     },
     "key_travel_space#key_travel_space": {
       "valid": true,
@@ -1286,18 +1595,18 @@
     {
       "label": "keybed stands on the floor",
       "item": "keybed",
-      "a": "keybed",
+      "a": "keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8",
       "b": "bottom",
       "interference_volume": 0,
       "min_distance": 0,
       "closest": [
         [
-          20.15,
+          27.65,
           76.7,
           2
         ],
         [
-          20.15,
+          27.65,
           76.7,
           2
         ]
@@ -1306,7 +1615,7 @@
     {
       "label": "keys and frame clear the top and the nuts",
       "item": "",
-      "a": "keybed",
+      "a": "keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8",
       "b": "top+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6",
       "interference_volume": 0,
       "min_distance": 1.5,
@@ -2307,7 +2616,7 @@
       "label": "no part overlaps another",
       "item": "bottom",
       "a": "bottom",
-      "b": "top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2315,14 +2624,14 @@
       "label": "no part overlaps another",
       "item": "top",
       "a": "top",
-      "b": "bottom+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
     {
       "label": "no part overlaps another",
       "item": "keybed",
-      "a": "keybed",
+      "a": "keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8",
       "b": "bottom+top+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
@@ -2331,7 +2640,7 @@
       "label": "no part overlaps another",
       "item": "key_travel",
       "a": "key_travel",
-      "b": "bottom+top+keybed+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2339,7 +2648,7 @@
       "label": "no part overlaps another",
       "item": "screw_1",
       "a": "screw_1",
-      "b": "bottom+top+keybed+key_travel+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2347,7 +2656,7 @@
       "label": "no part overlaps another",
       "item": "screw_2",
       "a": "screw_2",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2355,7 +2664,7 @@
       "label": "no part overlaps another",
       "item": "screw_3",
       "a": "screw_3",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2363,7 +2672,7 @@
       "label": "no part overlaps another",
       "item": "screw_4",
       "a": "screw_4",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2371,7 +2680,7 @@
       "label": "no part overlaps another",
       "item": "screw_5",
       "a": "screw_5",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2379,7 +2688,7 @@
       "label": "no part overlaps another",
       "item": "screw_6",
       "a": "screw_6",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2387,7 +2696,7 @@
       "label": "no part overlaps another",
       "item": "nut_1",
       "a": "nut_1",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2395,7 +2704,7 @@
       "label": "no part overlaps another",
       "item": "nut_2",
       "a": "nut_2",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2403,7 +2712,7 @@
       "label": "no part overlaps another",
       "item": "nut_3",
       "a": "nut_3",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2411,7 +2720,7 @@
       "label": "no part overlaps another",
       "item": "nut_4",
       "a": "nut_4",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2419,7 +2728,7 @@
       "label": "no part overlaps another",
       "item": "nut_5",
       "a": "nut_5",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2427,7 +2736,7 @@
       "label": "no part overlaps another",
       "item": "nut_6",
       "a": "nut_6",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2435,7 +2744,7 @@
       "label": "no part overlaps another",
       "item": "foot_1",
       "a": "foot_1",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2443,7 +2752,7 @@
       "label": "no part overlaps another",
       "item": "foot_2",
       "a": "foot_2",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2451,7 +2760,7 @@
       "label": "no part overlaps another",
       "item": "foot_3",
       "a": "foot_3",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2459,7 +2768,7 @@
       "label": "no part overlaps another",
       "item": "foot_4",
       "a": "foot_4",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2467,7 +2776,7 @@
       "label": "no part overlaps another",
       "item": "pot_1",
       "a": "pot_1",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2475,7 +2784,7 @@
       "label": "no part overlaps another",
       "item": "pot_2",
       "a": "pot_2",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2483,7 +2792,7 @@
       "label": "no part overlaps another",
       "item": "pot_3",
       "a": "pot_3",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_4+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_4+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2491,7 +2800,7 @@
       "label": "no part overlaps another",
       "item": "pot_4",
       "a": "pot_4",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_5+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_5+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2499,7 +2808,7 @@
       "label": "no part overlaps another",
       "item": "pot_5",
       "a": "pot_5",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_6+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_6+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2507,7 +2816,7 @@
       "label": "no part overlaps another",
       "item": "pot_6",
       "a": "pot_6",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_7+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_7+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2515,7 +2824,7 @@
       "label": "no part overlaps another",
       "item": "pot_7",
       "a": "pot_7",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_8+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_8+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2523,7 +2832,7 @@
       "label": "no part overlaps another",
       "item": "pot_8",
       "a": "pot_8",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+led",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+led",
       "interference_volume": 0,
       "min_distance": null
     },
@@ -2531,7 +2840,7 @@
       "label": "no part overlaps another",
       "item": "led",
       "a": "led",
-      "b": "bottom+top+keybed+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8",
+      "b": "bottom+top+keybed#keys_and_frame+keybed#black_keys_1+keybed#black_keys_2+keybed#black_keys_3+keybed#black_keys_4+keybed#black_keys_5+keybed#black_keys_6+keybed#boss_1+keybed#boss_2+keybed#boss_3+keybed#boss_4+keybed#boss_5+keybed#boss_6+keybed#boss_7+keybed#boss_8+key_travel+screw_1+screw_2+screw_3+screw_4+screw_5+screw_6+nut_1+nut_2+nut_3+nut_4+nut_5+nut_6+foot_1+foot_2+foot_3+foot_4+pot_1+pot_2+pot_3+pot_4+pot_5+pot_6+pot_7+pot_8",
       "interference_volume": 0,
       "min_distance": null
     }
