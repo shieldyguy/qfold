@@ -63,3 +63,14 @@ def test_misplaced_board_part_is_caught(tmp_path):
         off[part.split("/")[-1]] = mismatch(d.find(part).ref(), d.find(h_path).ref(h_ref))["radial"]
     assert off["RV5"] == pytest.approx(0.5, abs=1e-9)
     assert max(v for k, v in off.items() if k != "RV5") < 1e-9
+
+
+def test_extruded_profile_stand_in(tmp_path):
+    from qfold.assembly import Design, extrude, prim_component
+    d = Design("t")  # an L drawn in (y, z), 10 long in x
+    d.add(prim_component("l", [extrude([(0, 0), (4, 0), (4, 1), (1, 1), (1, 3), (0, 3)], 10.0,
+                                       x=(0, 1, 0), y=(0, 0, 1))]), "l")
+    job = d.job()
+    job["outputs"] = {"measure": [{"name": "l", "geom": d.group("l")}]}
+    m = kernel.run(job, tmp_path)["measure"]["l"]
+    assert m["volume"] == pytest.approx(60.0) and m["bbox"] == pytest.approx([0, 0, 0, 10, 4, 3])

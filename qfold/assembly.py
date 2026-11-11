@@ -340,6 +340,16 @@ def cyl(p, d, length, direction=(0, 0, 1), bore: float = 0.0) -> dict:
             "len": length, "bore": float(bore)}
 
 
+def extrude(outline, length, o=(0, 0, 0), x=(1, 0, 0), y=(0, 1, 0)) -> dict:
+    """An outline drawn in the plane through o spanned by x and y, extruded
+    by length along x cross y. Vertices are (u, v) or (u, v, bulge), as in a
+    sheet outline: a block with a profile, for stand-ins."""
+    x, y = np.array(x, float), np.array(y, float)
+    return {"kind": "extrude", "T": float(length), "outline": [list(map(float, q)) for q in outline],
+            "frame": {"o": list(map(float, o)), "u": x.tolist(), "v": y.tolist(),
+                      "n": np.cross(x, y).tolist()}}
+
+
 def insert_step(parent, path: str | Path, tree: list[dict] | None = None,
                 name: str | None = None, color=(60, 60, 60),
                 colors: dict[str, tuple] | None = None) -> Occurrence:

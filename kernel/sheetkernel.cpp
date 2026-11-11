@@ -743,6 +743,7 @@ static TopoDS_Shape makePrim(const J& p) {
     gp_Ax2 ax(P3(p["o"]), gp_Dir(V3(p["zdir"])), gp_Dir(V3(p["xdir"])));
     return BRepPrimAPI_MakeBox(ax, p["dx"].num(), p["dy"].num(), p["dz"].num()).Shape();
   }
+  if (k == "extrude") return makePlate(p);  // an outline in a frame, T along its normal
   throw std::runtime_error("unknown primitive kind: " + k);
 }
 
