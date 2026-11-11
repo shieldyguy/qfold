@@ -77,8 +77,10 @@ the other by a couple of millimetres, not flush. Panels can come within
 
 ## Next, in order
 
-1. **Keybed case v2**, with the keybed and boards as STEP. Add what it
-   needs as it needs it: likely candidates are overlap ratio, mitered lips
+1. **Keybed case v2**: the enclosure is done and ships as
+   `examples/keybed_case`, with the keybed as STEP. Still to come: real
+   boards and controls in place of the stand-ins, the keybed's own screws,
+   and the measured key travel. Add what it needs as it needs it: likely candidates are overlap ratio, mitered lips
    where two lips meet at a corner, hems, countersinks.
 2. **Synth case onto `Sheet`**, or leave it as the example of the layer
    beneath.
@@ -101,7 +103,7 @@ the other by a couple of millimetres, not flush. Panels can come within
 ## Process
 
 Commits go straight to `main` (no PRs; it's one owner and one agent).
-Every change keeps `scripts/bootstrap.sh` and both examples green on a fresh
+Every change keeps `scripts/bootstrap.sh` and all four examples green on a fresh
 clone, and regenerates their committed `out/` folders.
 
 ## Open questions

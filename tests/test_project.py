@@ -90,3 +90,9 @@ def test_chassis_with_inserted_step_fits(tmp_path):
     occ = proj.design.find("standoff_2")
     align(occ, "origin", onto=occ.world() @ translate((3, 0, 0)))
     assert set(_failed(proj, tmp_path)) == {"standoffs on their holes"}
+
+
+def test_keybed_case_fits_in_both_cheek_versions(tmp_path):
+    from examples.keybed_case.__main__ import Params as KeybedParams, build as keybed
+    for style in ("fillet", "flush"):
+        assert _failed(keybed(KeybedParams(cheek_top=style)), tmp_path) == {}

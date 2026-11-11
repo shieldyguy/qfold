@@ -33,7 +33,7 @@ folder:
 
 It prints one line per check and exits non-zero if any fails.
 
-Three examples, each with committed output in their `out/` folder:
+Four examples, each with committed output in their `out/` folder:
 
 - [`examples/pedal_box`](examples/pedal_box/__main__.py): a tray with lips and
   a flat lid, 130 lines. **Copy this to start a new design.**
@@ -41,6 +41,14 @@ Three examples, each with committed output in their `out/` folder:
   board inserted from a STEP file on standoffs, 65 lines.
 - [`examples/synth_case`](examples/synth_case): a sloped desktop synth case
   with a control board inserted from a STEP file and its own drawing sheets.
+- [`examples/keybed_case`](examples/keybed_case/__main__.py): a clamshell
+  around a 37-key keybed from a STEP file. The top's cheeks wrap the sides,
+  the bottom is recessed inside them with matched radii, and the checks
+  hold the keys, pressed and at rest, clear of the case. `out/` has the
+  cheeks' edge filleted into the panel; `out_flush/` has it at panel height
+  with a relief slot (`python -m examples.keybed_case out_flush flush`).
+
+![Keybed case](examples/keybed_case/out/render_iso.png)
 
 ## Your first design
 
@@ -88,7 +96,7 @@ side.flange("top", 14, name="right_lip")         # a lip folding inward off the 
   curve with no relief; `extend_level=(0, None)` instead runs the
   extension's edge flush with the parent's surface, with a relief slot
   beside the bend's end (give that flange `relief="round"`) (a
-  cheek that carries on beyond its panel, as in `designs/keybed_case`);
+  cheek that carries on beyond its panel, as in `examples/keybed_case`);
   `round=(1.4, 1.4)` rounds a wall's two far corners, to nest it inside
   another part's bend (that bend's inside radius less the gap) or around
   one (its outside radius plus the gap).
@@ -230,7 +238,7 @@ qfold/
   render.py    numpy z-buffer renderer (no GPU or display)
   kernel.py    runs sheetkernel
 kernel/        sheetkernel (C++/OCCT): bodies + placed instances in, answers out
-examples/      pedal_box (the template), chassis, synth_case
+examples/      pedal_box (the template), chassis, synth_case, keybed_case
 ```
 
 Python owns the design, the fold math and the assembly tree. The kernel owns

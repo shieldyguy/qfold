@@ -1,6 +1,6 @@
 """A clamshell case for the Huaxin 37-key keybed.
 
-    python -m designs.keybed_case [out_dir] [fillet|flush|step|flush_raw]
+    python -m examples.keybed_case [out_dir] [fillet|flush|step|flush_raw]
 
 Top, folding down: the control panel behind the keys, with a cheek at each
 end folded down to the table. The cheeks run forward past the panel,
